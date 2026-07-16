@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { mixinKey, randomHex, ticketSignature } from './crypto';
 
 const STORAGE_KEY = '@liberbili/session/v1';
+const ACCOUNT_KEY = '@liberbili/account-cookie/v1';
 const REFERER = 'https://www.bilibili.com/';
 const BASE64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
@@ -62,6 +63,7 @@ export function dmImgParams() {
 
 export class SessionManager {
   private session?: BilibiliSession;
+  private accountCookie?: string;
 
   async get(force = false) {
     if (!force && this.session && this.session.expiresAt > Date.now() / 1000 + 60) return this.session;
@@ -116,13 +118,26 @@ export class SessionManager {
     return this.session;
   }
 
-  async headers() {
+  async setAccountCookies(cookie?: string) {
+    this.accountCookie = cookie?.trim() || undefined;
+    if (this.accountCookie) await AsyncStorage.setItem(ACCOUNT_KEY, this.accountCookie);
+    else await AsyncStorage.removeItem(ACCOUNT_KEY);
+  }
+
+  async hasAccountCookies() {
+    if (this.accountCookie) return true;
+    this.accountCookie = (await AsyncStorage.getItem(ACCOUNT_KEY)) ?? undefined;
+    return Boolean(this.accountCookie);
+  }
+
+  async headers(authenticated = false) {
     const session = await this.get();
+    if (authenticated && !this.accountCookie) this.accountCookie = (await AsyncStorage.getItem(ACCOUNT_KEY)) ?? undefined;
     return {
       'User-Agent': session.userAgent,
       Referer: REFERER,
       'Accept-Language': 'zh-CN,zh;q=0.9',
-      Cookie: session.cookie,
+      Cookie: authenticated && this.accountCookie ? this.accountCookie : session.cookie,
     };
   }
 

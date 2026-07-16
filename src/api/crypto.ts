@@ -53,6 +53,14 @@ export function ticketSignature(timestamp: number) {
   return bytesToHex(hmac(sha256, utf8ToBytes('XgwSnGZ1p'), utf8ToBytes(`ts${timestamp}`)));
 }
 
+export function signApp(params: Record<string, string | number>, appSecret: string) {
+  const query = Object.entries(params)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`)
+    .join('&');
+  return bytesToHex(md5(utf8ToBytes(query + appSecret)));
+}
+
 export function randomHex(bytes: number) {
   const data = new Uint8Array(bytes);
   // Anonymous device-fingerprint entropy, not a security credential.

@@ -42,7 +42,7 @@ function mapError(code: number, message = 'Bilibili request failed') {
 
 export const recommendationsUrl = () => `${API}/x/web-interface/index/top/rcmd?fresh_type=3`;
 
-function normalizeSummary(item: Json): VideoSummary {
+export function normalizeSummary(item: Json): VideoSummary {
   const bvid = item.bvid || item.uri?.match(/BV[\w]+/)?.[0] || item.arcurl?.match(/BV[\w]+/)?.[0];
   return {
     bvid,
@@ -57,6 +57,8 @@ function normalizeSummary(item: Json): VideoSummary {
         : Number(item.duration ?? 0),
     views: Number(item.stat?.view ?? item.play ?? 0),
     publishedAt: Number(item.pubdate ?? 0) || undefined,
+    requiresMembership: item.elec_arc_type === 1 || JSON.stringify(item.badges ?? []).includes('充电专属'),
+    type: 'video',
   };
 }
 
@@ -77,8 +79,8 @@ function normalizeComment(item: Json): Comment {
   };
 }
 
-class BilibiliClient {
-  private async request<T>(url: string, retry = true): Promise<T> {
+export class BilibiliClient {
+  protected async request<T>(url: string, retry = true): Promise<T> {
     try {
       const response = await fetch(url, { headers: await bilibiliSession.headers() });
       if (response.status === 412 && retry) {
@@ -96,7 +98,7 @@ class BilibiliClient {
     }
   }
 
-  private async wbi(path: string, params: Record<string, string | number>) {
+  protected async wbi(path: string, params: Record<string, string | number>) {
     const query = signWbi(params, await bilibiliSession.getMixinKey());
     return `${API}${path}?${query}`;
   }
