@@ -25,9 +25,23 @@ export type VideoDetail = VideoSummary & {
   description: string;
   likes: number;
   comments: number;
+  uploaderId: string;
+  uploaderUrl: string;
+  uploaderVerified: boolean;
+  paid: boolean;
+  stats: Record<string, number | string>;
+  staff: VideoStaff[];
   parts: VideoPart[];
   tags?: string[];
   related?: VideoSummary[];
+};
+
+export type VideoStaff = {
+  id: string;
+  name: string;
+  role: string;
+  avatar: string;
+  url: string;
 };
 
 export type DashStream = {
@@ -65,7 +79,16 @@ export type Channel = {
   live?: VideoSummary;
 };
 
-export type ChannelSummary = { type: 'channel'; id: string; name: string; avatar: string; description?: string; followers?: number };
+export type ChannelSummary = {
+  type: 'channel';
+  id: string;
+  name: string;
+  avatar: string;
+  description?: string;
+  followers?: number;
+  videos?: number;
+  verified: boolean;
+};
 export type SearchItem = VideoSummary | ChannelSummary;
 
 export type RemotePlaylist = {
@@ -77,7 +100,36 @@ export type RemotePlaylist = {
   streamCount: number;
 };
 
+export type RemotePlaylistPage = PageResult<VideoSummary> & {
+  total: number;
+  playlist: {
+    id: string;
+    type: 'season' | 'series';
+    name: string;
+    thumbnail: string;
+    uploaderId: string;
+  };
+};
+
 export type Subtitle = { id: number; language: string; label: string; url: string; automatic: boolean };
+export type PremiumEpisode = VideoSummary & {
+  cid: number;
+  episodeId: string;
+  episodeNumber?: string;
+  description?: string;
+  paid: boolean;
+};
+export type PremiumSeason = {
+  id: string;
+  title: string;
+  description: string;
+  thumbnail: string;
+  uploader?: { id: string; name: string; avatar: string };
+  views: number;
+  likes: number;
+  episodes: PremiumEpisode[];
+  selectedEpisode: PremiumEpisode;
+};
 export type VideoShot = {
   imageUrls: string[];
   frameWidth: number;
@@ -107,6 +159,17 @@ export type LiveRoom = {
   online: number;
   status: 0 | 1 | 2;
   startedAt: number;
+  tags: string[];
+};
+
+export type RoundPlay = {
+  bvid: string;
+  cid: number;
+  title: string;
+  playTime: number;
+  nextTimestamp: number;
+  video: DashStream[];
+  audio: DashStream[];
 };
 
 export type SearchType = 'video' | 'live_room' | 'bili_user' | 'media_bangumi' | 'media_ft';
@@ -128,13 +191,17 @@ export type Comment = {
   oid: number;
   root: number;
   author: string;
+  authorId: string;
+  authorUrl: string;
   avatar: string;
   message: string;
   likes: number;
   createdAt: number;
   replyCount: number;
   pinned: boolean;
+  heartedByUploader: boolean;
   pictures: string[];
+  pictureDetails: { url: string; width: number; height: number }[];
   replies: Comment[];
 };
 

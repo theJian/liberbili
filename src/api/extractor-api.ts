@@ -11,8 +11,12 @@ import {
   LiveRoom,
   PageResult,
   PlaybackInfo,
+  PremiumEpisode,
+  PremiumSeason,
   ProgressiveStream,
   RemotePlaylist,
+  RemotePlaylistPage,
+  RoundPlay,
   SearchDuration,
   SearchOrder,
   SearchType,
@@ -30,8 +34,22 @@ const LIVE_API = 'https://api.live.bilibili.com';
 const APP_KEY = '1d8b6e7d45233436';
 const APP_SECRET = '560c52ccd288fed045859ed18bffd973';
 const QUALITY: Record<number, string> = { 6: '240P', 16: '360P', 32: '480P', 64: '720P', 74: '720P60', 80: '1080P', 112: '1080P+', 116: '1080P60', 120: '4K', 125: 'HDR', 126: 'Dolby Vision', 127: '8K' };
+const AUDIO_QUALITY: Record<number, string> = { 30216: '64K', 30232: '132K', 30280: '192K', 30250: 'Dolby Atmos', 30255: 'Dolby Atmos', 30251: 'Hi-Res lossless' };
 const https = (value = '') => value.replace(/^http:/, 'https:').replace(/^\/\//, 'https://');
 const entity = (value: string) => value.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#39;/g, "'").replace(/&quot;/g, '"');
+
+const hostnameMatches = (url: string, pattern: RegExp) => {
+  try {
+    return pattern.test(new URL(url).hostname);
+  } catch {
+    return false;
+  }
+};
+
+export const isBilibiliUrl = (url: string) => hostnameMatches(url, /(^|\.)bilibili\.com$/i);
+export const isBilibiliMediaUrl = (url: string) => hostnameMatches(url, /(^|\.)(bilivideo\.com|akamaized\.net)$/i);
+export const videoQualityLabel = (id: number) => QUALITY[id] ?? 'Unknown resolution';
+export const audioQualityLabel = (id: number) => AUDIO_QUALITY[id] ?? 'Unknown bitrate';
 
 function dash(item: Json): DashStream {
   return {
@@ -61,6 +79,26 @@ function liveSummary(item: Json, nested = false): VideoSummary {
     views: Number(item.online ?? item.watched_show?.num ?? 0),
     publishedAt: nested ? undefined : Date.parse(`${item.live_time}+08:00`) / 1000 || undefined,
     type: 'live',
+  };
+}
+
+function premiumEpisode(item: Json): PremiumEpisode {
+  const url = String(item.url ?? item.share_url ?? '');
+  return {
+    bvid: String(item.bvid ?? ''),
+    aid: Number(item.aid ?? 0),
+    cid: Number(item.cid ?? 0),
+    episodeId: url.match(/\/(ep\d+)/)?.[1] ?? String(item.ep_id ?? item.id ?? ''),
+    episodeNumber: item.title,
+    title: entity(String(item.share_copy ?? item.long_title ?? item.title ?? '').replace(/<[^>]+>/g, '')),
+    description: item.long_title,
+    thumbnail: https(item.cover),
+    uploader: 'BiliBili',
+    duration: Number(item.duration ?? 0) / 1000,
+    views: -1,
+    publishedAt: Number(item.pub_time ?? item.pubtime ?? 0) || undefined,
+    paid: Number(item.rights?.pay ?? 0) === 1,
+    type: 'premium',
   };
 }
 
@@ -116,7 +154,7 @@ export class BilibiliExtractorApi extends BilibiliClient {
     const type = options.type ?? 'video';
     const items: SearchItem[] = (data.result ?? []).map((item: Json) => {
       if (type === 'live_room') return liveSummary(item);
-      if (type === 'bili_user') return { type: 'channel', id: String(item.mid), name: String(item.uname).replace(/<[^>]+>/g, ''), avatar: https(item.upic), description: item.usign, followers: Number(item.fans ?? 0) } satisfies ChannelSummary;
+      if (type === 'bili_user') return { type: 'channel', id: String(item.mid), name: String(item.uname).replace(/<[^>]+>/g, ''), avatar: https(item.upic), description: item.usign, followers: Number(item.fans ?? 0), videos: Number(item.videos ?? 0), verified: false } satisfies ChannelSummary;
       if (type === 'media_bangumi' || type === 'media_ft') return {
         bvid: String(item.url ?? item.share_url), aid: Number(item.season_id ?? item.media_id ?? 0), title: String(item.title ?? '').replace(/<[^>]+>/g, ''), thumbnail: https(item.cover), uploader: String(item.org_title ?? 'BiliBili').replace(/<[^>]+>/g, ''), duration: Number(item.duration ?? 0) / 1000, views: -1, publishedAt: Number(item.pubtime ?? item.pub_time ?? 0), type: 'premium' as const,
       };
@@ -150,6 +188,19 @@ export class BilibiliExtractorApi extends BilibiliClient {
   async getRelated(bvid: string) {
     const data = await this.request<Json>(`${API}/x/web-interface/archive/related?bvid=${encodeURIComponent(bvid)}`);
     return (Array.isArray(data) ? data : []).map(normalizeSummary);
+  }
+
+  async getVideoParts(bvid: string): Promise<VideoPart[]> {
+    const data = await this.request<Json[]>(`${API}/x/player/pagelist?bvid=${encodeURIComponent(bvid)}`);
+    const aid = bvToAv(bvid);
+    return data.map((part) => ({
+      bvid,
+      aid,
+      cid: Number(part.cid),
+      page: Number(part.page),
+      title: String(part.part ?? ''),
+      duration: Number(part.duration ?? 0),
+    }));
   }
 
   async getPlayback(part: VideoPart, options: { quality?: number; premium?: boolean; dash?: boolean; authenticated?: boolean } = {}): Promise<PlaybackInfo> {
@@ -207,17 +258,37 @@ export class BilibiliExtractorApi extends BilibiliClient {
     return (payload.body ?? []).map((line: Json, index: number) => `${index + 1}\n${timestamp(Number(line.from))} --> ${timestamp(Number(line.to))}\n${line.content}\n`).join('\n');
   }
 
-  async getVideoShot(bvid: string, cid: number): Promise<VideoShot> {
-    const data = await this.request<Json>(`${API}/x/player/videoshot?index=1&bvid=${encodeURIComponent(bvid)}&cid=${cid}`);
+  async getVideoShot(bvid: string, cid?: number): Promise<VideoShot> {
+    const url = new URL(`${API}/x/player/videoshot`);
+    url.searchParams.set('index', '1');
+    url.searchParams.set('bvid', bvid);
+    if (cid !== undefined) url.searchParams.set('cid', String(cid));
+    const data = await this.request<Json>(url.toString());
     const points: number[] = data.index ?? [];
     const totalFrames = Math.max(0, points.length - 1);
     const durationPerFrame = totalFrames > 1 ? ((points.at(-1)! - points[0]) * 1000) / totalFrames : 0;
     return { imageUrls: (data.image ?? []).map(https), frameWidth: Number(data.img_x_size ?? 0), frameHeight: Number(data.img_y_size ?? 0), columns: Number(data.img_x_len ?? 10), rows: Number(data.img_y_len ?? 10), totalFrames, durationPerFrame, points };
   }
 
-  async getPremiumSeason(id: string) {
+  async getPremiumSeason(id: string): Promise<PremiumSeason> {
     const key = id.startsWith('ss') ? 'season_id' : 'ep_id';
-    return this.result(`${API}/pgc/view/web/season?${key}=${encodeURIComponent(id.slice(2))}`);
+    const data = await this.result(`${API}/pgc/view/web/season?${key}=${encodeURIComponent(id.slice(2))}`);
+    const episodes = (data.episodes ?? []).map(premiumEpisode);
+    const selectedEpisode = id.startsWith('ss')
+      ? episodes[0]
+      : episodes.find((episode: PremiumEpisode) => episode.episodeId === id);
+    if (!selectedEpisode) throw new Error(`Premium episode ${id} was not found`);
+    return {
+      id: String(data.season_id ?? id),
+      title: String(data.title ?? selectedEpisode.title),
+      description: String(data.evaluate ?? ''),
+      thumbnail: https(data.cover),
+      uploader: data.up_info ? { id: String(data.up_info.mid), name: String(data.up_info.uname), avatar: https(data.up_info.avatar) } : undefined,
+      views: Number(data.stat?.views ?? 0),
+      likes: Number(data.stat?.likes ?? 0),
+      episodes,
+      selectedEpisode,
+    };
   }
 
   async getChannel(mid: string): Promise<Channel> {
@@ -258,13 +329,24 @@ export class BilibiliExtractorApi extends BilibiliClient {
     return { items, next: items.length ? String(page + 1) : undefined };
   }
 
-  async getRemotePlaylist(mid: string, id: string, type: 'season' | 'series', page = 1) {
+  async getRemotePlaylist(mid: string, id: string, type: 'season' | 'series', page = 1): Promise<RemotePlaylistPage> {
     const url = type === 'season'
       ? `${API}/x/polymer/web-space/seasons_archives_list?mid=${mid}&season_id=${id}&sort_reverse=false&page_num=${page}&page_size=30`
       : `${API}/x/series/archives?mid=${mid}&series_id=${id}&only_normal=true&sort=desc&pn=${page}&ps=30`;
     const data = await this.request<Json>(url);
     const items = (data.archives ?? []).map(normalizeSummary);
-    return { items, next: items.length ? String(page + 1) : undefined, total: Number(data.page?.total ?? items.length), metadata: data.meta };
+    return {
+      items,
+      next: items.length ? String(page + 1) : undefined,
+      total: Number(data.page?.total ?? items.length),
+      playlist: {
+        id,
+        type,
+        name: String(data.meta?.name ?? ''),
+        thumbnail: https(data.meta?.cover),
+        uploaderId: String(data.meta?.mid ?? mid),
+      },
+    };
   }
 
   async getRecordedDanmaku(cid: number): Promise<Danmaku[]> {
@@ -290,7 +372,18 @@ export class BilibiliExtractorApi extends BilibiliClient {
     const init = await this.request<Json>(`${LIVE_API}/room/v1/Room/room_init?id=${encodeURIComponent(id)}`);
     const statuses = await this.request<Json>(`${LIVE_API}/room/v1/Room/get_status_info_by_uids?uids[]=${init.uid}`);
     const room = statuses[String(init.uid)] ?? {};
-    return { roomId: Number(init.room_id), uid: Number(init.uid), title: room.title, uploader: room.uname, avatar: https(room.face), thumbnail: https(room.cover_from_user), online: Number(room.online ?? 0), status: Number(init.live_status) as 0 | 1 | 2, startedAt: Number(init.live_time ?? 0) };
+    return {
+      roomId: Number(init.room_id),
+      uid: Number(init.uid),
+      title: room.title,
+      uploader: room.uname,
+      avatar: https(room.face),
+      thumbnail: https(room.cover_from_user),
+      online: Number(room.online ?? 0),
+      status: Number(init.live_status) as 0 | 1 | 2,
+      startedAt: Number(init.live_time ?? 0),
+      tags: [room.tag_name, ...(String(room.tags ?? '').split(','))].filter(Boolean),
+    };
   }
 
   async getLiveStream(roomId: number) {
@@ -298,7 +391,7 @@ export class BilibiliExtractorApi extends BilibiliClient {
     return (data.durl ?? []).map((item: Json) => https(item.url));
   }
 
-  async getRoundPlay(roomId: number, timestamp = Date.now()) {
+  async getRoundPlay(roomId: number, timestamp = Date.now()): Promise<RoundPlay> {
     const round = await this.result(`https://api.live.bilibili.com/live/getRoundPlayVideo?room_id=${roomId}&a=${timestamp}&type=flv`);
     if (Number(round.cid) < 0) throw new Error('Round play is unavailable');
     const playback = await this.request<Json>(`${API}/x/player/playurl?cid=${round.cid}&bvid=${round.bvid}&fnval=4048&qn=120&fourk=1&try_look=1`);

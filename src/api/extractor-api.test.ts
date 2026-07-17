@@ -1,6 +1,12 @@
 import { describe, expect, test } from 'bun:test';
 
-import { BilibiliExtractorApi } from './extractor-api';
+import {
+  audioQualityLabel,
+  BilibiliExtractorApi,
+  isBilibiliMediaUrl,
+  isBilibiliUrl,
+  videoQualityLabel,
+} from './extractor-api';
 
 const api = new BilibiliExtractorApi();
 
@@ -20,3 +26,20 @@ describe('PipePipe Bilibili URL parity', () => {
   });
 });
 
+describe('PipePipe Bilibili service utility parity', () => {
+  test('recognizes Bilibili pages and media CDN URLs without accepting lookalikes', () => {
+    expect(isBilibiliUrl('https://space.bilibili.com/1')).toBe(true);
+    expect(isBilibiliUrl('https://bilibili.com.evil.example/video/BV1xx411c7mD')).toBe(false);
+    expect(isBilibiliUrl('not a url')).toBe(false);
+    expect(isBilibiliMediaUrl('https://upos-sz-mirrorcos.bilivideo.com/file.mp4')).toBe(true);
+    expect(isBilibiliMediaUrl('https://example.com/file.mp4')).toBe(false);
+  });
+
+  test('maps every special quality family exposed by PipePipe', () => {
+    expect(videoQualityLabel(127)).toBe('8K');
+    expect(videoQualityLabel(126)).toBe('Dolby Vision');
+    expect(videoQualityLabel(999)).toBe('Unknown resolution');
+    expect(audioQualityLabel(30251)).toBe('Hi-Res lossless');
+    expect(audioQualityLabel(999)).toBe('Unknown bitrate');
+  });
+});

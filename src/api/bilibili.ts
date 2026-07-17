@@ -63,18 +63,30 @@ export function normalizeSummary(item: Json): VideoSummary {
 }
 
 function normalizeComment(item: Json): Comment {
+  let message = stripHtml(item.content?.message ?? '');
+  const jumpUrl = Object.keys(item.content?.jump_url ?? {}).find((url) => url.startsWith('https://'));
+  if (message.endsWith('...') && jumpUrl) message += `\n\n${jumpUrl}`;
+  const pictureDetails = (item.content?.pictures ?? []).map((picture: Json) => ({
+    url: https(picture.img_src),
+    width: Number(picture.img_width ?? 0),
+    height: Number(picture.img_height ?? 0),
+  }));
   return {
     id: String(item.rpid_str ?? item.rpid),
     oid: Number(item.oid),
     root: Number(item.root || item.rpid),
     author: item.member?.uname ?? '',
+    authorId: String(item.mid ?? item.member?.mid ?? ''),
+    authorUrl: `https://space.bilibili.com/${item.mid ?? item.member?.mid ?? ''}`,
     avatar: https(item.member?.avatar),
-    message: stripHtml(item.content?.message ?? ''),
+    message,
     likes: Number(item.like ?? 0),
     createdAt: Number(item.ctime ?? 0),
     replyCount: Number(item.rcount ?? 0),
     pinned: Boolean(item.isTop),
-    pictures: (item.content?.pictures ?? []).map((picture: Json) => https(picture.img_src)),
+    heartedByUploader: Boolean(item.up_action?.like),
+    pictures: pictureDetails.map((picture: { url: string }) => picture.url),
+    pictureDetails,
     replies: (item.replies ?? []).map(normalizeComment),
   };
 }
@@ -135,6 +147,20 @@ export class BilibiliClient {
       description: data.desc ?? '',
       likes: Number(data.stat?.like ?? 0),
       comments: Number(data.stat?.reply ?? 0),
+      uploaderId: String(data.owner?.mid ?? ''),
+      uploaderUrl: `https://space.bilibili.com/${data.owner?.mid ?? ''}`,
+      uploaderVerified: false,
+      paid: Number(data.rights?.pay ?? 0) === 1,
+      stats: Object.fromEntries(
+        Object.entries(data.stat ?? {}).map(([key, value]) => [key, typeof value === 'number' ? value : String(value)]),
+      ),
+      staff: (data.staff ?? []).map((member: Json) => ({
+        id: String(member.mid),
+        name: String(member.name ?? ''),
+        role: String(member.title ?? ''),
+        avatar: https(member.face),
+        url: `https://space.bilibili.com/${member.mid}`,
+      })),
       parts,
     };
   }
