@@ -7,7 +7,7 @@ import { VideoSummary } from '@/api/types';
 import { ScreenState } from '@/components/screen-state';
 import { VideoCard } from '@/components/video-card';
 import { ThemedText } from '@/components/themed-text';
-import { useI18n } from '@/i18n/i18n';
+import { useI18n } from '@/i18n';
 import { usePlayer } from '@/state/player';
 import { usePlaylists } from '@/state/playlists';
 import { useTheme } from '@/hooks/use-theme';
@@ -31,4 +31,3 @@ export default function PlaylistScreen() {
 }
 
 const styles = StyleSheet.create({ container: { flex: 1 }, actions: { padding: 16, flexDirection: 'row', alignItems: 'center', gap: 20 }, play: { borderRadius: 999, paddingHorizontal: 18, paddingVertical: 11 }, playText: { color: '#fff', fontWeight: '800' }, remove: { position: 'absolute', right: 16, bottom: 10, padding: 5 } });
-

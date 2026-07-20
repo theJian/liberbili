@@ -9,7 +9,7 @@ import { VideoSummary } from '@/api/types';
 import { ScreenState } from '@/components/screen-state';
 import { ThemedText } from '@/components/themed-text';
 import { VideoCard } from '@/components/video-card';
-import { useI18n } from '@/i18n/i18n';
+import { useI18n } from '@/i18n';
 import { useTheme } from '@/hooks/use-theme';
 
 export default function SearchScreen() {

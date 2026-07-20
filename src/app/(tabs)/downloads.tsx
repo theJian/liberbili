@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ScreenState } from '@/components/screen-state';
 import { ThemedText } from '@/components/themed-text';
-import { useI18n } from '@/i18n/i18n';
+import { useI18n } from '@/i18n';
 import { DownloadItem, useDownloads } from '@/state/downloads';
 import { usePlayer } from '@/state/player';
 import { useTheme } from '@/hooks/use-theme';

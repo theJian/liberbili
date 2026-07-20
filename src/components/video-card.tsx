@@ -4,7 +4,7 @@ import { memo, useCallback } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { VideoSummary } from '@/api/types';
-import { formatCount, formatDuration, useI18n } from '@/i18n/i18n';
+import { formatCount, formatDuration, useI18n } from '@/i18n';
 import { useTheme } from '@/hooks/use-theme';
 import { ThemedText } from './themed-text';
 
@@ -39,4 +39,3 @@ const styles = StyleSheet.create({
   title: { fontWeight: '600', lineHeight: 20 },
   divider: { position: 'absolute', bottom: 0, left: 184, right: 16, height: StyleSheet.hairlineWidth },
 });
-

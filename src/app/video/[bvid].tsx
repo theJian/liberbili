@@ -10,7 +10,7 @@ import { CommentCard } from '@/components/comment-card';
 import { ScreenState } from '@/components/screen-state';
 import { ThemedText } from '@/components/themed-text';
 import { useResource } from '@/hooks/use-resource';
-import { formatCount, formatDuration, useI18n } from '@/i18n/i18n';
+import { formatCount, formatDuration, useI18n } from '@/i18n';
 import { useDownloads } from '@/state/downloads';
 import { usePlayer, VideoView } from '@/state/player';
 import { usePlaylists } from '@/state/playlists';

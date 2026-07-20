@@ -10,7 +10,7 @@ import { ScreenState } from '@/components/screen-state';
 import { VideoCard } from '@/components/video-card';
 import { ThemedText } from '@/components/themed-text';
 import { useResource } from '@/hooks/use-resource';
-import { useI18n } from '@/i18n/i18n';
+import { useI18n } from '@/i18n';
 import { useTheme } from '@/hooks/use-theme';
 
 export default function HomeScreen() {
@@ -35,4 +35,3 @@ const styles = StyleSheet.create({
   brand: { fontSize: 26, lineHeight: 30, fontWeight: '800', letterSpacing: -0.7 }, roundButton: { marginLeft: 'auto', width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center' },
   searchIcon: { fontSize: 26, lineHeight: 28 }, language: { width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center' }, list: { paddingBottom: 84 },
 });
-

@@ -3,7 +3,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useColorScheme } from 'react-native';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import { I18nProvider } from '@/i18n/i18n';
+import { I18nProvider } from '@/i18n';
 import { DownloadProvider } from '@/state/downloads';
 import { PlayerProvider } from '@/state/player';
 import { PlaylistProvider } from '@/state/playlists';

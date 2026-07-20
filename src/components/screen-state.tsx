@@ -1,7 +1,7 @@
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
 import { BilibiliError } from '@/api/types';
-import { useI18n } from '@/i18n/i18n';
+import { useI18n } from '@/i18n';
 import { useTheme } from '@/hooks/use-theme';
 import { ThemedText } from './themed-text';
 

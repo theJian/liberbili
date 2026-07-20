@@ -9,8 +9,8 @@ import {
   useMemo,
   useState,
 } from "react";
-import en from "./en.json";
-import zhHans from "./zh-Hans.json";
+import en from "@/locales/en.json";
+import zhHans from "@/locales/zh-Hans.json";
 
 const STORAGE_KEY = "@liberbili/locale/v1";
 

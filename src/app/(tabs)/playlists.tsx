@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { ScreenState } from '@/components/screen-state';
-import { useI18n } from '@/i18n/i18n';
+import { useI18n } from '@/i18n';
 import { Playlist, usePlaylists } from '@/state/playlists';
 import { useTheme } from '@/hooks/use-theme';
 
@@ -34,4 +34,3 @@ export default function PlaylistsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 }, title: { fontSize: 30, lineHeight: 36, fontWeight: '800', padding: 16 }, create: { flexDirection: 'row', marginHorizontal: 16, marginBottom: 12, borderRadius: 14, overflow: 'hidden', paddingLeft: 14 }, input: { flex: 1, height: 48 }, button: { width: 52, alignItems: 'center', justifyContent: 'center' }, buttonText: { color: '#fff', fontSize: 24 }, row: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderBottomWidth: StyleSheet.hairlineWidth }, art: { width: 54, height: 54, borderRadius: 10, alignItems: 'center', justifyContent: 'center' }, artIcon: { fontSize: 24 }, rowText: { flex: 1, gap: 3 }, name: { fontWeight: '700' },
 });
-

@@ -1,7 +1,7 @@
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 import { MiniPlayer } from '@/components/mini-player';
-import { useI18n } from '@/i18n/i18n';
+import { useI18n } from '@/i18n';
 
 export default function TabsLayout() {
   const { t } = useI18n();

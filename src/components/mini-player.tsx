@@ -2,7 +2,7 @@ import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { useI18n } from '@/i18n/i18n';
+import { useI18n } from '@/i18n';
 import { usePlayer } from '@/state/player';
 import { useTheme } from '@/hooks/use-theme';
 import { ThemedText } from './themed-text';
@@ -30,4 +30,3 @@ const styles = StyleSheet.create({
   image: { width: 92, height: 52, marginLeft: 6, borderRadius: 7 },
   text: { flex: 1 }, title: { fontWeight: '600' }, control: { width: 48, alignItems: 'center', justifyContent: 'center', height: 56 }, icon: { fontWeight: '800' },
 });
-

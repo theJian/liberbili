@@ -3,7 +3,7 @@ import { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Comment } from '@/api/types';
-import { formatCount, useI18n } from '@/i18n/i18n';
+import { formatCount, useI18n } from '@/i18n';
 import { useTheme } from '@/hooks/use-theme';
 import { ThemedText } from './themed-text';
 
@@ -14,4 +14,3 @@ export const CommentCard = memo(function CommentCard({ comment }: { comment: Com
 });
 
 const styles = StyleSheet.create({ container: { flexDirection: 'row', gap: 11, padding: 16, borderBottomWidth: StyleSheet.hairlineWidth }, avatar: { width: 38, height: 38, borderRadius: 19 }, content: { flex: 1, gap: 8 }, meta: { flexDirection: 'row', gap: 8, alignItems: 'center' }, message: { lineHeight: 21 }, picture: { width: 180, height: 120, borderRadius: 9 }, reply: { borderRadius: 8, padding: 9, gap: 3 } });
-
