@@ -1,16 +1,17 @@
 import { Image } from 'expo-image';
+import { useLingui } from '@lingui/react/macro';
 import { router } from 'expo-router';
 import { memo, useCallback } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { VideoSummary } from '@/api/types';
-import { formatCount, formatDuration, useI18n } from '@/i18n';
+import { formatCount, formatDuration } from '@/i18n';
 import { useTheme } from '@/hooks/use-theme';
 import { ThemedText } from './themed-text';
 
 export const VideoCard = memo(function VideoCard({ video }: { video: VideoSummary }) {
   const theme = useTheme();
-  const { locale, t } = useI18n();
+  const { i18n, t } = useLingui();
   const open = useCallback(() => router.push({ pathname: '/video/[bvid]', params: { bvid: video.bvid } }), [video.bvid]);
   return (
     <Pressable onPress={open} style={({ pressed }) => [styles.container, pressed && styles.pressed]} accessibilityRole="button">
@@ -21,7 +22,7 @@ export const VideoCard = memo(function VideoCard({ video }: { video: VideoSummar
       <View style={styles.content}>
         <ThemedText numberOfLines={2} style={styles.title}>{video.title}</ThemedText>
         <ThemedText numberOfLines={1} themeColor="textSecondary" type="small">{video.uploader}</ThemedText>
-        <ThemedText themeColor="textSecondary" type="small">{formatCount(video.views, locale)} {t('views')}</ThemedText>
+        <ThemedText themeColor="textSecondary" type="small">{formatCount(video.views, i18n.locale)} {t`views`}</ThemedText>
       </View>
       <View style={[styles.divider, { backgroundColor: theme.border }]} />
     </Pressable>

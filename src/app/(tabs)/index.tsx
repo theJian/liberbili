@@ -1,4 +1,5 @@
 import { FlashList } from '@shopify/flash-list';
+import { useLingui } from '@lingui/react/macro';
 import { router } from 'expo-router';
 import { useCallback } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -10,19 +11,20 @@ import { ScreenState } from '@/components/screen-state';
 import { VideoCard } from '@/components/video-card';
 import { ThemedText } from '@/components/themed-text';
 import { useResource } from '@/hooks/use-resource';
-import { useI18n } from '@/i18n';
+import { setLocale, type Locale } from '@/i18n';
 import { useTheme } from '@/hooks/use-theme';
 
 export default function HomeScreen() {
   const { data = [], loading, error, reload } = useResource(() => bilibiliApi.getRecommendations(), []);
-  const { locale, setLocale, t } = useI18n();
+  const { i18n, t } = useLingui();
+  const locale = i18n.locale as Locale;
   const theme = useTheme();
   const renderItem = useCallback(({ item }: { item: VideoSummary }) => <VideoCard video={item} />, []);
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: theme.background }]} edges={['top']}>
       <View style={styles.header}>
-        <View><ThemedText style={styles.brand}>LiberBili</ThemedText><ThemedText type="small" themeColor="textSecondary">{t('recommended')}</ThemedText></View>
-        <Pressable onPress={() => router.push('/search')} style={[styles.roundButton, { backgroundColor: theme.backgroundElement }]} accessibilityLabel={t('search')}><ThemedText style={styles.searchIcon}>⌕</ThemedText></Pressable>
+        <View><ThemedText style={styles.brand}>LiberBili</ThemedText><ThemedText type="small" themeColor="textSecondary">{t`Recommended`}</ThemedText></View>
+        <Pressable onPress={() => router.push('/search')} style={[styles.roundButton, { backgroundColor: theme.backgroundElement }]} accessibilityLabel={t`Search`}><ThemedText style={styles.searchIcon}>⌕</ThemedText></Pressable>
         <Pressable onPress={() => setLocale(locale === 'en' ? 'zh-Hans' : 'en')} style={[styles.language, { backgroundColor: theme.backgroundElement }]}><ThemedText type="smallBold">{locale === 'en' ? '中' : 'EN'}</ThemedText></Pressable>
       </View>
       <FlashList data={data} renderItem={renderItem} keyExtractor={(item) => item.bvid} refreshing={loading && data.length > 0} onRefresh={reload} contentContainerStyle={styles.list} ListEmptyComponent={<ScreenState loading={loading} error={error} empty={!loading && !error} onRetry={reload} />} />

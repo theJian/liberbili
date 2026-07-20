@@ -1,0 +1,164 @@
+msgid ""
+msgstr ""
+"Language: en\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Content-Transfer-Encoding: \n"
+
+#. placeholder {0}: comment.replyCount
+#: src/components/comment-card.tsx:15
+msgid "{0, plural, one {# reply} other {# replies}}"
+msgstr "{0, plural, one {# reply} other {# replies}}"
+
+#. placeholder {0}: item.items.length
+#: src/app/(tabs)/playlists.tsx:23
+msgid "{0, plural, one {# video} other {# videos}}"
+msgstr "{0, plural, one {# video} other {# videos}}"
+
+#: src/app/video/[bvid].tsx:46
+msgid "Add to playlist"
+msgstr "Add to playlist"
+
+#: src/app/video/[bvid].tsx:49
+msgid "All comments"
+msgstr "All comments"
+
+#: src/components/screen-state.tsx:15
+msgid "Bilibili blocked this request. Please retry."
+msgstr "Bilibili blocked this request. Please retry."
+
+#: src/components/screen-state.tsx:15
+msgid "Bilibili returned an unexpected response."
+msgstr "Bilibili returned an unexpected response."
+
+#: src/app/video/[bvid].tsx:46
+msgid "Comments"
+msgstr "Comments"
+
+#: src/app/video/[bvid].tsx:47
+msgid "Create a playlist first."
+msgstr "Create a playlist first."
+
+#: src/app/playlist/[id].tsx:27
+msgid "Delete"
+msgstr "Delete"
+
+#: src/app/video/[bvid].tsx:49
+msgid "Description"
+msgstr "Description"
+
+#: src/app/video/[bvid].tsx:46
+msgid "Download"
+msgstr "Download"
+
+#: src/app/(tabs)/downloads.tsx:22
+msgid "Downloaded"
+msgstr "Downloaded"
+
+#: src/app/(tabs)/downloads.tsx:22
+msgid "Downloading"
+msgstr "Downloading"
+
+#: src/app/(tabs)/_layout.tsx:19
+#: src/app/(tabs)/downloads.tsx:27
+msgid "Downloads"
+msgstr "Downloads"
+
+#: src/app/(tabs)/downloads.tsx:22
+msgid "Failed"
+msgstr "Failed"
+
+#: src/app/(tabs)/_layout.tsx:11
+msgid "Home"
+msgstr "Home"
+
+#: src/app/(tabs)/downloads.tsx:22
+msgid "Interrupted"
+msgstr "Interrupted"
+
+#: src/app/video/[bvid].tsx:46
+msgid "likes"
+msgstr "likes"
+
+#: src/components/mini-player.tsx:22
+msgid "Next"
+msgstr "Next"
+
+#: src/components/screen-state.tsx:16
+msgid "Nothing here yet"
+msgstr "Nothing here yet"
+
+#: src/app/video/[bvid].tsx:48
+msgid "Parts"
+msgstr "Parts"
+
+#: src/components/mini-player.tsx:21
+msgid "Pause"
+msgstr "Pause"
+
+#: src/app/(tabs)/downloads.tsx:22
+msgid "Paused"
+msgstr "Paused"
+
+#: src/app/playlist/[id].tsx:27
+#: src/components/mini-player.tsx:21
+msgid "Play"
+msgstr "Play"
+
+#: src/app/(tabs)/playlists.tsx:29
+msgid "Playlist name"
+msgstr "Playlist name"
+
+#: src/app/(tabs)/_layout.tsx:15
+#: src/app/(tabs)/playlists.tsx:28
+msgid "Playlists"
+msgstr "Playlists"
+
+#: src/app/(tabs)/index.tsx:26
+msgid "Recommended"
+msgstr "Recommended"
+
+#: src/app/playlist/[id].tsx:22
+msgid "Remove"
+msgstr "Remove"
+
+#: src/app/(tabs)/index.tsx:27
+#: src/app/search.tsx:35
+msgid "Search"
+msgstr "Search"
+
+#: src/app/search.tsx:37
+msgid "Search Bilibili videos"
+msgstr "Search Bilibili videos"
+
+#: src/components/screen-state.tsx:15
+msgid "This content requires a Bilibili account."
+msgstr "This content requires a Bilibili account."
+
+#: src/components/screen-state.tsx:15
+msgid "This video is not available in your region."
+msgstr "This video is not available in your region."
+
+#: src/components/screen-state.tsx:15
+msgid "This video is unavailable."
+msgstr "This video is unavailable."
+
+#: src/components/screen-state.tsx:17
+msgid "Try again"
+msgstr "Try again"
+
+#: src/components/screen-state.tsx:15
+#: src/components/screen-state.tsx:15
+msgid "Unable to reach Bilibili."
+msgstr "Unable to reach Bilibili."
+
+#: src/app/video/[bvid].tsx:46
+#: src/components/video-card.tsx:25
+msgid "views"
+msgstr "views"

@@ -1,4 +1,5 @@
 import { FlashList } from '@shopify/flash-list';
+import { useLingui } from '@lingui/react/macro';
 import { Stack } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, TextInput, View } from 'react-native';
@@ -9,11 +10,10 @@ import { VideoSummary } from '@/api/types';
 import { ScreenState } from '@/components/screen-state';
 import { ThemedText } from '@/components/themed-text';
 import { VideoCard } from '@/components/video-card';
-import { useI18n } from '@/i18n';
 import { useTheme } from '@/hooks/use-theme';
 
 export default function SearchScreen() {
-  const { t } = useI18n();
+  const { t } = useLingui();
   const theme = useTheme();
   const [query, setQuery] = useState('');
   const [items, setItems] = useState<VideoSummary[]>([]);
@@ -32,9 +32,9 @@ export default function SearchScreen() {
   const renderItem = useCallback(({ item }: { item: VideoSummary }) => <VideoCard video={item} />, []);
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]} edges={['bottom']}>
-      <Stack.Screen options={{ title: t('search') }} />
+      <Stack.Screen options={{ title: t`Search` }} />
       <View style={[styles.searchBar, { backgroundColor: theme.backgroundElement }]}>
-        <TextInput value={query} onChangeText={setQuery} onSubmitEditing={() => void search(1)} placeholder={t('searchPlaceholder')} placeholderTextColor={theme.textSecondary} style={[styles.input, { color: theme.text }]} returnKeyType="search" autoFocus />
+        <TextInput value={query} onChangeText={setQuery} onSubmitEditing={() => void search(1)} placeholder={t`Search Bilibili videos`} placeholderTextColor={theme.textSecondary} style={[styles.input, { color: theme.text }]} returnKeyType="search" autoFocus />
         <Pressable onPress={() => void search(1)} style={[styles.submit, { backgroundColor: theme.accent }]}><ThemedText style={styles.submitText}>⌕</ThemedText></Pressable>
       </View>
       <FlashList data={items} renderItem={renderItem} keyExtractor={(item) => item.bvid} onEndReached={() => page > 0 && void search(page)} onEndReachedThreshold={0.4} ListEmptyComponent={<ScreenState loading={loading} error={error} empty={!loading && !error && query.length > 0} onRetry={() => void search(1)} />} ListFooterComponent={loading && items.length ? <ActivityIndicator style={styles.footer} color={theme.accent} /> : null} />

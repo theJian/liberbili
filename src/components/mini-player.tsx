@@ -1,15 +1,15 @@
 import { Image } from 'expo-image';
+import { useLingui } from '@lingui/react/macro';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { useI18n } from '@/i18n';
 import { usePlayer } from '@/state/player';
 import { useTheme } from '@/hooks/use-theme';
 import { ThemedText } from './themed-text';
 
 export function MiniPlayer() {
   const { current, isPlaying, toggle, next } = usePlayer();
-  const { t } = useI18n();
+  const { t } = useLingui();
   const theme = useTheme();
   if (!current) return null;
   return (
@@ -18,8 +18,8 @@ export function MiniPlayer() {
         <Image source={{ uri: current.thumbnail }} style={styles.image} contentFit="cover" />
         <View style={styles.text}><ThemedText numberOfLines={1} style={styles.title}>{current.title}</ThemedText><ThemedText numberOfLines={1} type="small" themeColor="textSecondary">{current.uploader}</ThemedText></View>
       </Pressable>
-      <Pressable onPress={toggle} accessibilityLabel={isPlaying ? t('pause') : t('play')} style={styles.control}><ThemedText style={styles.icon}>{isPlaying ? 'Ⅱ' : '▶'}</ThemedText></Pressable>
-      <Pressable onPress={next} accessibilityLabel={t('next')} style={styles.control}><ThemedText style={styles.icon}>▶|</ThemedText></Pressable>
+      <Pressable onPress={toggle} accessibilityLabel={isPlaying ? t`Pause` : t`Play`} style={styles.control}><ThemedText style={styles.icon}>{isPlaying ? 'Ⅱ' : '▶'}</ThemedText></Pressable>
+      <Pressable onPress={next} accessibilityLabel={t`Next`} style={styles.control}><ThemedText style={styles.icon}>▶|</ThemedText></Pressable>
     </View>
   );
 }

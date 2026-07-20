@@ -1,20 +1,20 @@
+import { useLingui } from '@lingui/react/macro';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
 import { BilibiliError } from '@/api/types';
-import { useI18n } from '@/i18n';
 import { useTheme } from '@/hooks/use-theme';
 import { ThemedText } from './themed-text';
 
 export function ScreenState({ loading, error, empty, onRetry }: { loading?: boolean; error?: Error; empty?: boolean; onRetry?: () => void }) {
-  const { t } = useI18n();
+  const { t } = useLingui();
   const theme = useTheme();
   if (!loading && !error && !empty) return null;
   return (
     <View style={styles.container}>
       {loading ? <ActivityIndicator color={theme.accent} size="large" /> : null}
-      {error ? <ThemedText style={styles.message}>{error instanceof BilibiliError ? t(error.kind) : error.message || t('network')}</ThemedText> : null}
-      {empty ? <ThemedText themeColor="textSecondary">{t('noResults')}</ThemedText> : null}
-      {error && onRetry ? <Pressable onPress={onRetry} style={[styles.button, { backgroundColor: theme.accent }]}><ThemedText style={styles.buttonText}>{t('retry')}</ThemedText></Pressable> : null}
+      {error ? <ThemedText style={styles.message}>{error instanceof BilibiliError ? error.kind === 'antiBot' ? t`Bilibili blocked this request. Please retry.` : error.kind === 'unavailable' ? t`This video is unavailable.` : error.kind === 'restricted' ? t`This video is not available in your region.` : error.kind === 'loginRequired' ? t`This content requires a Bilibili account.` : error.kind === 'invalidResponse' ? t`Bilibili returned an unexpected response.` : t`Unable to reach Bilibili.` : error.message || t`Unable to reach Bilibili.`}</ThemedText> : null}
+      {empty ? <ThemedText themeColor="textSecondary">{t`Nothing here yet`}</ThemedText> : null}
+      {error && onRetry ? <Pressable onPress={onRetry} style={[styles.button, { backgroundColor: theme.accent }]}><ThemedText style={styles.buttonText}>{t`Try again`}</ThemedText></Pressable> : null}
     </View>
   );
 }
