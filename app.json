@@ -8,7 +8,7 @@
     "scheme": "liberbili",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/liberbili.icon"
     },
     "android": {
       "adaptiveIcon": {
