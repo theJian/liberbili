@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/liberbili.icon/Assets/SvgPixelArt-static-1784629943215.svg" width="128" alt="LiberBili logo">
+</p>
+
 # LiberBili
 
 > [!WARNING]
