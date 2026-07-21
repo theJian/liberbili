@@ -4,6 +4,8 @@
   "version": "1.0.0",
   "dependencies": {
     "@expo/ui": "~57.0.7",
+    "@formatjs/intl-locale": "^5.3.10",
+    "@formatjs/intl-pluralrules": "^6.3.13",
     "@lingui/core": "^6.5.0",
     "@lingui/react": "^6.5.0",
     "@noble/hashes": "^2.2.0",

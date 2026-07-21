@@ -1,3 +1,5 @@
+import '@/intl-polyfills';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { i18n, type Messages } from '@lingui/core';
 import { getLocales } from 'expo-localization';
