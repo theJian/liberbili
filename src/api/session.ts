@@ -5,7 +5,8 @@ import { mixinKey, randomHex, ticketSignature } from './crypto';
 const STORAGE_KEY = '@liberbili/session/v1';
 const ACCOUNT_KEY = '@liberbili/account-cookie/v1';
 const REFERER = 'https://www.bilibili.com/';
-const BASE64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+const BASE64 =
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 export type BilibiliSession = {
   userAgent: string;
@@ -16,7 +17,9 @@ export type BilibiliSession = {
 };
 
 type SpiResponse = { data: { b_3: string; b_4: string } };
-type TicketResponse = { data: { ticket: string; created_at: number; ttl: number } };
+type TicketResponse = {
+  data: { ticket: string; created_at: number; ttl: number };
+};
 type NavResponse = { data: { wbi_img: { img_url: string; sub_url: string } } };
 
 const chromium = () => 130 + Math.floor(Math.random() * 8);
@@ -43,7 +46,10 @@ function asciiBase64(value: string) {
     const first = value.charCodeAt(index);
     const second = value.charCodeAt(index + 1);
     const third = value.charCodeAt(index + 2);
-    const chunk = (first << 16) | ((Number.isNaN(second) ? 0 : second) << 8) | (Number.isNaN(third) ? 0 : third);
+    const chunk =
+      (first << 16) |
+      ((Number.isNaN(second) ? 0 : second) << 8) |
+      (Number.isNaN(third) ? 0 : third);
     result += BASE64[(chunk >> 18) & 63] + BASE64[(chunk >> 12) & 63];
     result += Number.isNaN(second) ? '=' : BASE64[(chunk >> 6) & 63];
     result += Number.isNaN(third) ? '=' : BASE64[chunk & 63];
@@ -56,8 +62,14 @@ export function dmImgParams() {
   return {
     dm_img_list: '[]',
     dm_img_str: asciiBase64('WebGL 1.0 (OpenGL ES 2.0 Chromium)').slice(0, -2),
-    dm_cover_img_str: asciiBase64('ANGLE (Intel, Intel(R) UHD Graphics Direct3D11 vs_5_0 ps_5_0, D3D11)Google Inc. (Intel)').slice(0, -2),
-    dm_img_inter: JSON.stringify({ ds: [], wh: [5940 + random * 3, 6750 + random, random], of: [random, random * 2, random] }),
+    dm_cover_img_str: asciiBase64(
+      'ANGLE (Intel, Intel(R) UHD Graphics Direct3D11 vs_5_0 ps_5_0, D3D11)Google Inc. (Intel)',
+    ).slice(0, -2),
+    dm_img_inter: JSON.stringify({
+      ds: [],
+      wh: [5940 + random * 3, 6750 + random, random],
+      of: [random, random * 2, random],
+    }),
   };
 }
 
@@ -66,12 +78,18 @@ export class SessionManager {
   private accountCookie?: string;
 
   async get(force = false) {
-    if (!force && this.session && this.session.expiresAt > Date.now() / 1000 + 60) return this.session;
+    if (
+      !force &&
+      this.session &&
+      this.session.expiresAt > Date.now() / 1000 + 60
+    )
+      return this.session;
     if (!force) {
       const saved = await AsyncStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved) as BilibiliSession;
-        if (parsed.expiresAt > Date.now() / 1000 + 60) return (this.session = parsed);
+        if (parsed.expiresAt > Date.now() / 1000 + 60)
+          return (this.session = parsed);
       }
     }
     return this.bootstrap();
@@ -84,9 +102,19 @@ export class SessionManager {
 
   private async bootstrap() {
     const ua = userAgent();
-    const headers = { 'User-Agent': ua, Referer: REFERER, 'Accept-Language': 'zh-CN,zh;q=0.9' };
-    const spiResponse = await fetch('https://api.bilibili.com/x/frontend/finger/spi', { headers });
-    if (!spiResponse.ok) throw new Error(`Bilibili session bootstrap failed (${spiResponse.status})`);
+    const headers = {
+      'User-Agent': ua,
+      Referer: REFERER,
+      'Accept-Language': 'zh-CN,zh;q=0.9',
+    };
+    const spiResponse = await fetch(
+      'https://api.bilibili.com/x/frontend/finger/spi',
+      { headers },
+    );
+    if (!spiResponse.ok)
+      throw new Error(
+        `Bilibili session bootstrap failed (${spiResponse.status})`,
+      );
     const spi = (await spiResponse.json()) as SpiResponse;
     const now = Math.floor(Date.now() / 1000);
     const cookies: Record<string, string | number> = {
@@ -97,7 +125,9 @@ export class SessionManager {
       _uuid: fpUuid(),
       buvid_fp: randomHex(16),
     };
-    const ticketUrl = new URL('https://api.bilibili.com/bapis/bilibili.api.ticket.v1.Ticket/GenWebTicket');
+    const ticketUrl = new URL(
+      'https://api.bilibili.com/bapis/bilibili.api.ticket.v1.Ticket/GenWebTicket',
+    );
     ticketUrl.searchParams.set('key_id', 'ec02');
     ticketUrl.searchParams.set('hexsign', ticketSignature(now));
     ticketUrl.searchParams.set('context[ts]', String(now));
@@ -120,7 +150,8 @@ export class SessionManager {
 
   async setAccountCookies(cookie?: string) {
     this.accountCookie = cookie?.trim() || undefined;
-    if (this.accountCookie) await AsyncStorage.setItem(ACCOUNT_KEY, this.accountCookie);
+    if (this.accountCookie)
+      await AsyncStorage.setItem(ACCOUNT_KEY, this.accountCookie);
     else await AsyncStorage.removeItem(ACCOUNT_KEY);
   }
 
@@ -132,25 +163,39 @@ export class SessionManager {
 
   async headers(authenticated = false) {
     const session = await this.get();
-    if (authenticated && !this.accountCookie) this.accountCookie = (await AsyncStorage.getItem(ACCOUNT_KEY)) ?? undefined;
+    if (authenticated && !this.accountCookie)
+      this.accountCookie =
+        (await AsyncStorage.getItem(ACCOUNT_KEY)) ?? undefined;
     return {
       'User-Agent': session.userAgent,
       Referer: REFERER,
       'Accept-Language': 'zh-CN,zh;q=0.9',
-      Cookie: authenticated && this.accountCookie ? this.accountCookie : session.cookie,
+      Cookie:
+        authenticated && this.accountCookie
+          ? this.accountCookie
+          : session.cookie,
     };
   }
 
   async getMixinKey() {
     const session = await this.get();
-    const date = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date());
+    const date = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Shanghai',
+    }).format(new Date());
     if (session.mixinKey && session.mixinDate === date) return session.mixinKey;
-    const response = await fetch('https://api.bilibili.com/x/web-interface/nav', {
-      headers: await this.headers(),
-    });
-    if (!response.ok) throw new Error(`Unable to load WBI key (${response.status})`);
+    const response = await fetch(
+      'https://api.bilibili.com/x/web-interface/nav',
+      {
+        headers: await this.headers(),
+      },
+    );
+    if (!response.ok)
+      throw new Error(`Unable to load WBI key (${response.status})`);
     const nav = (await response.json()) as NavResponse;
-    session.mixinKey = mixinKey(fileKey(nav.data.wbi_img.img_url), fileKey(nav.data.wbi_img.sub_url));
+    session.mixinKey = mixinKey(
+      fileKey(nav.data.wbi_img.img_url),
+      fileKey(nav.data.wbi_img.sub_url),
+    );
     session.mixinDate = date;
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(session));
     return session.mixinKey;

@@ -23,7 +23,8 @@ function activateLocale(locale: Locale): void {
   i18n.loadAndActivate({ locale, messages: translations[locale] });
 }
 
-const deviceLocale: Locale = getLocales()[0]?.languageCode === 'zh' ? 'zh-Hans' : 'en';
+const deviceLocale: Locale =
+  getLocales()[0]?.languageCode === 'zh' ? 'zh-Hans' : 'en';
 activateLocale(deviceLocale);
 
 export async function restoreLocale(): Promise<void> {

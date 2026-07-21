@@ -1,13 +1,13 @@
-import { Image } from "expo-image";
-import { plural } from "@lingui/core/macro";
-import { useLingui } from "@lingui/react/macro";
-import { memo } from "react";
-import { StyleSheet, View } from "react-native";
+import { Image } from 'expo-image';
+import { plural } from '@lingui/core/macro';
+import { useLingui } from '@lingui/react/macro';
+import { memo } from 'react';
+import { StyleSheet, View } from 'react-native';
 
-import { Comment } from "@/api/types";
-import { formatCount } from "@/i18n";
-import { useTheme } from "@/hooks/use-theme";
-import { ThemedText } from "./themed-text";
+import { Comment } from '@/api/types';
+import { formatCount } from '@/i18n';
+import { useTheme } from '@/hooks/use-theme';
+import { ThemedText } from './themed-text';
 
 export const CommentCard = memo(function CommentCard({
   comment,
@@ -39,8 +39,8 @@ export const CommentCard = memo(function CommentCard({
         <ThemedText type="small" themeColor="textSecondary">
           ♡ {formatCount(comment.likes, i18n.locale)}
           {comment.replyCount
-            ? ` · ${plural(comment.replyCount, { one: "# reply", other: "# replies" })}`
-            : ""}
+            ? ` · ${plural(comment.replyCount, { one: '# reply', other: '# replies' })}`
+            : ''}
         </ThemedText>
         {comment.replies.slice(0, 2).map((reply) => (
           <View
@@ -58,14 +58,14 @@ export const CommentCard = memo(function CommentCard({
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 11,
     padding: 16,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   avatar: { width: 38, height: 38, borderRadius: 19 },
   content: { flex: 1, gap: 8 },
-  meta: { flexDirection: "row", gap: 8, alignItems: "center" },
+  meta: { flexDirection: 'row', gap: 8, alignItems: 'center' },
   message: { lineHeight: 21 },
   picture: { width: 180, height: 120, borderRadius: 9 },
   reply: { borderRadius: 8, padding: 9, gap: 3 },

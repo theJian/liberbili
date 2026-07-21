@@ -1,27 +1,27 @@
-import { FlashList } from "@shopify/flash-list";
-import { useLingui } from "@lingui/react/macro";
-import { Image } from "expo-image";
-import { Stack, useLocalSearchParams } from "expo-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { FlashList } from '@shopify/flash-list';
+import { useLingui } from '@lingui/react/macro';
+import { Image } from 'expo-image';
+import { Stack, useLocalSearchParams } from 'expo-router';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
   ScrollView,
   StyleSheet,
   View,
-} from "react-native";
+} from 'react-native';
 
-import { bilibiliApi } from "@/api/bilibili";
-import { Comment, VideoPart, VideoSummary } from "@/api/types";
-import { CommentCard } from "@/components/comment-card";
-import { ScreenState } from "@/components/screen-state";
-import { ThemedText } from "@/components/themed-text";
-import { useResource } from "@/hooks/use-resource";
-import { formatCount, formatDuration } from "@/i18n";
-import { useDownloads } from "@/state/downloads";
-import { usePlayer, VideoView } from "@/state/player";
-import { usePlaylists } from "@/state/playlists";
-import { useTheme } from "@/hooks/use-theme";
+import { bilibiliApi } from '@/api/bilibili';
+import { Comment, VideoPart, VideoSummary } from '@/api/types';
+import { CommentCard } from '@/components/comment-card';
+import { ScreenState } from '@/components/screen-state';
+import { ThemedText } from '@/components/themed-text';
+import { useResource } from '@/hooks/use-resource';
+import { formatCount, formatDuration } from '@/i18n';
+import { useDownloads } from '@/state/downloads';
+import { usePlayer, VideoView } from '@/state/player';
+import { usePlaylists } from '@/state/playlists';
+import { useTheme } from '@/hooks/use-theme';
 
 export default function VideoScreen() {
   const { bvid } = useLocalSearchParams<{ bvid: string }>();
@@ -68,7 +68,7 @@ export default function VideoScreen() {
     try {
       const result = await bilibiliApi.getComments(detail.aid, cursor);
       setMoreComments((all) => [...all, ...result.items]);
-      setNextCursor(result.next ?? "");
+      setNextCursor(result.next ?? '');
     } finally {
       setCommentLoading(false);
     }
@@ -80,7 +80,7 @@ export default function VideoScreen() {
   if (!detail || !summary)
     return (
       <View style={[styles.fill, { backgroundColor: theme.background }]}>
-        <Stack.Screen options={{ title: "" }} />
+        <Stack.Screen options={{ title: '' }} />
         <ScreenState
           loading={detailResource.loading}
           error={detailResource.error}
@@ -99,8 +99,8 @@ export default function VideoScreen() {
       <View style={styles.info}>
         <ThemedText style={styles.title}>{detail.title}</ThemedText>
         <ThemedText type="small" themeColor="textSecondary">
-          {formatCount(detail.views, i18n.locale)} {t`views`} ·{" "}
-          {formatCount(detail.likes, i18n.locale)} {t`likes`} ·{" "}
+          {formatCount(detail.views, i18n.locale)} {t`views`} ·{' '}
+          {formatCount(detail.likes, i18n.locale)} {t`likes`} ·{' '}
           {formatCount(detail.comments, i18n.locale)} {t`Comments`}
         </ThemedText>
         <View style={styles.uploader}>
@@ -224,24 +224,24 @@ export default function VideoScreen() {
 
 const styles = StyleSheet.create({
   fill: { flex: 1 },
-  video: { width: "100%", aspectRatio: 16 / 9, backgroundColor: "#000" },
+  video: { width: '100%', aspectRatio: 16 / 9, backgroundColor: '#000' },
   info: { paddingVertical: 16, gap: 12 },
   title: {
     fontSize: 20,
     lineHeight: 27,
-    fontWeight: "700",
+    fontWeight: '700',
     paddingHorizontal: 16,
   },
   uploader: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 9,
     paddingHorizontal: 16,
   },
   avatar: { width: 32, height: 32, borderRadius: 16 },
-  actions: { flexDirection: "row", gap: 10, paddingHorizontal: 16 },
-  action: { flex: 1, borderRadius: 999, padding: 11, alignItems: "center" },
-  actionPrimary: { color: "#fff", fontWeight: "700" },
+  actions: { flexDirection: 'row', gap: 10, paddingHorizontal: 16 },
+  action: { flex: 1, borderRadius: 999, padding: 11, alignItems: 'center' },
+  actionPrimary: { color: '#fff', fontWeight: '700' },
   playlistChoices: { paddingHorizontal: 16, gap: 8 },
   chip: {
     borderWidth: 1,
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
   descriptionText: { lineHeight: 21 },
   commentsTitle: {
     fontSize: 19,
-    fontWeight: "800",
+    fontWeight: '800',
     paddingHorizontal: 16,
     marginTop: 6,
   },

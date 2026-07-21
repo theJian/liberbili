@@ -24,11 +24,16 @@ export default function RootLayout() {
       <PlaylistProvider>
         <DownloadProvider>
           <PlayerProvider>
-            <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+            <ThemeProvider
+              value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+            >
               <AnimatedSplashOverlay />
               <Stack screenOptions={{ headerBackButtonDisplayMode: 'minimal' }}>
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen name="search" options={{ presentation: 'modal' }} />
+                <Stack.Screen
+                  name="search"
+                  options={{ presentation: 'modal' }}
+                />
                 <Stack.Screen name="video/[bvid]" options={{ title: '' }} />
                 <Stack.Screen name="playlist/[id]" options={{ title: '' }} />
               </Stack>

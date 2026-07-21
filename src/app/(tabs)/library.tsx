@@ -15,7 +15,10 @@ export default function LibraryScreen() {
   ];
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]} edges={['top']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.background }]}
+      edges={['top']}
+    >
       <ThemedText style={styles.title}>{t`Library`}</ThemedText>
       <View style={styles.list}>
         {items.map((item) => (
@@ -41,8 +44,21 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   title: { fontSize: 30, lineHeight: 36, fontWeight: '800', padding: 16 },
   list: { paddingHorizontal: 16, gap: 10 },
-  row: { minHeight: 72, borderRadius: 14, padding: 12, flexDirection: 'row', alignItems: 'center', gap: 12 },
-  icon: { width: 48, height: 48, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  row: {
+    minHeight: 72,
+    borderRadius: 14,
+    padding: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  icon: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   iconText: { fontSize: 24 },
   rowTitle: { flex: 1, fontWeight: '700' },
 });

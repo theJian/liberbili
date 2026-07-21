@@ -1,6 +1,6 @@
-import { NativeTabs } from "expo-router/unstable-native-tabs";
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
-import { MiniPlayer } from "@/components/mini-player";
+import { MiniPlayer } from '@/components/mini-player';
 
 export default function TabsLayout() {
   return (

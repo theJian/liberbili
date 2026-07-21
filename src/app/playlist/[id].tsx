@@ -19,15 +19,58 @@ export default function PlaylistScreen() {
   const { t } = useLingui();
   const theme = useTheme();
   const playlist = playlists.find((item) => item.id === id);
-  const renderItem = useCallback(({ item }: { item: VideoSummary }) => <View><VideoCard video={item} /><Pressable onPress={() => removeItem(id, item.bvid)} style={styles.remove}><ThemedText type="small" themeColor="textSecondary">{t`Remove`}</ThemedText></Pressable></View>, [id, removeItem, t]);
+  const renderItem = useCallback(
+    ({ item }: { item: VideoSummary }) => (
+      <View>
+        <VideoCard video={item} />
+        <Pressable
+          onPress={() => removeItem(id, item.bvid)}
+          style={styles.remove}
+        >
+          <ThemedText
+            type="small"
+            themeColor="textSecondary"
+          >{t`Remove`}</ThemedText>
+        </Pressable>
+      </View>
+    ),
+    [id, removeItem, t],
+  );
   if (!playlist) return <ScreenState empty />;
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Stack.Screen options={{ title: playlist.name }} />
-      <View style={styles.actions}><Pressable disabled={!playlist.items.length} onPress={() => void play(playlist.items[0], playlist.items)} style={[styles.play, { backgroundColor: theme.accent }]}><ThemedText style={styles.playText}>▶ {t`Play`}</ThemedText></Pressable><Pressable onPress={() => { remove(playlist.id); router.back(); }}><ThemedText themeColor="textSecondary">{t`Delete`}</ThemedText></Pressable></View>
-      <FlashList data={playlist.items} renderItem={renderItem} keyExtractor={(item) => item.bvid} ListEmptyComponent={<ScreenState empty />} />
+      <View style={styles.actions}>
+        <Pressable
+          disabled={!playlist.items.length}
+          onPress={() => void play(playlist.items[0], playlist.items)}
+          style={[styles.play, { backgroundColor: theme.accent }]}
+        >
+          <ThemedText style={styles.playText}>▶ {t`Play`}</ThemedText>
+        </Pressable>
+        <Pressable
+          onPress={() => {
+            remove(playlist.id);
+            router.back();
+          }}
+        >
+          <ThemedText themeColor="textSecondary">{t`Delete`}</ThemedText>
+        </Pressable>
+      </View>
+      <FlashList
+        data={playlist.items}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.bvid}
+        ListEmptyComponent={<ScreenState empty />}
+      />
     </View>
   );
 }
 
-const styles = StyleSheet.create({ container: { flex: 1 }, actions: { padding: 16, flexDirection: 'row', alignItems: 'center', gap: 20 }, play: { borderRadius: 999, paddingHorizontal: 18, paddingVertical: 11 }, playText: { color: '#fff', fontWeight: '800' }, remove: { position: 'absolute', right: 16, bottom: 10, padding: 5 } });
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  actions: { padding: 16, flexDirection: 'row', alignItems: 'center', gap: 20 },
+  play: { borderRadius: 999, paddingHorizontal: 18, paddingVertical: 11 },
+  playText: { color: '#fff', fontWeight: '800' },
+  remove: { position: 'absolute', right: 16, bottom: 10, padding: 5 },
+});

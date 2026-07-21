@@ -111,7 +111,13 @@ export type RemotePlaylistPage = PageResult<VideoSummary> & {
   };
 };
 
-export type Subtitle = { id: number; language: string; label: string; url: string; automatic: boolean };
+export type Subtitle = {
+  id: number;
+  language: string;
+  label: string;
+  url: string;
+  automatic: boolean;
+};
 export type PremiumEpisode = VideoSummary & {
   cid: number;
   episodeId: string;
@@ -172,8 +178,19 @@ export type RoundPlay = {
   audio: DashStream[];
 };
 
-export type SearchType = 'video' | 'live_room' | 'bili_user' | 'media_bangumi' | 'media_ft';
-export type SearchOrder = 'totalrank' | 'click' | 'pubdate' | 'dm' | 'scores' | 'stow';
+export type SearchType =
+  | 'video'
+  | 'live_room'
+  | 'bili_user'
+  | 'media_bangumi'
+  | 'media_ft';
+export type SearchOrder =
+  | 'totalrank'
+  | 'click'
+  | 'pubdate'
+  | 'dm'
+  | 'scores'
+  | 'stow';
 export type SearchDuration = 0 | 1 | 2 | 3 | 4;
 
 export type ProgressiveStream = {
@@ -216,7 +233,11 @@ export type BilibiliErrorKind =
   | 'invalidResponse';
 
 export class BilibiliError extends Error {
-  constructor(public kind: BilibiliErrorKind, message: string, public code?: number) {
+  constructor(
+    public kind: BilibiliErrorKind,
+    message: string,
+    public code?: number,
+  ) {
     super(message);
     this.name = 'BilibiliError';
   }

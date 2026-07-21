@@ -17,23 +17,45 @@ function packet(payload: string, operation: number) {
   return result;
 }
 
-function normalize(message: Record<string, any>, startedAt: number): Danmaku | undefined {
+function normalize(
+  message: Record<string, any>,
+  startedAt: number,
+): Danmaku | undefined {
   const command = String(message.cmd ?? '');
   if (command.startsWith('DANMU_MSG')) {
     const info = message.info ?? [];
     const metadata = info[0] ?? [];
     const mode = Number(metadata[1]);
-    return { text: String(info[1] ?? ''), color: 0xff000000 + Number(metadata[3] ?? 0xffffff), position: mode === 4 ? 'bottom' : mode === 1 ? 'regular' : 'top', fontScale: 0.64, time: 0, live: true };
+    return {
+      text: String(info[1] ?? ''),
+      color: 0xff000000 + Number(metadata[3] ?? 0xffffff),
+      position: mode === 4 ? 'bottom' : mode === 1 ? 'regular' : 'top',
+      fontScale: 0.64,
+      time: 0,
+      live: true,
+    };
   }
   if (command.includes('SUPER_CHAT_MESSAGE')) {
     const data = message.data ?? {};
-    return { text: `(¥${data.price}) ${data.message}`, color: 0xff000000 + Number.parseInt(String(data.background_bottom_color ?? '#ffffff').slice(1), 16), position: 'superchat', fontScale: 0.64, time: Number(data.start_time ?? startedAt) - startedAt, live: true };
+    return {
+      text: `(¥${data.price}) ${data.message}`,
+      color:
+        0xff000000 +
+        Number.parseInt(
+          String(data.background_bottom_color ?? '#ffffff').slice(1),
+          16,
+        ),
+      position: 'superchat',
+      fontScale: 0.64,
+      time: Number(data.start_time ?? startedAt) - startedAt,
+      live: true,
+    };
   }
 }
 
 function decodePackets(bytes: Uint8Array): Record<string, any>[] {
   const messages: Record<string, any>[] = [];
-  for (let offset = 0; offset + 16 <= bytes.length;) {
+  for (let offset = 0; offset + 16 <= bytes.length; ) {
     const view = new DataView(bytes.buffer, bytes.byteOffset + offset);
     const length = view.getUint32(0);
     const headerLength = view.getUint16(4);
@@ -44,7 +66,11 @@ function decodePackets(bytes: Uint8Array): Record<string, any>[] {
     if (operation === 5) {
       if (protocol === 2) messages.push(...decodePackets(inflate(body)));
       else {
-        try { messages.push(JSON.parse(new TextDecoder().decode(body))); } catch { /* heartbeat and malformed frames are ignored */ }
+        try {
+          messages.push(JSON.parse(new TextDecoder().decode(body)));
+        } catch {
+          /* heartbeat and malformed frames are ignored */
+        }
       }
     }
     offset += length;
@@ -66,21 +92,42 @@ export class BilibiliLiveDanmakuClient {
 
   connect() {
     this.stopped = false;
-    const Socket = WebSocket as unknown as new (url: string, protocols?: string | string[], options?: object) => WebSocket;
+    const Socket = WebSocket as unknown as new (
+      url: string,
+      protocols?: string | string[],
+      options?: object,
+    ) => WebSocket;
     const socket = new Socket(SOCKET_URL, undefined, {
-      headers: { Origin: 'https://www.bilibili.com', 'User-Agent': 'Mozilla/5.0' },
+      headers: {
+        Origin: 'https://www.bilibili.com',
+        'User-Agent': 'Mozilla/5.0',
+      },
     });
     socket.binaryType = 'arraybuffer';
     socket.onopen = () => {
-      socket.send(packet(JSON.stringify({ uid: 0, roomid: this.roomId, protover: 2, platform: 'web', clientver: '1.4.0', type: 2, key: this.token }), 7));
+      socket.send(
+        packet(
+          JSON.stringify({
+            uid: 0,
+            roomid: this.roomId,
+            protover: 2,
+            platform: 'web',
+            clientver: '1.4.0',
+            type: 2,
+            key: this.token,
+          }),
+          7,
+        ),
+      );
       this.heartbeat = setInterval(() => socket.send(packet('', 2)), 30_000);
     };
     socket.onmessage = async (event) => {
-      const bytes = event.data instanceof ArrayBuffer
-        ? new Uint8Array(event.data)
-        : event.data instanceof Blob
-          ? new Uint8Array(await event.data.arrayBuffer())
-          : new TextEncoder().encode(String(event.data));
+      const bytes =
+        event.data instanceof ArrayBuffer
+          ? new Uint8Array(event.data)
+          : event.data instanceof Blob
+            ? new Uint8Array(await event.data.arrayBuffer())
+            : new TextEncoder().encode(String(event.data));
       for (const raw of decodePackets(bytes)) {
         const message = normalize(raw, this.startedAt);
         if (message) this.onMessage(message);
@@ -99,4 +146,3 @@ export class BilibiliLiveDanmakuClient {
     this.socket?.close();
   }
 }
-

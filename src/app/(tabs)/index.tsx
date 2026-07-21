@@ -1,17 +1,17 @@
-import { FlashList } from "@shopify/flash-list";
-import { useLingui } from "@lingui/react/macro";
-import { router } from "expo-router";
-import { useCallback } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { FlashList } from '@shopify/flash-list';
+import { useLingui } from '@lingui/react/macro';
+import { router } from 'expo-router';
+import { useCallback } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { bilibiliApi } from "@/api/bilibili";
-import { VideoSummary } from "@/api/types";
-import { ScreenState } from "@/components/screen-state";
-import { VideoCard } from "@/components/video-card";
-import { ThemedText } from "@/components/themed-text";
-import { useResource } from "@/hooks/use-resource";
-import { useTheme } from "@/hooks/use-theme";
+import { bilibiliApi } from '@/api/bilibili';
+import { VideoSummary } from '@/api/types';
+import { ScreenState } from '@/components/screen-state';
+import { VideoCard } from '@/components/video-card';
+import { ThemedText } from '@/components/themed-text';
+import { useResource } from '@/hooks/use-resource';
+import { useTheme } from '@/hooks/use-theme';
 
 export default function HomeScreen() {
   const {
@@ -29,7 +29,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView
       style={[styles.safe, { backgroundColor: theme.background }]}
-      edges={["top"]}
+      edges={['top']}
     >
       <View style={styles.header}>
         <View>
@@ -40,7 +40,7 @@ export default function HomeScreen() {
           >{t`Recommended`}</ThemedText>
         </View>
         <Pressable
-          onPress={() => router.push("/search")}
+          onPress={() => router.push('/search')}
           style={[
             styles.roundButton,
             { backgroundColor: theme.backgroundElement },
@@ -75,23 +75,23 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 16,
     paddingVertical: 12,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 9,
   },
   brand: {
     fontSize: 26,
     lineHeight: 30,
-    fontWeight: "800",
+    fontWeight: '800',
     letterSpacing: -0.7,
   },
   roundButton: {
-    marginLeft: "auto",
+    marginLeft: 'auto',
     width: 42,
     height: 42,
     borderRadius: 21,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   searchIcon: { fontSize: 26, lineHeight: 28 },
   list: { paddingBottom: 84 },

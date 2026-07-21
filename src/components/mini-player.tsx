@@ -13,20 +13,72 @@ export function MiniPlayer() {
   const theme = useTheme();
   if (!current) return null;
   return (
-    <View style={[styles.container, { backgroundColor: theme.backgroundElement, borderTopColor: theme.border }]}>
-      <Pressable style={styles.main} onPress={() => router.push({ pathname: '/video/[bvid]', params: { bvid: current.bvid } })}>
-        <Image source={{ uri: current.thumbnail }} style={styles.image} contentFit="cover" />
-        <View style={styles.text}><ThemedText numberOfLines={1} style={styles.title}>{current.title}</ThemedText><ThemedText numberOfLines={1} type="small" themeColor="textSecondary">{current.uploader}</ThemedText></View>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: theme.backgroundElement,
+          borderTopColor: theme.border,
+        },
+      ]}
+    >
+      <Pressable
+        style={styles.main}
+        onPress={() =>
+          router.push({
+            pathname: '/video/[bvid]',
+            params: { bvid: current.bvid },
+          })
+        }
+      >
+        <Image
+          source={{ uri: current.thumbnail }}
+          style={styles.image}
+          contentFit="cover"
+        />
+        <View style={styles.text}>
+          <ThemedText numberOfLines={1} style={styles.title}>
+            {current.title}
+          </ThemedText>
+          <ThemedText numberOfLines={1} type="small" themeColor="textSecondary">
+            {current.uploader}
+          </ThemedText>
+        </View>
       </Pressable>
-      <Pressable onPress={toggle} accessibilityLabel={isPlaying ? t`Pause` : t`Play`} style={styles.control}><ThemedText style={styles.icon}>{isPlaying ? 'Ⅱ' : '▶'}</ThemedText></Pressable>
-      <Pressable onPress={next} accessibilityLabel={t`Next`} style={styles.control}><ThemedText style={styles.icon}>▶|</ThemedText></Pressable>
+      <Pressable
+        onPress={toggle}
+        accessibilityLabel={isPlaying ? t`Pause` : t`Play`}
+        style={styles.control}
+      >
+        <ThemedText style={styles.icon}>{isPlaying ? 'Ⅱ' : '▶'}</ThemedText>
+      </Pressable>
+      <Pressable
+        onPress={next}
+        accessibilityLabel={t`Next`}
+        style={styles.control}
+      >
+        <ThemedText style={styles.icon}>▶|</ThemedText>
+      </Pressable>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { minHeight: 62, flexDirection: 'row', alignItems: 'center', borderTopWidth: StyleSheet.hairlineWidth },
+  container: {
+    minHeight: 62,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderTopWidth: StyleSheet.hairlineWidth,
+  },
   main: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 },
   image: { width: 92, height: 52, marginLeft: 6, borderRadius: 7 },
-  text: { flex: 1 }, title: { fontWeight: '600' }, control: { width: 48, alignItems: 'center', justifyContent: 'center', height: 56 }, icon: { fontWeight: '800' },
+  text: { flex: 1 },
+  title: { fontWeight: '600' },
+  control: {
+    width: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 56,
+  },
+  icon: { fontWeight: '800' },
 });

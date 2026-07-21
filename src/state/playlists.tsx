@@ -1,4 +1,4 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   createContext,
   PropsWithChildren,
@@ -7,11 +7,11 @@ import {
   useEffect,
   useMemo,
   useState,
-} from "react";
+} from 'react';
 
-import { VideoSummary } from "@/api/types";
+import { VideoSummary } from '@/api/types';
 
-const STORAGE_KEY = "@liberbili/playlists/v1";
+const STORAGE_KEY = '@liberbili/playlists/v1';
 export type Playlist = {
   id: string;
   name: string;
@@ -91,6 +91,6 @@ export function PlaylistProvider({ children }: PropsWithChildren) {
 
 export function usePlaylists() {
   const value = useContext(Context);
-  if (!value) throw new Error("usePlaylists must be inside PlaylistProvider");
+  if (!value) throw new Error('usePlaylists must be inside PlaylistProvider');
   return value;
 }

@@ -48,6 +48,7 @@
     "eslint": "^9.0.0",
     "eslint-config-expo": "~57.0.0",
     "expo-mcp": "~0.2.1",
+    "prettier": "3.8.3",
     "typescript": "~6.0.3"
   },
   "scripts": {
@@ -58,6 +59,8 @@
     "web": "expo start --web",
     "i18n:extract": "lingui extract",
     "i18n:extract:clean": "lingui extract --clean",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
     "test": "bun test"
