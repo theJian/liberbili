@@ -78,6 +78,15 @@ msgstr "Failed"
 msgid "Home"
 msgstr "Home"
 
+msgid "Language"
+msgstr "Language"
+
+msgid "Library"
+msgstr "Library"
+
+msgid "Settings"
+msgstr "Settings"
+
 #: src/app/(tabs)/downloads.tsx:22
 msgid "Interrupted"
 msgstr "Interrupted"

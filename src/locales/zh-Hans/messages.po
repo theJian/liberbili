@@ -78,6 +78,15 @@ msgstr "失败"
 msgid "Home"
 msgstr "首页"
 
+msgid "Language"
+msgstr "语言"
+
+msgid "Library"
+msgstr "资料库"
+
+msgid "Settings"
+msgstr "设置"
+
 #: src/app/(tabs)/downloads.tsx:22
 msgid "Interrupted"
 msgstr "已中断"
