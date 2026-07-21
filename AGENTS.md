@@ -8,7 +8,7 @@ LiberBili is an Expo 57 React Native application written in TypeScript.
 - `src/api/`: Bilibili API clients, session/signing logic, models, and tests.
 - `src/components/`: reusable UI components.
 - `src/state/`: player, playlist, and download state providers.
-- `src/i18n/`: English and Chinese localization.
+- `src/i18n.ts` and `src/locales/`: Lingui configuration and English/Chinese message catalogs.
 - `src/constants/`: shared theme values.
 - `assets/`: bundled images and application artwork.
 
@@ -24,6 +24,8 @@ Use Bun for project commands:
 - `bun run test`: run the Bun unit-test suite.
 - `bun run typecheck`: run TypeScript without emitting files.
 - `bun run lint`: run the Expo ESLint configuration.
+- `bun run i18n:extract`: extract messages into the Lingui catalogs.
+- `bun run i18n:extract:clean`: extract messages and remove obsolete catalog entries.
 - `bunx expo-doctor`: validate Expo dependencies and configuration.
 - `bunx expo export --platform ios`: create a production iOS bundle.
 
@@ -41,6 +43,10 @@ Run typechecking and ESLint before committing. Keep public API models idiomatic 
 ## Testing Guidelines
 
 Tests use Bun’s `describe`, `test`, and `expect` APIs. Add regression tests for API URL construction, response normalization, signing, pagination, and bug fixes. Tests must not depend on authenticated accounts or unstable live data unless explicitly marked as integration tests.
+
+## Localization
+
+Use Lingui for user-facing text. Keep source messages in code and update the English and Simplified Chinese catalogs in `src/locales/` with `bun run i18n:extract`. Review catalog changes before committing and do not edit generated message identifiers manually.
 
 ## Commit & Pull Request Guidelines
 
