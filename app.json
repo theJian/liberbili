@@ -13,6 +13,7 @@
     },
     "android": {
       "package": "io.github.thejian.liberbili",
+      "icon": "./assets/images/icon.png",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -31,7 +32,7 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#208AEF",
-          "image": "./assets/images/logo.png",
+          "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
       ],

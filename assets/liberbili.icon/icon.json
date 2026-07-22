@@ -19,16 +19,14 @@
     {
       "layers" : [
         {
-          "blend-mode" : "normal",
-          "fill" : "automatic",
           "glass" : false,
-          "image-name" : "SvgPixelArt-static-1784629943215.svg",
-          "name" : "pixel-art-tv",
+          "image-name" : "pixel-tv.svg",
+          "name" : "pixel-tv",
           "position" : {
-            "scale" : 30,
+            "scale" : 27.48,
             "translation-in-points" : [
               0,
-              -30
+              -55.754375000000095
             ]
           }
         }
