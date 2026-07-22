@@ -1,12 +1,10 @@
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import { I18nProvider } from '@lingui/react';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import { i18n } from '@lingui/core';
-import { restoreLocale } from '@/i18n';
 import { DownloadProvider } from '@/state/downloads';
 import { PlayerProvider } from '@/state/player';
 import { PlaylistProvider } from '@/state/playlists';
@@ -15,9 +13,6 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  useEffect(() => {
-    void restoreLocale();
-  }, []);
 
   return (
     <I18nProvider i18n={i18n}>

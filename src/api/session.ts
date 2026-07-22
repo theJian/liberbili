@@ -1,6 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import { mixinKey, randomHex, ticketSignature } from './crypto';
+import { storage } from '@/storage';
 
 const STORAGE_KEY = '@liberbili/session/v1';
 const ACCOUNT_KEY = '@liberbili/account-cookie/v1';
@@ -85,7 +84,7 @@ export class SessionManager {
     )
       return this.session;
     if (!force) {
-      const saved = await AsyncStorage.getItem(STORAGE_KEY);
+      const saved = storage.getString(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved) as BilibiliSession;
         if (parsed.expiresAt > Date.now() / 1000 + 60)
@@ -95,9 +94,9 @@ export class SessionManager {
     return this.bootstrap();
   }
 
-  async clear() {
+  clear(): void {
     this.session = undefined;
-    await AsyncStorage.removeItem(STORAGE_KEY);
+    storage.remove(STORAGE_KEY);
   }
 
   private async bootstrap() {
@@ -144,28 +143,26 @@ export class SessionManager {
       cookies.bili_ticket_expires = expiresAt;
     }
     this.session = { userAgent: ua, cookie: headerCookie(cookies), expiresAt };
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(this.session));
+    storage.set(STORAGE_KEY, JSON.stringify(this.session));
     return this.session;
   }
 
-  async setAccountCookies(cookie?: string) {
+  setAccountCookies(cookie?: string): void {
     this.accountCookie = cookie?.trim() || undefined;
-    if (this.accountCookie)
-      await AsyncStorage.setItem(ACCOUNT_KEY, this.accountCookie);
-    else await AsyncStorage.removeItem(ACCOUNT_KEY);
+    if (this.accountCookie) storage.set(ACCOUNT_KEY, this.accountCookie);
+    else storage.remove(ACCOUNT_KEY);
   }
 
-  async hasAccountCookies() {
+  hasAccountCookies(): boolean {
     if (this.accountCookie) return true;
-    this.accountCookie = (await AsyncStorage.getItem(ACCOUNT_KEY)) ?? undefined;
+    this.accountCookie = storage.getString(ACCOUNT_KEY);
     return Boolean(this.accountCookie);
   }
 
   async headers(authenticated = false) {
     const session = await this.get();
     if (authenticated && !this.accountCookie)
-      this.accountCookie =
-        (await AsyncStorage.getItem(ACCOUNT_KEY)) ?? undefined;
+      this.accountCookie = storage.getString(ACCOUNT_KEY);
     return {
       'User-Agent': session.userAgent,
       Referer: REFERER,
@@ -197,7 +194,7 @@ export class SessionManager {
       fileKey(nav.data.wbi_img.sub_url),
     );
     session.mixinDate = date;
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+    storage.set(STORAGE_KEY, JSON.stringify(session));
     return session.mixinKey;
   }
 }

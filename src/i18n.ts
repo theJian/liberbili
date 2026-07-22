@@ -1,11 +1,11 @@
 import '@/intl-polyfills';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { i18n, type Messages } from '@lingui/core';
 import { getLocales } from 'expo-localization';
 
 import { messages as en } from '@/locales/en/messages.po';
 import { messages as zhHans } from '@/locales/zh-Hans/messages.po';
+import { storage } from '@/storage';
 
 const STORAGE_KEY = '@liberbili/locale/v1';
 
@@ -25,16 +25,12 @@ function activateLocale(locale: Locale): void {
 
 const deviceLocale: Locale =
   getLocales()[0]?.languageCode === 'zh' ? 'zh-Hans' : 'en';
-activateLocale(deviceLocale);
-
-export async function restoreLocale(): Promise<void> {
-  const savedLocale = await AsyncStorage.getItem(STORAGE_KEY);
-  if (isLocale(savedLocale)) activateLocale(savedLocale);
-}
+const savedLocale = storage.getString(STORAGE_KEY) ?? null;
+activateLocale(isLocale(savedLocale) ? savedLocale : deviceLocale);
 
 export function setLocale(locale: Locale): void {
   activateLocale(locale);
-  void AsyncStorage.setItem(STORAGE_KEY, locale);
+  storage.set(STORAGE_KEY, locale);
 }
 
 export function formatCount(value: number, locale: string): string {

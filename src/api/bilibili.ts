@@ -113,7 +113,7 @@ export class BilibiliClient {
         headers: await bilibiliSession.headers(),
       });
       if (response.status === 412 && retry) {
-        await bilibiliSession.clear();
+        bilibiliSession.clear();
         return this.request(url, false);
       }
       if (!response.ok)

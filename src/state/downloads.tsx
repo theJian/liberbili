@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   Directory,
   DownloadPauseState,
@@ -19,6 +18,7 @@ import {
 
 import { bilibiliApi } from '@/api/bilibili';
 import { VideoSummary } from '@/api/types';
+import { storage } from '@/storage';
 
 const STORAGE_KEY = '@liberbili/downloads/v1';
 const downloadsDirectory = new Directory(Paths.document, 'downloads');
@@ -51,27 +51,22 @@ type Value = {
 };
 const Context = createContext<Value | null>(null);
 
+function loadDownloads(): DownloadItem[] {
+  const data = storage.getString(STORAGE_KEY);
+  if (!data) return [];
+  return (JSON.parse(data) as DownloadItem[]).map((item) =>
+    item.status === 'downloading' || item.status === 'queued'
+      ? { ...item, status: 'interrupted' as const }
+      : item,
+  );
+}
+
 export function DownloadProvider({ children }: PropsWithChildren) {
-  const [downloads, setDownloads] = useState<DownloadItem[]>([]);
-  const [ready, setReady] = useState(false);
+  const [downloads, setDownloads] = useState(loadDownloads);
   const tasks = useRef(new Map<string, Task>());
   useEffect(() => {
-    AsyncStorage.getItem(STORAGE_KEY).then((data) => {
-      if (data) {
-        const items = (JSON.parse(data) as DownloadItem[]).map((item) =>
-          item.status === 'downloading' || item.status === 'queued'
-            ? { ...item, status: 'interrupted' as const }
-            : item,
-        );
-        setDownloads(items);
-      }
-      setReady(true);
-    });
-  }, []);
-  useEffect(() => {
-    if (ready)
-      void AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(downloads));
-  }, [downloads, ready]);
+    storage.set(STORAGE_KEY, JSON.stringify(downloads));
+  }, [downloads]);
 
   const update = useCallback(
     (id: string, patch: Partial<DownloadItem>) =>

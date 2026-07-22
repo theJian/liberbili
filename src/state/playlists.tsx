@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   createContext,
   PropsWithChildren,
@@ -10,6 +9,7 @@ import {
 } from 'react';
 
 import { VideoSummary } from '@/api/types';
+import { storage } from '@/storage';
 
 const STORAGE_KEY = '@liberbili/playlists/v1';
 export type Playlist = {
@@ -28,19 +28,16 @@ type Value = {
 };
 const Context = createContext<Value | null>(null);
 
+function loadPlaylists(): Playlist[] {
+  const data = storage.getString(STORAGE_KEY);
+  return data ? (JSON.parse(data) as Playlist[]) : [];
+}
+
 export function PlaylistProvider({ children }: PropsWithChildren) {
-  const [playlists, setPlaylists] = useState<Playlist[]>([]);
-  const [ready, setReady] = useState(false);
+  const [playlists, setPlaylists] = useState(loadPlaylists);
   useEffect(() => {
-    AsyncStorage.getItem(STORAGE_KEY).then((data) => {
-      if (data) setPlaylists(JSON.parse(data));
-      setReady(true);
-    });
-  }, []);
-  useEffect(() => {
-    if (ready)
-      void AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(playlists));
-  }, [playlists, ready]);
+    storage.set(STORAGE_KEY, JSON.stringify(playlists));
+  }, [playlists]);
   const create = useCallback((name: string) => {
     const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
     setPlaylists((current) => [
