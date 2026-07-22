@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import * as SplashScreen from 'expo-splash-screen';
 import { useState } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { Dimensions, StyleSheet, useColorScheme, View } from 'react-native';
 import Animated, { Easing, Keyframe } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 
@@ -9,6 +9,7 @@ const INITIAL_SCALE_FACTOR = Dimensions.get('screen').height / 90;
 const DURATION = 600;
 
 export function AnimatedSplashOverlay() {
+  const colorScheme = useColorScheme();
   const [animate, setAnimate] = useState(false);
   const [visible, setVisible] = useState(true);
 
@@ -48,7 +49,12 @@ export function AnimatedSplashOverlay() {
           scheduleOnRN(setVisible, false);
         }
       })}
-      style={styles.splashOverlay}
+      style={[
+        styles.splashOverlay,
+        colorScheme === 'dark'
+          ? styles.splashOverlayDark
+          : styles.splashOverlayLight,
+      ]}
     >
       {image}
     </Animated.View>
@@ -59,7 +65,12 @@ export function AnimatedSplashOverlay() {
           setAnimate(true);
         });
       }}
-      style={styles.splashOverlay}
+      style={[
+        styles.splashOverlay,
+        colorScheme === 'dark'
+          ? styles.splashOverlayDark
+          : styles.splashOverlayLight,
+      ]}
     >
       {image}
     </View>
@@ -162,9 +173,14 @@ const styles = StyleSheet.create({
   },
   splashOverlay: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: '#208AEF',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1000,
+  },
+  splashOverlayDark: {
+    backgroundColor: '#000000',
+  },
+  splashOverlayLight: {
+    backgroundColor: '#FFFFFF',
   },
 });
