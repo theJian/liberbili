@@ -8,10 +8,11 @@
     "scheme": "liberbili",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/liberbili.icon"
+      "icon": "./assets/liberbili.icon",
+      "bundleIdentifier": "io.github.thejian.liberbili"
     },
     "android": {
-      "package": "com.jian.liberbili",
+      "package": "io.github.thejian.liberbili",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
