@@ -1,7 +1,8 @@
 import { FlashList } from '@shopify/flash-list';
 import { useLingui } from '@lingui/react/macro';
 import { Image } from 'expo-image';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -10,6 +11,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { bilibiliApi } from '@/api/bilibili';
 import { Comment, VideoPart, VideoSummary } from '@/api/types';
@@ -29,6 +31,7 @@ export default function VideoScreen() {
   const detail = detailResource.data;
   const { i18n, t } = useLingui();
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
   const { player, current, play, playPart } = usePlayer();
   const { start } = useDownloads();
   const { playlists, add } = usePlaylists();
@@ -79,13 +82,15 @@ export default function VideoScreen() {
   );
   if (!detail || !summary)
     return (
-      <View style={[styles.fill, { backgroundColor: theme.background }]}>
-        <Stack.Screen options={{ title: '' }} />
-        <ScreenState
-          loading={detailResource.loading}
-          error={detailResource.error}
-          onRetry={detailResource.reload}
-        />
+      <View style={[styles.fill, styles.screen, { paddingTop: insets.top }]}>
+        <StatusBar style="light" />
+        <View style={[styles.fill, { backgroundColor: theme.background }]}>
+          <ScreenState
+            loading={detailResource.loading}
+            error={detailResource.error}
+            onRetry={detailResource.reload}
+          />
+        </View>
       </View>
     );
   const header = (
@@ -203,27 +208,30 @@ export default function VideoScreen() {
     </View>
   );
   return (
-    <View style={[styles.fill, { backgroundColor: theme.background }]}>
-      <Stack.Screen options={{ title: detail.title }} />
-      <FlashList
-        data={[...(initialComments.data?.items ?? []), ...moreComments]}
-        renderItem={renderComment}
-        keyExtractor={(item) => item.id}
-        ListHeaderComponent={header}
-        onEndReached={loadComments}
-        onEndReachedThreshold={0.4}
-        ListFooterComponent={
-          commentLoading || initialComments.loading ? (
-            <ActivityIndicator style={styles.footer} color={theme.accent} />
-          ) : null
-        }
-      />
+    <View style={[styles.fill, styles.screen, { paddingTop: insets.top }]}>
+      <StatusBar style="light" />
+      <View style={[styles.fill, { backgroundColor: theme.background }]}>
+        <FlashList
+          data={[...(initialComments.data?.items ?? []), ...moreComments]}
+          renderItem={renderComment}
+          keyExtractor={(item) => item.id}
+          ListHeaderComponent={header}
+          onEndReached={loadComments}
+          onEndReachedThreshold={0.4}
+          ListFooterComponent={
+            commentLoading || initialComments.loading ? (
+              <ActivityIndicator style={styles.footer} color={theme.accent} />
+            ) : null
+          }
+        />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   fill: { flex: 1 },
+  screen: { backgroundColor: '#000' },
   video: { width: '100%', aspectRatio: 16 / 9, backgroundColor: '#000' },
   info: { paddingVertical: 16, gap: 12 },
   title: {

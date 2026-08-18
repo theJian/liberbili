@@ -29,7 +29,10 @@ export default function RootLayout() {
                   name="search"
                   options={{ presentation: 'modal' }}
                 />
-                <Stack.Screen name="video/[bvid]" options={{ title: '' }} />
+                <Stack.Screen
+                  name="video/[bvid]"
+                  options={{ headerShown: false }}
+                />
                 <Stack.Screen name="playlist/[id]" options={{ title: '' }} />
               </Stack>
             </ThemeProvider>
