@@ -3,7 +3,7 @@ import { I18nProvider } from '@lingui/react';
 import * as SplashScreen from 'expo-splash-screen';
 import { useColorScheme } from 'react-native';
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
+import { AnimatedSplashOverlay } from '@/components/animated-splash-overlay';
 import { i18n } from '@lingui/core';
 import { DownloadProvider } from '@/state/downloads';
 import { PlayerProvider } from '@/state/player';
