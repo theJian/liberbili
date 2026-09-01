@@ -5,8 +5,9 @@ import { useCallback } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { bilibiliApi } from '@/api/bilibili';
-import { VideoSummary } from '@/api/types';
+import type { VideoSummary } from '@liberbili/api/types';
+
+import { bilibiliApi } from '@/lib/bilibili';
 import { ScreenState } from '@/components/screen-state';
 import { VideoCard } from '@/components/video-card';
 import { ThemedText } from '@/components/themed-text';

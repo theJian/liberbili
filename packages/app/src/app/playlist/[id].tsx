@@ -4,7 +4,8 @@ import { Stack, useLocalSearchParams, router } from 'expo-router';
 import { useCallback } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { VideoSummary } from '@/api/types';
+import type { VideoSummary } from '@liberbili/api/types';
+
 import { ScreenState } from '@/components/screen-state';
 import { VideoCard } from '@/components/video-card';
 import { ThemedText } from '@/components/themed-text';

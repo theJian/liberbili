@@ -4,7 +4,8 @@ import { useLingui } from '@lingui/react/macro';
 import { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { Comment } from '@/api/types';
+import type { Comment } from '@liberbili/api/types';
+
 import { formatCount } from '@/i18n';
 import { useTheme } from '@/hooks/use-theme';
 import { ThemedText } from './themed-text';

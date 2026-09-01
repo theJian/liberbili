@@ -13,9 +13,10 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { bilibiliApi } from '@/api/bilibili';
-import { Comment, VideoPart, VideoSummary } from '@/api/types';
+import type { Comment, VideoPart, VideoSummary } from '@liberbili/api/types';
+
 import { CommentCard } from '@/components/comment-card';
+import { bilibiliApi } from '@/lib/bilibili';
 import { ScreenState } from '@/components/screen-state';
 import { ThemedText } from '@/components/themed-text';
 import { useResource } from '@/hooks/use-resource';

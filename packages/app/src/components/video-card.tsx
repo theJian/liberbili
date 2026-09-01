@@ -4,7 +4,8 @@ import { router } from 'expo-router';
 import { memo, useCallback } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { VideoSummary } from '@/api/types';
+import type { VideoSummary } from '@liberbili/api/types';
+
 import { formatCount, formatDuration } from '@/i18n';
 import { useTheme } from '@/hooks/use-theme';
 import { ThemedText } from './themed-text';

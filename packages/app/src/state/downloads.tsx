@@ -16,8 +16,9 @@ import {
   useState,
 } from 'react';
 
-import { bilibiliApi } from '@/api/bilibili';
-import { VideoSummary } from '@/api/types';
+import type { VideoSummary } from '@liberbili/api/types';
+
+import { bilibiliApi } from '@/lib/bilibili';
 import { storage } from '@/storage';
 
 const STORAGE_KEY = '@liberbili/downloads/v1';

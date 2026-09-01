@@ -1,5 +1,6 @@
 [install]
 minimumReleaseAge = 259200
+linker = "hoisted"
 
 [test]
-preload = ["./test/setup.ts"]
+preload = ["./packages/app/test/setup.ts"]
