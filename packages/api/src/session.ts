@@ -1,5 +1,4 @@
 import { mixinKey, randomHex, ticketSignature } from './crypto';
-import { storage } from '@/storage';
 
 const STORAGE_KEY = '@liberbili/session/v1';
 const ACCOUNT_KEY = '@liberbili/account-cookie/v1';
@@ -20,6 +19,23 @@ type TicketResponse = {
   data: { ticket: string; created_at: number; ttl: number };
 };
 type NavResponse = { data: { wbi_img: { img_url: string; sub_url: string } } };
+
+export type BilibiliStorage = {
+  getString(key: string): string | undefined;
+  set(key: string, value: string): void;
+  remove(key: string): void;
+};
+
+const values = new Map<string, string>();
+const memoryStorage: BilibiliStorage = {
+  getString: (key) => values.get(key),
+  set: (key, value) => {
+    values.set(key, value);
+  },
+  remove: (key) => {
+    values.delete(key);
+  },
+};
 
 const chromium = () => 130 + Math.floor(Math.random() * 8);
 const userAgent = () =>
@@ -76,6 +92,14 @@ export class SessionManager {
   private session?: BilibiliSession;
   private accountCookie?: string;
 
+  constructor(private storage: BilibiliStorage = memoryStorage) {}
+
+  configureStorage(storage: BilibiliStorage): void {
+    this.storage = storage;
+    this.session = undefined;
+    this.accountCookie = undefined;
+  }
+
   async get(force = false) {
     if (
       !force &&
@@ -84,7 +108,7 @@ export class SessionManager {
     )
       return this.session;
     if (!force) {
-      const saved = storage.getString(STORAGE_KEY);
+      const saved = this.storage.getString(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved) as BilibiliSession;
         if (parsed.expiresAt > Date.now() / 1000 + 60)
@@ -96,7 +120,7 @@ export class SessionManager {
 
   clear(): void {
     this.session = undefined;
-    storage.remove(STORAGE_KEY);
+    this.storage.remove(STORAGE_KEY);
   }
 
   private async bootstrap() {
@@ -143,26 +167,26 @@ export class SessionManager {
       cookies.bili_ticket_expires = expiresAt;
     }
     this.session = { userAgent: ua, cookie: headerCookie(cookies), expiresAt };
-    storage.set(STORAGE_KEY, JSON.stringify(this.session));
+    this.storage.set(STORAGE_KEY, JSON.stringify(this.session));
     return this.session;
   }
 
   setAccountCookies(cookie?: string): void {
     this.accountCookie = cookie?.trim() || undefined;
-    if (this.accountCookie) storage.set(ACCOUNT_KEY, this.accountCookie);
-    else storage.remove(ACCOUNT_KEY);
+    if (this.accountCookie) this.storage.set(ACCOUNT_KEY, this.accountCookie);
+    else this.storage.remove(ACCOUNT_KEY);
   }
 
   hasAccountCookies(): boolean {
     if (this.accountCookie) return true;
-    this.accountCookie = storage.getString(ACCOUNT_KEY);
+    this.accountCookie = this.storage.getString(ACCOUNT_KEY);
     return Boolean(this.accountCookie);
   }
 
   async headers(authenticated = false) {
     const session = await this.get();
     if (authenticated && !this.accountCookie)
-      this.accountCookie = storage.getString(ACCOUNT_KEY);
+      this.accountCookie = this.storage.getString(ACCOUNT_KEY);
     return {
       'User-Agent': session.userAgent,
       Referer: REFERER,
@@ -194,9 +218,13 @@ export class SessionManager {
       fileKey(nav.data.wbi_img.sub_url),
     );
     session.mixinDate = date;
-    storage.set(STORAGE_KEY, JSON.stringify(session));
+    this.storage.set(STORAGE_KEY, JSON.stringify(session));
     return session.mixinKey;
   }
 }
 
 export const bilibiliSession = new SessionManager();
+
+export function configureBilibiliStorage(storage: BilibiliStorage): void {
+  bilibiliSession.configureStorage(storage);
+}

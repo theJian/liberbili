@@ -1,7 +1,8 @@
 import { useLingui } from '@lingui/react/macro';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
-import { BilibiliError } from '@/api/types';
+import { BilibiliError } from '@liberbili/api/types';
+
 import { useTheme } from '@/hooks/use-theme';
 import { ThemedText } from './themed-text';
 

@@ -10,8 +10,9 @@ import {
   useState,
 } from 'react';
 
-import { bilibiliApi } from '@/api/bilibili';
-import { VideoPart, VideoSummary } from '@/api/types';
+import type { VideoPart, VideoSummary } from '@liberbili/api/types';
+
+import { bilibiliApi } from '@/lib/bilibili';
 
 type Value = {
   player: VideoPlayer;

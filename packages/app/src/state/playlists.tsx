@@ -8,7 +8,8 @@ import {
   useState,
 } from 'react';
 
-import { VideoSummary } from '@/api/types';
+import type { VideoSummary } from '@liberbili/api/types';
+
 import { storage } from '@/storage';
 
 const STORAGE_KEY = '@liberbili/playlists/v1';

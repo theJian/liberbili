@@ -41,3 +41,5 @@ example
 # generated native folders
 /ios
 /android
+/packages/app/ios
+/packages/app/android

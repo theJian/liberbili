@@ -1,0 +1,27 @@
+{
+  "name": "@liberbili/api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./bilibili": "./src/bilibili.ts",
+    "./crypto": "./src/crypto.ts",
+    "./extractor-api": "./src/extractor-api.ts",
+    "./live-danmaku": "./src/live-danmaku.ts",
+    "./session": "./src/session.ts",
+    "./types": "./src/types.ts"
+  },
+  "dependencies": {
+    "@noble/hashes": "^2.2.0",
+    "pako": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.14",
+    "@types/pako": "^2.0.4",
+    "typescript": "~6.0.3"
+  },
+  "scripts": {
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  }
+}

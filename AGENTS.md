@@ -2,15 +2,14 @@
 
 ## Project Structure & Module Organization
 
-LiberBili is an Expo 57 React Native application written in TypeScript.
+LiberBili is a Bun-workspace monorepo containing an Expo 57 React Native application and a reusable TypeScript API package.
 
-- `src/app/`: Expo Router screens and route layouts.
-- `src/api/`: Bilibili API clients, session/signing logic, models, and tests.
-- `src/components/`: reusable UI components.
-- `src/state/`: player, playlist, and download state providers.
-- `src/i18n.ts` and `src/locales/`: Lingui configuration and English/Chinese message catalogs.
-- `src/constants/`: shared theme values.
-- `assets/`: bundled images and application artwork.
+- `packages/app/src/app/`: Expo Router screens and route layouts.
+- `packages/app/src/components/`: reusable UI components.
+- `packages/app/src/state/`: player, playlist, and download state providers.
+- `packages/app/src/i18n.ts` and `packages/app/src/locales/`: Lingui configuration and English/Chinese message catalogs.
+- `packages/app/assets/`: bundled images and application artwork.
+- `packages/api/src/`: Bilibili API clients, session/signing logic, models, and tests.
 
 Keep tests next to the implementation using the `*.test.ts` suffix.
 
@@ -26,8 +25,8 @@ Use Bun for project commands:
 - `bun run lint`: run the Expo ESLint configuration.
 - `bun run i18n:extract`: extract messages into the Lingui catalogs.
 - `bun run i18n:extract:clean`: extract messages and remove obsolete catalog entries.
-- `bunx expo-doctor`: validate Expo dependencies and configuration.
-- `bunx expo export --platform ios`: create a production iOS bundle.
+- `cd packages/app && bunx expo-doctor`: validate Expo dependencies and configuration.
+- `cd packages/app && bunx expo export --platform ios`: create a production iOS bundle.
 
 ## Coding Style & Naming Conventions
 
@@ -46,7 +45,7 @@ Tests use Bun’s `describe`, `test`, and `expect` APIs. Add regression tests fo
 
 ## Localization
 
-Use Lingui for user-facing text. Keep source messages in code and update the English and Simplified Chinese catalogs in `src/locales/` with `bun run i18n:extract`. Review catalog changes before committing and do not edit generated message identifiers manually.
+Use Lingui for user-facing text. Keep source messages in code and update the English and Simplified Chinese catalogs in `packages/app/src/locales/` with `bun run i18n:extract`. Review catalog changes before committing and do not edit generated message identifiers manually.
 
 ## Commit & Pull Request Guidelines
 
