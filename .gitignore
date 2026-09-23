@@ -43,3 +43,6 @@ example
 /android
 /packages/app/ios
 /packages/app/android
+
+/.agents/skills/
+/skills-lock.json
