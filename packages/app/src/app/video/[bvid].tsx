@@ -1,7 +1,7 @@
 import { FlashList } from '@shopify/flash-list';
 import { useLingui } from '@lingui/react/macro';
 import { Image } from 'expo-image';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { Comment, VideoPart, VideoSummary } from '@liberbili/api/types';
 
+import { RelatedVideos } from '@/components/related-videos';
 import { CommentCard } from '@/components/comment-card';
 import { bilibiliApi } from '@/lib/bilibili';
 import { ScreenState } from '@/components/screen-state';
@@ -29,7 +30,8 @@ import { useTheme } from '@/hooks/use-theme';
 export default function VideoScreen() {
   const { bvid } = useLocalSearchParams<{ bvid: string }>();
   const detailResource = useResource(() => bilibiliApi.getVideo(bvid), [bvid]);
-  const detail = detailResource.data;
+  const detail =
+    detailResource.data?.bvid === bvid ? detailResource.data : undefined;
   const { i18n, t } = useLingui();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
@@ -109,7 +111,18 @@ export default function VideoScreen() {
           {formatCount(detail.likes, i18n.locale)} {t`likes`} ·{' '}
           {formatCount(detail.comments, i18n.locale)} {t`Comments`}
         </ThemedText>
-        <View style={styles.uploader}>
+        <Pressable
+          accessibilityRole="button"
+          disabled={!detail.uploaderId}
+          accessibilityLabel={t`View creator: ${detail.uploader}`}
+          onPress={() =>
+            router.push({
+              pathname: '/creator/[id]',
+              params: { id: detail.uploaderId },
+            })
+          }
+          style={styles.uploader}
+        >
           {detail.uploaderAvatar ? (
             <Image
               source={{ uri: detail.uploaderAvatar }}
@@ -117,7 +130,7 @@ export default function VideoScreen() {
             />
           ) : null}
           <ThemedText type="smallBold">{detail.uploader}</ThemedText>
-        </View>
+        </Pressable>
         <View style={styles.actions}>
           <Pressable
             onPress={() => setChoosingPlaylist((value) => !value)}
@@ -204,6 +217,7 @@ export default function VideoScreen() {
             </ThemedText>
           </View>
         ) : null}
+        <RelatedVideos bvid={bvid} />
         <ThemedText style={styles.commentsTitle}>{t`All comments`}</ThemedText>
       </View>
     </View>

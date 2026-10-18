@@ -57,6 +57,10 @@ export function normalizeSummary(item: Json): VideoSummary {
       item.pic?.startsWith('//') ? `https:${item.pic}` : item.pic,
     ),
     uploader: item.owner?.name ?? item.author ?? '',
+    uploaderId:
+      item.owner?.mid != null || item.mid != null
+        ? String(item.owner?.mid ?? item.mid)
+        : undefined,
     uploaderAvatar: https(item.owner?.face ?? item.upic),
     duration:
       typeof item.duration === 'string'
