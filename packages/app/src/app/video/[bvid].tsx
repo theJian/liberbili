@@ -1,9 +1,9 @@
 import { FlashList } from '@shopify/flash-list';
 import { useLingui } from '@lingui/react/macro';
 import { Image } from 'expo-image';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -15,7 +15,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { Comment, VideoPart, VideoSummary } from '@liberbili/api/types';
 
+import { PlaybackStatus } from '@/components/playback-status';
 import { CommentCard } from '@/components/comment-card';
+import { videoRouteAction } from '@/lib/video-route';
 import { bilibiliApi } from '@/lib/bilibili';
 import { ScreenState } from '@/components/screen-state';
 import { ThemedText } from '@/components/themed-text';
@@ -43,6 +45,13 @@ export default function VideoScreen() {
         : Promise.resolve({ items: [] }),
     [detail?.aid],
   );
+  const [focused, setFocused] = useState(false);
+  useFocusEffect(
+    useCallback(() => {
+      setFocused(true);
+      return () => setFocused(false);
+    }, []),
+  );
   const [moreComments, setMoreComments] = useState<Comment[]>([]);
   const [nextCursor, setNextCursor] = useState<string>();
   const [commentLoading, setCommentLoading] = useState(false);
@@ -62,9 +71,34 @@ export default function VideoScreen() {
       },
     [detail],
   );
+  const openedBvid = useRef<string | undefined>(undefined);
+  const pendingBvid = useRef<string | undefined>(undefined);
+  const previousCurrent = useRef(current?.bvid);
   useEffect(() => {
-    if (summary && current?.bvid !== summary.bvid) void play(summary);
-  }, [current?.bvid, play, summary]);
+    const action = videoRouteAction({
+      focused,
+      bvid,
+      summaryBvid: summary?.bvid,
+      currentBvid: current?.bvid,
+      previousCurrent: previousCurrent.current,
+      openedBvid: openedBvid.current,
+      pendingBvid: pendingBvid.current,
+    });
+    if (!focused || (pendingBvid.current && pendingBvid.current !== bvid))
+      return;
+    if (pendingBvid.current === bvid) pendingBvid.current = undefined;
+    previousCurrent.current = current?.bvid;
+    if (action.type === 'follow') {
+      openedBvid.current = action.bvid;
+      pendingBvid.current = action.bvid;
+      router.setParams({ bvid: action.bvid, p: undefined, t: undefined });
+      return;
+    }
+    if (action.type === 'open' && summary) {
+      openedBvid.current = bvid;
+      if (current?.bvid !== bvid) void play(summary);
+    }
+  }, [bvid, current?.bvid, focused, play, summary]);
   const loadComments = useCallback(async () => {
     const cursor = nextCursor ?? initialComments.data?.next;
     if (!detail || commentLoading || !cursor) return;
@@ -96,12 +130,22 @@ export default function VideoScreen() {
     );
   const header = (
     <View>
-      <VideoView
-        player={player}
-        style={styles.video}
-        nativeControls
-        fullscreenOptions={{ enable: true }}
-      />
+      {focused ? (
+        <VideoView
+          player={player}
+          style={styles.video}
+          nativeControls
+          fullscreenOptions={{ enable: true }}
+        />
+      ) : null}
+      <PlaybackStatus />
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => router.push('/playback')}
+        style={{ padding: 16 }}
+      >
+        <ThemedText>{t`Playback and queue`}</ThemedText>
+      </Pressable>
       <View style={styles.info}>
         <ThemedText style={styles.title}>{detail.title}</ThemedText>
         <ThemedText type="small" themeColor="textSecondary">

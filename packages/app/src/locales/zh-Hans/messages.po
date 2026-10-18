@@ -12,162 +12,257 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 
 #. placeholder {0}: comment.replyCount
-#: src/components/comment-card.tsx:15
+#: src/components/comment-card.tsx:43
 msgid "{0, plural, one {# reply} other {# replies}}"
 msgstr "{0, plural, other {# 条回复}}"
 
 #. placeholder {0}: item.items.length
-#: src/app/(tabs)/playlists.tsx:23
+#: src/app/(tabs)/playlists.tsx:41
 msgid "{0, plural, one {# video} other {# videos}}"
 msgstr "{0, plural, other {# 个视频}}"
 
-#: src/app/video/[bvid].tsx:46
+#: src/app/playback.tsx:138
+msgid "{minutes} minutes"
+msgstr "{minutes} 分钟"
+
+#: src/app/video/[bvid].tsx:173
 msgid "Add to playlist"
 msgstr "添加到播放列表"
 
-#: src/app/video/[bvid].tsx:49
+#: src/app/video/[bvid].tsx:251
 msgid "All comments"
 msgstr "全部评论"
 
-#: src/components/screen-state.tsx:15
+#: src/app/playback.tsx:116
+#: src/app/playback.tsx:118
+msgid "Autoplay queue"
+msgstr "自动连播队列"
+
+#: src/components/screen-state.tsx:30
 msgid "Bilibili blocked this request. Please retry."
 msgstr "请求被哔哩哔哩拦截，请重试。"
 
-#: src/components/screen-state.tsx:15
+#: src/components/screen-state.tsx:38
 msgid "Bilibili returned an unexpected response."
 msgstr "哔哩哔哩返回了异常数据。"
 
-#: src/app/video/[bvid].tsx:46
+#: src/app/playback.tsx:156
+msgid "Cancel sleep timer"
+msgstr "取消睡眠定时"
+
+#: src/app/video/[bvid].tsx:154
 msgid "Comments"
 msgstr "评论"
 
-#: src/app/video/[bvid].tsx:47
+#: src/app/video/[bvid].tsx:204
 msgid "Create a playlist first."
 msgstr "请先创建播放列表。"
 
-#: src/app/playlist/[id].tsx:27
+#: src/app/playlist/[id].tsx:58
 msgid "Delete"
 msgstr "删除"
 
-#: src/app/video/[bvid].tsx:49
+#: src/app/video/[bvid].tsx:242
 msgid "Description"
 msgstr "简介"
 
-#: src/app/video/[bvid].tsx:46
+#: src/app/video/[bvid].tsx:180
 msgid "Download"
 msgstr "下载"
 
-#: src/app/(tabs)/downloads.tsx:22
+#: src/app/(tabs)/downloads.tsx:47
 msgid "Downloaded"
 msgstr "已下载"
 
-#: src/app/(tabs)/downloads.tsx:22
+#: src/app/(tabs)/downloads.tsx:49
 msgid "Downloading"
 msgstr "下载中"
 
-#: src/app/(tabs)/_layout.tsx:19
-#: src/app/(tabs)/downloads.tsx:27
+#: src/app/(tabs)/downloads.tsx:92
+#: src/app/(tabs)/library.tsx:14
 msgid "Downloads"
 msgstr "下载"
 
-#: src/app/(tabs)/downloads.tsx:22
+#: src/app/(tabs)/downloads.tsx:54
 msgid "Failed"
 msgstr "失败"
 
 #: src/app/(tabs)/_layout.tsx:11
-msgid "Home"
-msgstr "首页"
+#~ msgid "Home"
+#~ msgstr "首页"
 
-msgid "Language"
-msgstr "语言"
-
-msgid "Library"
-msgstr "资料库"
-
-msgid "Settings"
-msgstr "设置"
-
-#: src/app/(tabs)/downloads.tsx:22
+#: src/app/(tabs)/downloads.tsx:53
 msgid "Interrupted"
 msgstr "已中断"
 
-#: src/app/video/[bvid].tsx:46
+#: src/app/(tabs)/settings.tsx:28
+msgid "Language"
+msgstr "语言"
+
+#: src/app/(tabs)/library.tsx:22
+msgid "Library"
+msgstr "资料库"
+
+#: src/app/video/[bvid].tsx:153
 msgid "likes"
 msgstr "点赞"
 
-#: src/components/mini-player.tsx:22
+#: src/components/playback-status.tsx:12
+msgid "Loading video"
+msgstr "正在加载视频"
+
+#: src/app/playback.tsx:207
+msgid "Move down"
+msgstr "下移"
+
+#: src/app/playback.tsx:199
+msgid "Move up"
+msgstr "上移"
+
+#: src/app/playback.tsx:69
+#: src/components/mini-player.tsx:56
 msgid "Next"
 msgstr "下一个"
 
-#: src/components/screen-state.tsx:16
+#: src/components/screen-state.tsx:44
 msgid "Nothing here yet"
 msgstr "这里还没有内容"
 
-#: src/app/video/[bvid].tsx:48
+#: src/app/video/[bvid].tsx:213
 msgid "Parts"
 msgstr "分P"
 
-#: src/components/mini-player.tsx:21
+#: src/app/playback.tsx:61
+#: src/components/mini-player.tsx:45
 msgid "Pause"
 msgstr "暂停"
 
-#: src/app/(tabs)/downloads.tsx:22
+#: src/app/(tabs)/downloads.tsx:51
 msgid "Paused"
 msgstr "已暂停"
 
-#: src/app/playlist/[id].tsx:27
-#: src/components/mini-player.tsx:21
+#: src/app/playback.tsx:61
+#: src/app/playlist/[id].tsx:50
+#: src/components/mini-player.tsx:45
 msgid "Play"
 msgstr "播放"
 
-#: src/app/(tabs)/playlists.tsx:29
+#: src/app/playback.tsx:169
+msgid "Play a video or playlist to build your queue."
+msgstr "播放视频或播放列表以创建播放队列。"
+
+#: src/app/playback.tsx:31
+#: src/app/video/[bvid].tsx:147
+msgid "Playback and queue"
+msgstr "播放与队列"
+
+#: src/app/playback.tsx:76
+msgid "Playback speed"
+msgstr "播放速度"
+
+#: src/app/playback.tsx:145
+msgid "Playback stops at"
+msgstr "播放将停止于"
+
+#: src/app/(tabs)/playlists.tsx:62
 msgid "Playlist name"
 msgstr "播放列表名称"
 
-#: src/app/(tabs)/_layout.tsx:15
-#: src/app/(tabs)/playlists.tsx:28
+#: src/app/(tabs)/library.tsx:13
+#: src/app/(tabs)/playlists.tsx:54
 msgid "Playlists"
 msgstr "播放列表"
 
-#: src/app/(tabs)/index.tsx:26
+#: src/app/playback.tsx:48
+#: src/app/playback.tsx:53
+msgid "Previous"
+msgstr "上一个"
+
+#: src/app/(tabs)/index.tsx:41
 msgid "Recommended"
 msgstr "推荐视频"
 
-#: src/app/playlist/[id].tsx:22
+#: src/app/playback.tsx:214
+#: src/app/playlist/[id].tsx:34
 msgid "Remove"
 msgstr "移除"
 
-#: src/app/(tabs)/index.tsx:27
-#: src/app/search.tsx:35
+#: src/app/playback.tsx:98
+msgid "Repeat"
+msgstr "循环播放"
+
+#: src/app/playback.tsx:17
+msgid "Repeat all"
+msgstr "全部循环"
+
+#: src/app/playback.tsx:15
+msgid "Repeat off"
+msgstr "关闭循环"
+
+#: src/app/playback.tsx:16
+msgid "Repeat one"
+msgstr "单个循环"
+
+#: src/components/mini-player.tsx:45
+#: src/components/playback-status.tsx:25
+msgid "Retry playback"
+msgstr "重试播放"
+
+#: src/app/(tabs)/index.tsx:49
+#: src/app/search.tsx:58
 msgid "Search"
 msgstr "搜索"
 
-#: src/app/search.tsx:37
+#: src/app/search.tsx:66
 msgid "Search Bilibili videos"
 msgstr "搜索哔哩哔哩视频"
 
-#: src/components/screen-state.tsx:15
+#: src/app/(tabs)/settings.tsx:23
+msgid "Settings"
+msgstr "设置"
+
+#: src/app/playback.tsx:129
+msgid "Sleep timer"
+msgstr "睡眠定时"
+
+#: src/app/playback.tsx:163
+msgid "Sleep timer is off"
+msgstr "睡眠定时已关闭"
+
+#: src/components/screen-state.tsx:36
 msgid "This content requires a Bilibili account."
 msgstr "该内容需要登录哔哩哔哩账号。"
 
-#: src/components/screen-state.tsx:15
+#: src/components/screen-state.tsx:34
 msgid "This video is not available in your region."
 msgstr "该视频在当前地区不可用。"
 
-#: src/components/screen-state.tsx:15
+#: src/components/screen-state.tsx:32
 msgid "This video is unavailable."
 msgstr "该视频不可用。"
 
-#: src/components/screen-state.tsx:17
+#: src/components/screen-state.tsx:51
 msgid "Try again"
 msgstr "重试"
 
-#: src/components/screen-state.tsx:15
-#: src/components/screen-state.tsx:15
+#: src/components/playback-status.tsx:19
+msgid "Unable to play this video. Check your connection and try again."
+msgstr "无法播放此视频，请检查网络连接后重试。"
+
+#: src/components/screen-state.tsx:39
+#: src/components/screen-state.tsx:40
 msgid "Unable to reach Bilibili."
 msgstr "无法连接哔哩哔哩。"
 
-#: src/app/video/[bvid].tsx:46
-#: src/components/video-card.tsx:25
+#: src/app/playback.tsx:167
+msgid "Up next"
+msgstr "待播队列"
+
+#: src/app/video/[bvid].tsx:152
+#: src/components/video-card.tsx:54
 msgid "views"
 msgstr "播放"
+
+#: src/app/playback.tsx:126
+msgid "When autoplay is off, playback stops after the current video, including repeats."
+msgstr "关闭自动连播后，当前视频结束时将停止播放，包括循环播放。"
