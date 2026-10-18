@@ -58,6 +58,11 @@ export default function HomeScreen() {
         refreshing={loading && data.length > 0}
         onRefresh={reload}
         contentContainerStyle={styles.list}
+        ListFooterComponent={
+          data.length && error ? (
+            <ScreenState error={error} onRetry={reload} />
+          ) : null
+        }
         ListEmptyComponent={
           <ScreenState
             loading={loading}
