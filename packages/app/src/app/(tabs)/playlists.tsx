@@ -6,6 +6,7 @@ import { useCallback, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { PLAYLIST_NAME_LIMIT } from '@/lib/playlist-data';
 import { ThemedText } from '@/components/themed-text';
 import { ScreenState } from '@/components/screen-state';
 import { Playlist, usePlaylists } from '@/state/playlists';
@@ -57,6 +58,7 @@ export default function PlaylistsScreen() {
       >
         <TextInput
           value={name}
+          maxLength={PLAYLIST_NAME_LIMIT}
           onChangeText={setName}
           onSubmitEditing={submit}
           placeholder={t`Playlist name`}
