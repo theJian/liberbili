@@ -8,7 +8,8 @@ import { useTheme } from '@/hooks/use-theme';
 import { ThemedText } from './themed-text';
 
 export function MiniPlayer() {
-  const { current, isPlaying, toggle, next } = usePlayer();
+  const { current, isPlaying, toggle, next, index, queue, loading, error } =
+    usePlayer();
   const { t } = useLingui();
   const theme = useTheme();
   if (!current) return null;
@@ -22,15 +23,7 @@ export function MiniPlayer() {
         },
       ]}
     >
-      <Pressable
-        style={styles.main}
-        onPress={() =>
-          router.push({
-            pathname: '/video/[bvid]',
-            params: { bvid: current.bvid },
-          })
-        }
-      >
+      <Pressable style={styles.main} onPress={() => router.push('/playback')}>
         <Image
           source={{ uri: current.thumbnail }}
           style={styles.image}
@@ -47,13 +40,19 @@ export function MiniPlayer() {
       </Pressable>
       <Pressable
         onPress={toggle}
-        accessibilityLabel={isPlaying ? t`Pause` : t`Play`}
+        disabled={loading}
+        accessibilityLabel={
+          error ? t`Retry playback` : isPlaying ? t`Pause` : t`Play`
+        }
         style={styles.control}
       >
-        <ThemedText style={styles.icon}>{isPlaying ? 'Ⅱ' : '▶'}</ThemedText>
+        <ThemedText style={styles.icon}>
+          {loading ? '…' : error ? '↻' : isPlaying ? 'Ⅱ' : '▶'}
+        </ThemedText>
       </Pressable>
       <Pressable
         onPress={next}
+        disabled={index >= queue.length - 1}
         accessibilityLabel={t`Next`}
         style={styles.control}
       >
