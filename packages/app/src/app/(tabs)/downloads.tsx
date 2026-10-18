@@ -2,7 +2,7 @@ import { FlashList } from '@shopify/flash-list';
 import { useLingui } from '@lingui/react/macro';
 import { Image } from 'expo-image';
 import { useCallback } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ScreenState } from '@/components/screen-state';
@@ -12,7 +12,7 @@ import { usePlayer } from '@/state/player';
 import { useTheme } from '@/hooks/use-theme';
 
 export default function DownloadsScreen() {
-  const { downloads, pause, resume, remove } = useDownloads();
+  const { downloads, pause, resume, remove, verify } = useDownloads();
   const { t } = useLingui();
   const theme = useTheme();
   const { playLocal } = usePlayer();
@@ -21,16 +21,23 @@ export default function DownloadsScreen() {
       <View style={[styles.row, { borderBottomColor: theme.border }]}>
         <Pressable
           disabled={!item.fileUri}
-          onPress={() =>
-            item.fileUri &&
+          accessibilityRole="button"
+          accessibilityLabel={t`Play downloaded video`}
+          onPress={() => {
+            if (!item.fileUri || !verify(item.id)) return;
             void playLocal(
               {
                 ...item.video,
                 thumbnail: item.thumbnailUri ?? item.video.thumbnail,
               },
               item.fileUri,
-            )
-          }
+            ).catch(() =>
+              Alert.alert(
+                t`Could not play download`,
+                t`Try downloading this video again.`,
+              ),
+            );
+          }}
         >
           <Image
             source={{ uri: item.thumbnailUri ?? item.video.thumbnail }}
@@ -51,9 +58,20 @@ export default function DownloadsScreen() {
                   ? t`Paused`
                   : item.status === 'interrupted'
                     ? t`Interrupted`
-                    : t`Failed`}{' '}
+                    : item.status === 'queued'
+                      ? t`Queued`
+                      : t`Failed`}{' '}
             · {Math.round(item.progress * 100)}%
           </ThemedText>
+          {item.error ? (
+            <ThemedText type="small" themeColor="textSecondary">
+              {item.error === 'missingFile'
+                ? t`Downloaded file is missing. Download it again.`
+                : item.error === 'pauseFailed'
+                  ? t`Could not pause the download. Try again.`
+                  : t`The download could not finish. Try again.`}
+            </ThemedText>
+          ) : null}
           <View
             style={[styles.track, { backgroundColor: theme.backgroundElement }]}
           >
@@ -69,20 +87,35 @@ export default function DownloadsScreen() {
           </View>
         </View>
         {item.status === 'downloading' ? (
-          <Pressable onPress={() => void pause(item.id)}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t`Pause download`}
+            style={styles.control}
+            onPress={() => void pause(item.id)}
+          >
             <ThemedText>Ⅱ</ThemedText>
           </Pressable>
-        ) : item.status !== 'completed' ? (
-          <Pressable onPress={() => void resume(item.id)}>
+        ) : item.status !== 'completed' && item.status !== 'queued' ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t`Retry download`}
+            style={styles.control}
+            onPress={() => void resume(item.id)}
+          >
             <ThemedText>▶</ThemedText>
           </Pressable>
         ) : null}
-        <Pressable onPress={() => remove(item.id)}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t`Remove download`}
+          style={styles.control}
+          onPress={() => remove(item.id)}
+        >
           <ThemedText themeColor="textSecondary">×</ThemedText>
         </Pressable>
       </View>
     ),
-    [pause, playLocal, remove, resume, t, theme],
+    [pause, playLocal, remove, resume, t, theme, verify],
   );
   return (
     <SafeAreaView
@@ -111,6 +144,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   image: { width: 112, aspectRatio: 16 / 9, borderRadius: 8 },
+  control: {
+    minWidth: 44,
+    minHeight: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   content: { flex: 1, gap: 5 },
   name: { fontWeight: '600' },
   track: { height: 4, overflow: 'hidden', borderRadius: 2 },
