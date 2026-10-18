@@ -5,6 +5,7 @@ export type VideoSummary = {
   thumbnail: string;
   uploader: string;
   uploaderAvatar?: string;
+  uploaderId?: string;
   duration: number;
   views: number;
   publishedAt?: number;

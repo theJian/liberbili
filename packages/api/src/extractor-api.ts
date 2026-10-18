@@ -717,11 +717,36 @@ export class BilibiliExtractorApi extends BilibiliClient {
     };
   }
 
-  async getChannelVideosWithFallback(mid: string, page = 1) {
+  async getChannelVideosWithFallback(
+    mid: string,
+    page: number | string = 1,
+    lastAid?: number,
+  ): Promise<PageResult<VideoSummary>> {
+    if (typeof page === 'string' && page.startsWith('client:')) {
+      const result = await this.getChannelVideos(mid, {
+        mode: 'client',
+        lastAid: Number(page.slice(7)),
+      });
+      return {
+        ...result,
+        next: result.next ? `client:${result.next}` : undefined,
+      };
+    }
     const failures: unknown[] = [];
     for (const mode of ['web', 'search', 'client'] as const) {
       try {
-        return await this.getChannelVideos(mid, { page, mode });
+        const result = await this.getChannelVideos(mid, {
+          page: Number(page),
+          mode,
+          lastAid,
+        });
+        return {
+          ...result,
+          next:
+            mode === 'client' && result.next
+              ? `client:${result.next}`
+              : result.next,
+        };
       } catch (error) {
         failures.push(error);
       }
