@@ -1,0 +1,9 @@
+# Anonymous session reliability
+
+SessionManager now shares concurrent anonymous bootstrap requests and concurrent WBI-key lookups. A forced refresh coalesces with an already pending bootstrap; when no bootstrap is pending, force starts a fresh generation and invalidates outstanding signing work. Successful sessions and daily signing keys remain cached as before. Rejected requests release their pending promise so the next caller can retry.
+
+Persisted sessions are validated before use. Corrupt, incomplete or expired entries are removed and rebuilt; invalid optional signing metadata is discarded while retaining a usable anonymous session. SPI fingerprint fields and WBI image-key envelopes are validated before cookies or signing data can be cached. Anonymous nav status -101 remains accepted only with valid WBI image keys. Optional ticket HTTP/network/JSON failures fall back to a short-lived fingerprint-only session rather than persisting undefined cookies or invalid expiry.
+
+clear(), configureStorage(), and a new forced refresh invalidate earlier work. Bootstrap captures its storage adapter and checks generation ownership before publication; WBI responses also require the same active session. Invalidated callers receive a retryable session-changed error, and old requests cannot repopulate cleared storage or write into a replacement adapter. Account-cookie behavior is unchanged.
+
+Verification: `bun run test`, `bun run typecheck`, `bun run lint`, `git diff --check`. Fake-fetch tests cover concurrent normal/forced callers, headers plus signing coalescing, corrupt saved data, malformed SPI/nav/ticket responses, retry after HTTP errors, optional ticket network failure, clear during SPI/ticket requests, and adapter/force changes while WBI is pending. Tests do not use live Bilibili data or authenticated accounts. Live endpoint validation remains unperformed.
