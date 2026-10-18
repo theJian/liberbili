@@ -1,3 +1,4 @@
+import { AppIcon } from '@/components/app-icon';
 import { Image } from 'expo-image';
 import { useLingui } from '@lingui/react/macro';
 import { router } from 'expo-router';
@@ -47,17 +48,19 @@ export function MiniPlayer() {
       </Pressable>
       <Pressable
         onPress={toggle}
+        accessibilityRole="button"
         accessibilityLabel={isPlaying ? t`Pause` : t`Play`}
         style={styles.control}
       >
-        <ThemedText style={styles.icon}>{isPlaying ? 'Ⅱ' : '▶'}</ThemedText>
+        <AppIcon name={isPlaying ? 'pause' : 'play'} />
       </Pressable>
       <Pressable
         onPress={next}
+        accessibilityRole="button"
         accessibilityLabel={t`Next`}
         style={styles.control}
       >
-        <ThemedText style={styles.icon}>▶|</ThemedText>
+        <AppIcon name="next" />
       </Pressable>
     </View>
   );
@@ -80,5 +83,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     height: 56,
   },
-  icon: { fontWeight: '800' },
 });

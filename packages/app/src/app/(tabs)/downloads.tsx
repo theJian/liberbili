@@ -1,3 +1,4 @@
+import { AppIcon } from '@/components/app-icon';
 import { FlashList } from '@shopify/flash-list';
 import { useLingui } from '@lingui/react/macro';
 import { Image } from 'expo-image';
@@ -69,16 +70,31 @@ export default function DownloadsScreen() {
           </View>
         </View>
         {item.status === 'downloading' ? (
-          <Pressable onPress={() => void pause(item.id)}>
-            <ThemedText>Ⅱ</ThemedText>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t`Pause download`}
+            style={styles.control}
+            onPress={() => void pause(item.id)}
+          >
+            <AppIcon name="pause" size={20} />
           </Pressable>
         ) : item.status !== 'completed' ? (
-          <Pressable onPress={() => void resume(item.id)}>
-            <ThemedText>▶</ThemedText>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t`Resume download`}
+            style={styles.control}
+            onPress={() => void resume(item.id)}
+          >
+            <AppIcon name="play" size={20} />
           </Pressable>
         ) : null}
-        <Pressable onPress={() => remove(item.id)}>
-          <ThemedText themeColor="textSecondary">×</ThemedText>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t`Remove download`}
+          style={styles.control}
+          onPress={() => remove(item.id)}
+        >
+          <AppIcon name="close" size={20} themeColor="textSecondary" />
         </Pressable>
       </View>
     ),
@@ -111,6 +127,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   image: { width: 112, aspectRatio: 16 / 9, borderRadius: 8 },
+  control: {
+    minWidth: 44,
+    minHeight: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   content: { flex: 1, gap: 5 },
   name: { fontWeight: '600' },
   track: { height: 4, overflow: 'hidden', borderRadius: 2 },
