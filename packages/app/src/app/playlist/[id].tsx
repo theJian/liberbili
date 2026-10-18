@@ -1,3 +1,4 @@
+import { AppIcon } from '@/components/app-icon';
 import { FlashList } from '@shopify/flash-list';
 import { useLingui } from '@lingui/react/macro';
 import { Stack, useLocalSearchParams, router } from 'expo-router';
@@ -47,7 +48,8 @@ export default function PlaylistScreen() {
           onPress={() => void play(playlist.items[0], playlist.items)}
           style={[styles.play, { backgroundColor: theme.accent }]}
         >
-          <ThemedText style={styles.playText}>▶ {t`Play`}</ThemedText>
+          <AppIcon name="play" size={20} color="#fff" />
+          <ThemedText style={styles.playText}>{t`Play`}</ThemedText>
         </Pressable>
         <Pressable
           onPress={() => {
@@ -71,7 +73,14 @@ export default function PlaylistScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   actions: { padding: 16, flexDirection: 'row', alignItems: 'center', gap: 20 },
-  play: { borderRadius: 999, paddingHorizontal: 18, paddingVertical: 11 },
+  play: {
+    borderRadius: 999,
+    paddingHorizontal: 18,
+    paddingVertical: 11,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
   playText: { color: '#fff', fontWeight: '800' },
   remove: { position: 'absolute', right: 16, bottom: 10, padding: 5 },
 });

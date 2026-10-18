@@ -1,3 +1,4 @@
+import { AppIcon } from '@/components/app-icon';
 import { Image } from 'expo-image';
 import { plural } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react/macro';
@@ -37,12 +38,15 @@ export const CommentCard = memo(function CommentCard({
             contentFit="cover"
           />
         ) : null}
-        <ThemedText type="small" themeColor="textSecondary">
-          ♡ {formatCount(comment.likes, i18n.locale)}
-          {comment.replyCount
-            ? ` · ${plural(comment.replyCount, { one: '# reply', other: '# replies' })}`
-            : ''}
-        </ThemedText>
+        <View style={styles.meta}>
+          <AppIcon name="heart" size={16} themeColor="textSecondary" />
+          <ThemedText type="small" themeColor="textSecondary">
+            {formatCount(comment.likes, i18n.locale)}
+            {comment.replyCount
+              ? ` · ${plural(comment.replyCount, { one: '# reply', other: '# replies' })}`
+              : ''}
+          </ThemedText>
+        </View>
         {comment.replies.slice(0, 2).map((reply) => (
           <View
             key={reply.id}

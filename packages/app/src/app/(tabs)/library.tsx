@@ -3,6 +3,7 @@
  * Router. Its HistoryPreview links unfinished playback to the history screen;
  * the root layout supplies the HistoryProvider required by that preview.
  */
+import { AppIcon } from '@/components/app-icon';
 import { useLingui } from '@lingui/react/macro';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -16,9 +17,21 @@ export default function LibraryScreen() {
   const { t } = useLingui();
   const theme = useTheme();
   const items = [
-    { title: t`Watch history`, icon: '◷', route: '/history' as const },
-    { title: t`Playlists`, icon: '♫', route: '/(tabs)/playlists' as const },
-    { title: t`Downloads`, icon: '↓', route: '/(tabs)/downloads' as const },
+    {
+      title: t`Watch history`,
+      icon: 'history' as const,
+      route: '/history' as const,
+    },
+    {
+      title: t`Playlists`,
+      icon: 'playlist' as const,
+      route: '/(tabs)/playlists' as const,
+    },
+    {
+      title: t`Downloads`,
+      icon: 'download' as const,
+      route: '/(tabs)/downloads' as const,
+    },
   ];
 
   return (
@@ -36,10 +49,10 @@ export default function LibraryScreen() {
             style={[styles.row, { backgroundColor: theme.backgroundElement }]}
           >
             <View style={[styles.icon, { backgroundColor: theme.background }]}>
-              <ThemedText style={styles.iconText}>{item.icon}</ThemedText>
+              <AppIcon name={item.icon} />
             </View>
             <ThemedText style={styles.rowTitle}>{item.title}</ThemedText>
-            <ThemedText themeColor="textSecondary">›</ThemedText>
+            <AppIcon name="chevronRight" size={18} themeColor="textSecondary" />
           </Pressable>
         ))}
       </View>
@@ -67,6 +80,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  iconText: { fontSize: 24 },
   rowTitle: { flex: 1, fontWeight: '700' },
 });

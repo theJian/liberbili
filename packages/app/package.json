@@ -4,6 +4,7 @@
   "private": true,
   "main": "expo-router/entry",
   "dependencies": {
+    "@doodle-icons/react-native": "^0.2.0",
     "@expo/ui": "~57.0.14",
     "@formatjs/intl-locale": "^5.3.10",
     "@formatjs/intl-pluralrules": "^6.3.13",
@@ -36,6 +37,7 @@
     "react-native-reanimated": "4.5.1",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.0",
+    "react-native-svg": "15.15.4",
     "react-native-web": "~0.21.0",
     "react-native-worklets": "0.10.1"
   },

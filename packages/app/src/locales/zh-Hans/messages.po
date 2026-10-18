@@ -226,3 +226,19 @@ msgstr "播放"
 #: src/app/history.tsx:37
 msgid "Watch history"
 msgstr "观看历史"
+
+#: src/app/(tabs)/playlists.tsx:70
+msgid "Create playlist"
+msgstr "创建播放列表"
+
+#: src/app/(tabs)/downloads.tsx:75
+msgid "Pause download"
+msgstr "暂停下载"
+
+#: src/app/(tabs)/downloads.tsx:93
+msgid "Remove download"
+msgstr "移除下载"
+
+#: src/app/(tabs)/downloads.tsx:84
+msgid "Resume download"
+msgstr "继续下载"

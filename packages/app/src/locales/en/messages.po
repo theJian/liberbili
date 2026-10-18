@@ -226,3 +226,19 @@ msgstr "views"
 #: src/app/history.tsx:37
 msgid "Watch history"
 msgstr "Watch history"
+
+#: src/app/(tabs)/playlists.tsx:70
+msgid "Create playlist"
+msgstr "Create playlist"
+
+#: src/app/(tabs)/downloads.tsx:75
+msgid "Pause download"
+msgstr "Pause download"
+
+#: src/app/(tabs)/downloads.tsx:93
+msgid "Remove download"
+msgstr "Remove download"
+
+#: src/app/(tabs)/downloads.tsx:84
+msgid "Resume download"
+msgstr "Resume download"
