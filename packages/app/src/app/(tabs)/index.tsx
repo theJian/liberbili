@@ -1,3 +1,4 @@
+import { AppIcon } from '@/components/app-icon';
 import { FlashList } from '@shopify/flash-list';
 import { useLingui } from '@lingui/react/macro';
 import { router } from 'expo-router';
@@ -46,9 +47,10 @@ export default function HomeScreen() {
             styles.roundButton,
             { backgroundColor: theme.backgroundElement },
           ]}
+          accessibilityRole="button"
           accessibilityLabel={t`Search`}
         >
-          <ThemedText style={styles.searchIcon}>⌕</ThemedText>
+          <AppIcon name="search" />
         </Pressable>
       </View>
       <FlashList
@@ -94,6 +96,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  searchIcon: { fontSize: 26, lineHeight: 28 },
   list: { paddingBottom: 84 },
 });

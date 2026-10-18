@@ -1,3 +1,4 @@
+import { AppIcon } from '@/components/app-icon';
 import { FlashList } from '@shopify/flash-list';
 import { useLingui } from '@lingui/react/macro';
 import { Stack } from 'expo-router';
@@ -15,7 +16,6 @@ import type { VideoSummary } from '@liberbili/api/types';
 
 import { bilibiliApi } from '@/lib/bilibili';
 import { ScreenState } from '@/components/screen-state';
-import { ThemedText } from '@/components/themed-text';
 import { VideoCard } from '@/components/video-card';
 import { useTheme } from '@/hooks/use-theme';
 
@@ -71,9 +71,11 @@ export default function SearchScreen() {
         />
         <Pressable
           onPress={() => void search(1)}
+          accessibilityRole="button"
+          accessibilityLabel={t`Search`}
           style={[styles.submit, { backgroundColor: theme.accent }]}
         >
-          <ThemedText style={styles.submitText}>⌕</ThemedText>
+          <AppIcon name="search" color="#fff" />
         </Pressable>
       </View>
       <FlashList
@@ -111,6 +113,5 @@ const styles = StyleSheet.create({
   },
   input: { flex: 1, height: 48, fontSize: 16 },
   submit: { width: 54, alignItems: 'center', justifyContent: 'center' },
-  submitText: { color: '#fff', fontSize: 24, textAlign: 'center' },
   footer: { padding: 20 },
 });

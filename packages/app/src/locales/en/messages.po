@@ -12,162 +12,182 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 
 #. placeholder {0}: comment.replyCount
-#: src/components/comment-card.tsx:15
+#: src/components/comment-card.tsx:46
 msgid "{0, plural, one {# reply} other {# replies}}"
 msgstr "{0, plural, one {# reply} other {# replies}}"
 
 #. placeholder {0}: item.items.length
-#: src/app/(tabs)/playlists.tsx:23
+#: src/app/(tabs)/playlists.tsx:42
 msgid "{0, plural, one {# video} other {# videos}}"
 msgstr "{0, plural, one {# video} other {# videos}}"
 
-#: src/app/video/[bvid].tsx:46
+#: src/app/video/[bvid].tsx:131
 msgid "Add to playlist"
 msgstr "Add to playlist"
 
-#: src/app/video/[bvid].tsx:49
+#: src/app/video/[bvid].tsx:208
 msgid "All comments"
 msgstr "All comments"
 
-#: src/components/screen-state.tsx:15
+#: src/components/screen-state.tsx:30
 msgid "Bilibili blocked this request. Please retry."
 msgstr "Bilibili blocked this request. Please retry."
 
-#: src/components/screen-state.tsx:15
+#: src/components/screen-state.tsx:38
 msgid "Bilibili returned an unexpected response."
 msgstr "Bilibili returned an unexpected response."
 
-#: src/app/video/[bvid].tsx:46
+#: src/app/video/[bvid].tsx:111
 msgid "Comments"
 msgstr "Comments"
 
-#: src/app/video/[bvid].tsx:47
+#: src/app/video/[bvid].tsx:161
 msgid "Create a playlist first."
 msgstr "Create a playlist first."
 
-#: src/app/playlist/[id].tsx:27
+#: src/app/(tabs)/playlists.tsx:70
+msgid "Create playlist"
+msgstr "Create playlist"
+
+#: src/app/playlist/[id].tsx:60
 msgid "Delete"
 msgstr "Delete"
 
-#: src/app/video/[bvid].tsx:49
+#: src/app/video/[bvid].tsx:199
 msgid "Description"
 msgstr "Description"
 
-#: src/app/video/[bvid].tsx:46
+#: src/app/video/[bvid].tsx:138
 msgid "Download"
 msgstr "Download"
 
-#: src/app/(tabs)/downloads.tsx:22
+#: src/app/(tabs)/downloads.tsx:48
 msgid "Downloaded"
 msgstr "Downloaded"
 
-#: src/app/(tabs)/downloads.tsx:22
+#: src/app/(tabs)/downloads.tsx:50
 msgid "Downloading"
 msgstr "Downloading"
 
-#: src/app/(tabs)/_layout.tsx:19
-#: src/app/(tabs)/downloads.tsx:27
+#: src/app/(tabs)/downloads.tsx:108
+#: src/app/(tabs)/library.tsx:20
 msgid "Downloads"
 msgstr "Downloads"
 
-#: src/app/(tabs)/downloads.tsx:22
+#: src/app/(tabs)/downloads.tsx:55
 msgid "Failed"
 msgstr "Failed"
 
 #: src/app/(tabs)/_layout.tsx:11
-msgid "Home"
-msgstr "Home"
+#~ msgid "Home"
+#~ msgstr "Home"
 
-msgid "Language"
-msgstr "Language"
-
-msgid "Library"
-msgstr "Library"
-
-msgid "Settings"
-msgstr "Settings"
-
-#: src/app/(tabs)/downloads.tsx:22
+#: src/app/(tabs)/downloads.tsx:54
 msgid "Interrupted"
 msgstr "Interrupted"
 
-#: src/app/video/[bvid].tsx:46
+#: src/app/(tabs)/settings.tsx:28
+msgid "Language"
+msgstr "Language"
+
+#: src/app/(tabs)/library.tsx:31
+msgid "Library"
+msgstr "Library"
+
+#: src/app/video/[bvid].tsx:110
 msgid "likes"
 msgstr "likes"
 
-#: src/components/mini-player.tsx:22
+#: src/components/mini-player.tsx:60
 msgid "Next"
 msgstr "Next"
 
-#: src/components/screen-state.tsx:16
+#: src/components/screen-state.tsx:44
 msgid "Nothing here yet"
 msgstr "Nothing here yet"
 
-#: src/app/video/[bvid].tsx:48
+#: src/app/video/[bvid].tsx:170
 msgid "Parts"
 msgstr "Parts"
 
-#: src/components/mini-player.tsx:21
+#: src/components/mini-player.tsx:52
 msgid "Pause"
 msgstr "Pause"
 
-#: src/app/(tabs)/downloads.tsx:22
+#: src/app/(tabs)/downloads.tsx:75
+msgid "Pause download"
+msgstr "Pause download"
+
+#: src/app/(tabs)/downloads.tsx:52
 msgid "Paused"
 msgstr "Paused"
 
-#: src/app/playlist/[id].tsx:27
-#: src/components/mini-player.tsx:21
+#: src/app/playlist/[id].tsx:52
+#: src/components/mini-player.tsx:52
 msgid "Play"
 msgstr "Play"
 
-#: src/app/(tabs)/playlists.tsx:29
+#: src/app/(tabs)/playlists.tsx:63
 msgid "Playlist name"
 msgstr "Playlist name"
 
-#: src/app/(tabs)/_layout.tsx:15
-#: src/app/(tabs)/playlists.tsx:28
+#: src/app/(tabs)/library.tsx:15
+#: src/app/(tabs)/playlists.tsx:55
 msgid "Playlists"
 msgstr "Playlists"
 
-#: src/app/(tabs)/index.tsx:26
+#: src/app/(tabs)/index.tsx:42
 msgid "Recommended"
 msgstr "Recommended"
 
-#: src/app/playlist/[id].tsx:22
+#: src/app/playlist/[id].tsx:35
 msgid "Remove"
 msgstr "Remove"
 
-#: src/app/(tabs)/index.tsx:27
-#: src/app/search.tsx:35
+#: src/app/(tabs)/downloads.tsx:93
+msgid "Remove download"
+msgstr "Remove download"
+
+#: src/app/(tabs)/downloads.tsx:84
+msgid "Resume download"
+msgstr "Resume download"
+
+#: src/app/(tabs)/index.tsx:51
+#: src/app/search.tsx:58
+#: src/app/search.tsx:75
 msgid "Search"
 msgstr "Search"
 
-#: src/app/search.tsx:37
+#: src/app/search.tsx:66
 msgid "Search Bilibili videos"
 msgstr "Search Bilibili videos"
 
-#: src/components/screen-state.tsx:15
+#: src/app/(tabs)/settings.tsx:23
+msgid "Settings"
+msgstr "Settings"
+
+#: src/components/screen-state.tsx:36
 msgid "This content requires a Bilibili account."
 msgstr "This content requires a Bilibili account."
 
-#: src/components/screen-state.tsx:15
+#: src/components/screen-state.tsx:34
 msgid "This video is not available in your region."
 msgstr "This video is not available in your region."
 
-#: src/components/screen-state.tsx:15
+#: src/components/screen-state.tsx:32
 msgid "This video is unavailable."
 msgstr "This video is unavailable."
 
-#: src/components/screen-state.tsx:17
+#: src/components/screen-state.tsx:51
 msgid "Try again"
 msgstr "Try again"
 
-#: src/components/screen-state.tsx:15
-#: src/components/screen-state.tsx:15
+#: src/components/screen-state.tsx:39
+#: src/components/screen-state.tsx:40
 msgid "Unable to reach Bilibili."
 msgstr "Unable to reach Bilibili."
 
-#: src/app/video/[bvid].tsx:46
-#: src/components/video-card.tsx:25
+#: src/app/video/[bvid].tsx:109
+#: src/components/video-card.tsx:54
 msgid "views"
 msgstr "views"
