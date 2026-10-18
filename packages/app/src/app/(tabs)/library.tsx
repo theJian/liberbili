@@ -10,6 +10,7 @@ export default function LibraryScreen() {
   const { t } = useLingui();
   const theme = useTheme();
   const items = [
+    { title: t`Open video link`, icon: '↗', route: '/open-video' as const },
     { title: t`Playlists`, icon: '♫', route: '/(tabs)/playlists' as const },
     { title: t`Downloads`, icon: '↓', route: '/(tabs)/downloads' as const },
   ];

@@ -175,33 +175,77 @@ export class BilibiliExtractorApi extends BilibiliClient {
   }
 
   async resolveStreamUrl(input: string): Promise<StreamReference> {
-    let url = input;
-    if (url.includes('b23.tv')) {
-      const response = await fetch(url, { redirect: 'manual' });
-      url = response.headers.get('location') ?? response.url;
+    const value = input.trim();
+    const rawId = /^(BV1[1-9A-HJ-NP-Za-km-z]{9}|av[1-9]\d*)$/.test(value);
+    let parsed = new URL(
+      rawId ? `https://www.bilibili.com/video/${value}` : value,
+    );
+    const validateHost = (url: URL) => {
+      if (
+        !['https:', 'http:'].includes(url.protocol) ||
+        url.username ||
+        url.password ||
+        url.port ||
+        ![
+          'www.bilibili.com',
+          'bilibili.com',
+          'm.bilibili.com',
+          'live.bilibili.com',
+          'b23.tv',
+        ].includes(url.hostname)
+      )
+        throw new Error('Not a supported Bilibili URL');
+    };
+    for (let redirects = 0; ; redirects += 1) {
+      validateHost(parsed);
+      if (parsed.hostname !== 'b23.tv') break;
+      if (redirects >= 3 || !/^\/[A-Za-z0-9]+\/?$/.test(parsed.pathname))
+        throw new Error('Unable to resolve short link');
+      const response = await fetch(parsed.toString(), {
+        redirect: 'manual',
+        signal: AbortSignal.timeout(15000),
+      });
+      if (response.status < 200 || response.status >= 400)
+        throw new Error('Unable to resolve short link');
+      const location = response.headers.get('location');
+      const target = location
+        ? new URL(location, parsed)
+        : new URL(response.url || parsed.toString());
+      if (target.toString() === parsed.toString())
+        throw new Error('Unable to resolve short link');
+      parsed = target;
     }
-    const parsed = new URL(url);
-    const timestamp = Number(parsed.searchParams.get('t') ?? 0);
-    const page = Number(parsed.searchParams.get('p') ?? 1);
+    const pageValue = parsed.searchParams.get('p') ?? '1';
+    const timestampValue = parsed.searchParams.get('t') ?? '0';
+    const page = Number(pageValue);
+    const timestamp = Number(timestampValue);
+    if (
+      !/^\d+$/.test(pageValue) ||
+      !Number.isSafeInteger(page) ||
+      page < 1 ||
+      !/^\d+(?:\.\d+)?$/.test(timestampValue) ||
+      !Number.isFinite(timestamp) ||
+      timestamp < 0
+    )
+      throw new Error('Invalid video part or timestamp');
     const premium = parsed.pathname.match(
-      /\/bangumi\/play\/(ss\d+|ep\d+)/,
+      /^\/bangumi\/play\/(ss[1-9]\d*|ep[1-9]\d*)\/?$/,
     )?.[1];
-    if (premium) return { kind: 'premium', id: premium };
-    if (parsed.hostname === 'live.bilibili.com')
-      return {
-        kind: 'live',
-        id: parsed.pathname.split('/').filter(Boolean).at(-1)!,
-      };
-    const rawId =
-      parsed.pathname.match(/\/(BV[\w]+|av\d+)/)?.[1] ??
-      parsed.searchParams.get('bvid') ??
-      (parsed.searchParams.get('aid')
-        ? `av${parsed.searchParams.get('aid')}`
-        : undefined);
-    if (!rawId) throw new Error('Not a Bilibili stream URL');
-    const bvid = rawId.startsWith('av')
-      ? avToBv(Number(rawId.slice(2)))
-      : rawId;
+    if (premium && parsed.hostname !== 'live.bilibili.com')
+      return { kind: 'premium', id: premium };
+    if (parsed.hostname === 'live.bilibili.com') {
+      const id = parsed.pathname.match(/^\/([1-9]\d*)\/?$/)?.[1];
+      if (!id) throw new Error('Not a live room URL');
+      return { kind: 'live', id };
+    }
+    const id = parsed.pathname.match(
+      /^\/video\/(BV1[1-9A-HJ-NP-Za-km-z]{9}|av[1-9]\d*)\/?$/,
+    )?.[1];
+    if (!id) throw new Error('Not a Bilibili video URL');
+    const aid = id.startsWith('av') ? Number(id.slice(2)) : undefined;
+    if (aid !== undefined && (!Number.isSafeInteger(aid) || aid >= 2 ** 51))
+      throw new Error('Invalid AV identifier');
+    const bvid = aid === undefined ? id : avToBv(aid);
     return {
       kind: 'video',
       id: `${bvid}?p=${page}${timestamp ? `#timestamp=${timestamp}` : ''}`,
