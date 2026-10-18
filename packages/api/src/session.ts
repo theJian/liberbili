@@ -14,11 +14,86 @@ export type BilibiliSession = {
   mixinDate?: string;
 };
 
-type SpiResponse = { data: { b_3: string; b_4: string } };
-type TicketResponse = {
-  data: { ticket: string; created_at: number; ttl: number };
-};
-type NavResponse = { data: { wbi_img: { img_url: string; sub_url: string } } };
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+const headerValue = (value: unknown): value is string =>
+  typeof value === 'string' &&
+  value.trim().length > 0 &&
+  !/[\r\n\0]/.test(value);
+const cookieValue = (value: unknown): value is string =>
+  headerValue(value) && !/[;\s]/.test(value);
+const positiveNumber = (value: unknown): value is number =>
+  typeof value === 'number' && Number.isFinite(value) && value > 0;
+
+function savedSession(raw: string): BilibiliSession | undefined {
+  try {
+    const value: unknown = JSON.parse(raw);
+    if (
+      !isRecord(value) ||
+      !headerValue(value.userAgent) ||
+      !headerValue(value.cookie) ||
+      !positiveNumber(value.expiresAt)
+    )
+      return undefined;
+    const session: BilibiliSession = {
+      userAgent: value.userAgent,
+      cookie: value.cookie,
+      expiresAt: value.expiresAt,
+    };
+    if (
+      typeof value.mixinKey === 'string' &&
+      /^[a-f0-9]{32}$/i.test(value.mixinKey) &&
+      typeof value.mixinDate === 'string' &&
+      /^\d{4}-\d{2}-\d{2}$/.test(value.mixinDate)
+    ) {
+      session.mixinKey = value.mixinKey;
+      session.mixinDate = value.mixinDate;
+    }
+    return session;
+  } catch {
+    return undefined;
+  }
+}
+
+function spiCookies(value: unknown): { buvid3: string; buvid4: string } {
+  if (
+    !isRecord(value) ||
+    (value.code !== undefined && value.code !== 0) ||
+    !isRecord(value.data) ||
+    !cookieValue(value.data.b_3) ||
+    !cookieValue(value.data.b_4)
+  )
+    throw new Error(
+      'Bilibili session bootstrap returned invalid fingerprint data',
+    );
+  return { buvid3: value.data.b_3, buvid4: value.data.b_4 };
+}
+
+function navKeys(value: unknown): [string, string] {
+  // Anonymous nav responses may report -101 while still providing valid WBI keys.
+  if (
+    !isRecord(value) ||
+    (value.code !== undefined && value.code !== 0 && value.code !== -101) ||
+    !isRecord(value.data) ||
+    !isRecord(value.data.wbi_img)
+  )
+    throw new Error('Bilibili returned invalid WBI key data');
+  const { img_url: image, sub_url: sub } = value.data.wbi_img;
+  const parse = (url: unknown): string => {
+    if (typeof url !== 'string')
+      throw new Error('Bilibili returned invalid WBI key data');
+    try {
+      const parsed = new URL(url);
+      const key = fileKey(parsed.pathname);
+      if (parsed.protocol !== 'https:' || !/^[a-f0-9]{32}$/i.test(key))
+        throw new Error();
+      return key;
+    } catch {
+      throw new Error('Bilibili returned invalid WBI key data');
+    }
+  };
+  return [parse(image), parse(sub)];
+}
 
 export type BilibiliStorage = {
   getString(key: string): string | undefined;
@@ -91,39 +166,68 @@ export function dmImgParams() {
 export class SessionManager {
   private session?: BilibiliSession;
   private accountCookie?: string;
+  private generation = 0;
+  private pendingSession?: Promise<BilibiliSession>;
+  private pendingMixin?: Promise<string>;
+
+  private invalidate(): void {
+    this.generation += 1;
+    this.session = undefined;
+    this.pendingSession = undefined;
+    this.pendingMixin = undefined;
+  }
+
+  private assertCurrent(generation: number): void {
+    if (generation !== this.generation)
+      throw new Error('Bilibili session changed; retry the request');
+  }
 
   constructor(private storage: BilibiliStorage = memoryStorage) {}
 
   configureStorage(storage: BilibiliStorage): void {
+    this.invalidate();
     this.storage = storage;
-    this.session = undefined;
     this.accountCookie = undefined;
   }
 
-  async get(force = false) {
+  get(force = false): Promise<BilibiliSession> {
+    if (this.pendingSession) return this.pendingSession;
     if (
       !force &&
       this.session &&
       this.session.expiresAt > Date.now() / 1000 + 60
     )
-      return this.session;
+      return Promise.resolve(this.session);
     if (!force) {
       const saved = this.storage.getString(STORAGE_KEY);
       if (saved) {
-        const parsed = JSON.parse(saved) as BilibiliSession;
-        if (parsed.expiresAt > Date.now() / 1000 + 60)
-          return (this.session = parsed);
+        const parsed = savedSession(saved);
+        if (parsed && parsed.expiresAt > Date.now() / 1000 + 60) {
+          this.session = parsed;
+          return Promise.resolve(parsed);
+        }
+        this.storage.remove(STORAGE_KEY);
       }
     }
-    return this.bootstrap();
+    if (force) this.invalidate();
+    const pending = this.bootstrap(this.generation, this.storage).finally(
+      () => {
+        if (this.pendingSession === pending) this.pendingSession = undefined;
+      },
+    );
+    this.pendingSession = pending;
+    return pending;
   }
 
   clear(): void {
-    this.session = undefined;
+    this.invalidate();
     this.storage.remove(STORAGE_KEY);
   }
 
-  private async bootstrap() {
+  private async bootstrap(
+    generation: number,
+    storage: BilibiliStorage,
+  ): Promise<BilibiliSession> {
     const ua = userAgent();
     const headers = {
       'User-Agent': ua,
@@ -138,11 +242,11 @@ export class SessionManager {
       throw new Error(
         `Bilibili session bootstrap failed (${spiResponse.status})`,
       );
-    const spi = (await spiResponse.json()) as SpiResponse;
+    const fingerprints = spiCookies(await spiResponse.json());
+    this.assertCurrent(generation);
     const now = Math.floor(Date.now() / 1000);
     const cookies: Record<string, string | number> = {
-      buvid3: spi.data.b_3,
-      buvid4: spi.data.b_4,
+      ...fingerprints,
       b_nut: now,
       b_lsid: `${randomHex(16).toUpperCase()}_${Date.now().toString(16).toUpperCase()}`,
       _uuid: fpUuid(),
@@ -155,20 +259,42 @@ export class SessionManager {
     ticketUrl.searchParams.set('hexsign', ticketSignature(now));
     ticketUrl.searchParams.set('context[ts]', String(now));
     ticketUrl.searchParams.set('csrf', '');
-    const ticketResponse = await fetch(ticketUrl, {
-      method: 'POST',
-      headers: { ...headers, Cookie: headerCookie(cookies) },
-    });
-    let expiresAt = now + 3600;
-    if (ticketResponse.ok) {
-      const ticket = (await ticketResponse.json()) as TicketResponse;
-      cookies.bili_ticket = ticket.data.ticket;
-      expiresAt = ticket.data.created_at + ticket.data.ttl;
-      cookies.bili_ticket_expires = expiresAt;
+    let ticketResponse: Response | undefined;
+    try {
+      ticketResponse = await fetch(ticketUrl, {
+        method: 'POST',
+        headers: { ...headers, Cookie: headerCookie(cookies) },
+      });
+    } catch {
+      // Anonymous fingerprints are usable even when the optional ticket service is offline.
     }
-    this.session = { userAgent: ua, cookie: headerCookie(cookies), expiresAt };
-    this.storage.set(STORAGE_KEY, JSON.stringify(this.session));
-    return this.session;
+    let expiresAt = now + 3600;
+    if (ticketResponse?.ok) {
+      let ticket: unknown;
+      try {
+        ticket = await ticketResponse.json();
+      } catch {
+        /* Fingerprint-only sessions remain usable without an optional ticket. */
+      }
+      if (
+        isRecord(ticket) &&
+        (ticket.code === undefined || ticket.code === 0) &&
+        isRecord(ticket.data) &&
+        cookieValue(ticket.data.ticket) &&
+        positiveNumber(ticket.data.created_at) &&
+        positiveNumber(ticket.data.ttl) &&
+        Number.isFinite(ticket.data.created_at + ticket.data.ttl)
+      ) {
+        cookies.bili_ticket = ticket.data.ticket;
+        expiresAt = ticket.data.created_at + ticket.data.ttl;
+        cookies.bili_ticket_expires = expiresAt;
+      }
+    }
+    this.assertCurrent(generation);
+    const session = { userAgent: ua, cookie: headerCookie(cookies), expiresAt };
+    storage.set(STORAGE_KEY, JSON.stringify(session));
+    this.session = session;
+    return session;
   }
 
   setAccountCookies(cookie?: string): void {
@@ -183,8 +309,10 @@ export class SessionManager {
     return Boolean(this.accountCookie);
   }
 
-  async headers(authenticated = false) {
+  async headers(authenticated = false): Promise<Record<string, string>> {
+    const generation = this.generation;
     const session = await this.get();
+    this.assertCurrent(generation);
     if (authenticated && !this.accountCookie)
       this.accountCookie = this.storage.getString(ACCOUNT_KEY);
     return {
@@ -198,8 +326,18 @@ export class SessionManager {
     };
   }
 
-  async getMixinKey() {
+  getMixinKey(): Promise<string> {
+    if (this.pendingMixin) return this.pendingMixin;
+    const pending = this.loadMixinKey(this.generation).finally(() => {
+      if (this.pendingMixin === pending) this.pendingMixin = undefined;
+    });
+    this.pendingMixin = pending;
+    return pending;
+  }
+
+  private async loadMixinKey(generation: number): Promise<string> {
     const session = await this.get();
+    this.assertCurrent(generation);
     const date = new Intl.DateTimeFormat('en-CA', {
       timeZone: 'Asia/Shanghai',
     }).format(new Date());
@@ -207,19 +345,25 @@ export class SessionManager {
     const response = await fetch(
       'https://api.bilibili.com/x/web-interface/nav',
       {
-        headers: await this.headers(),
+        headers: {
+          'User-Agent': session.userAgent,
+          Referer: REFERER,
+          'Accept-Language': 'zh-CN,zh;q=0.9',
+          Cookie: session.cookie,
+        },
       },
     );
     if (!response.ok)
       throw new Error(`Unable to load WBI key (${response.status})`);
-    const nav = (await response.json()) as NavResponse;
-    session.mixinKey = mixinKey(
-      fileKey(nav.data.wbi_img.img_url),
-      fileKey(nav.data.wbi_img.sub_url),
-    );
-    session.mixinDate = date;
-    this.storage.set(STORAGE_KEY, JSON.stringify(session));
-    return session.mixinKey;
+    const [image, sub] = navKeys(await response.json());
+    this.assertCurrent(generation);
+    if (this.session !== session)
+      throw new Error('Bilibili session changed; retry the request');
+    const key = mixinKey(image, sub);
+    const updated = { ...session, mixinKey: key, mixinDate: date };
+    this.storage.set(STORAGE_KEY, JSON.stringify(updated));
+    this.session = updated;
+    return key;
   }
 }
 
