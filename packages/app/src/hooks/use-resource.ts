@@ -1,4 +1,16 @@
-import { DependencyList, useCallback, useEffect, useState } from 'react';
+import {
+  DependencyList,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState,
+  useRef,
+  useSyncExternalStore,
+} from 'react';
+import {
+  ResourceRequest,
+  sameResourceDependencies,
+} from '@/lib/resource-request';
 
 export type Resource<T> = {
   data?: T;
@@ -11,24 +23,31 @@ export function useResource<T>(
   load: (signal: AbortSignal) => Promise<T>,
   deps: DependencyList,
 ): Resource<T> {
-  const [version, setVersion] = useState(0);
-  const [state, setState] = useState<Omit<Resource<T>, 'reload'>>({
-    loading: true,
+  // Guarded render-time state adjustment prevents even one render of the old key's data.
+  const [scope, setScope] = useState(() => ({
+    deps: [...deps],
+    request: new ResourceRequest<T>(),
+  }));
+  let request = scope.request;
+  if (!sameResourceDependencies(scope.deps, deps)) {
+    request = new ResourceRequest<T>();
+    setScope({ deps: [...deps], request });
+  }
+  const loader = useRef(load);
+  useLayoutEffect(() => {
+    loader.current = load;
   });
   useEffect(() => {
-    const controller = new AbortController();
-    load(controller.signal).then(
-      (data) =>
-        !controller.signal.aborted && setState({ data, loading: false }),
-      (error) =>
-        !controller.signal.aborted &&
-        setState({ error: error as Error, loading: false }),
-    );
-    return () => controller.abort();
-  }, [...deps, version]); // eslint-disable-line react-hooks/exhaustive-deps
+    void request.run(loader.current);
+    return request.cancel;
+  }, [request]);
+  const state = useSyncExternalStore(
+    request.subscribe,
+    request.getSnapshot,
+    request.getSnapshot,
+  );
   const reload = useCallback(() => {
-    setState((current) => ({ ...current, loading: true, error: undefined }));
-    setVersion((value) => value + 1);
-  }, []);
+    void request.run(loader.current);
+  }, [request]);
   return { ...state, reload };
 }
