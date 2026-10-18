@@ -3,10 +3,12 @@ import { useLingui } from '@lingui/react/macro';
 import { Image } from 'expo-image';
 import { useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Pressable,
+  Share,
   ScrollView,
   StyleSheet,
   View,
@@ -25,10 +27,18 @@ import { useDownloads } from '@/state/downloads';
 import { usePlayer, VideoView } from '@/state/player';
 import { usePlaylists } from '@/state/playlists';
 import { useTheme } from '@/hooks/use-theme';
+import { canonicalVideoUrl, playVideoReference } from '@/lib/video-links';
 
 export default function VideoScreen() {
-  const { bvid } = useLocalSearchParams<{ bvid: string }>();
-  const detailResource = useResource(() => bilibiliApi.getVideo(bvid), [bvid]);
+  const {
+    bvid,
+    p: pageParam,
+    t: timeParam,
+  } = useLocalSearchParams<{ bvid: string; p?: string; t?: string }>();
+  const detailResource = useResource(async () => {
+    canonicalVideoUrl(bvid);
+    return bilibiliApi.getVideo(bvid);
+  }, [bvid]);
   const detail = detailResource.data;
   const { i18n, t } = useLingui();
   const theme = useTheme();
@@ -47,6 +57,7 @@ export default function VideoScreen() {
   const [nextCursor, setNextCursor] = useState<string>();
   const [commentLoading, setCommentLoading] = useState(false);
   const [choosingPlaylist, setChoosingPlaylist] = useState(false);
+  const [playbackError, setPlaybackError] = useState<Error>();
   const summary = useMemo<VideoSummary | undefined>(
     () =>
       detail && {
@@ -62,9 +73,89 @@ export default function VideoScreen() {
       },
     [detail],
   );
+  const playbackRequest = useRef('');
+  const linkedGeneration = useRef(0);
+  const mounted = useRef(true);
+  const activeRoute = useRef('');
+  const selectedVideo = useRef(current?.bvid);
   useEffect(() => {
-    if (summary && current?.bvid !== summary.bvid) void play(summary);
-  }, [current?.bvid, play, summary]);
+    selectedVideo.current = current?.bvid;
+  }, [current?.bvid]);
+  useEffect(() => {
+    activeRoute.current = `${bvid}:${pageParam ?? ''}:${timeParam ?? ''}`;
+    return () => {
+      activeRoute.current = '';
+    };
+  }, [bvid, pageParam, timeParam]);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+  const openLinkedVideo = useCallback(async () => {
+    if (!summary || !detail || detail.bvid !== bvid) return;
+    const key = `${bvid}:${pageParam ?? ''}:${timeParam ?? ''}`;
+    if (activeRoute.current !== key) return;
+    const generation = ++linkedGeneration.current;
+    playbackRequest.current = key;
+    try {
+      await playVideoReference(
+        summary,
+        detail.parts,
+        { page: pageParam, timestamp: timeParam },
+        {
+          play,
+          playPart,
+          isCurrent: () =>
+            mounted.current &&
+            linkedGeneration.current === generation &&
+            playbackRequest.current === key &&
+            activeRoute.current === key &&
+            selectedVideo.current === bvid,
+          seek: (seconds) => {
+            player.currentTime = seconds;
+          },
+        },
+      );
+      if (
+        mounted.current &&
+        linkedGeneration.current === generation &&
+        activeRoute.current === key
+      )
+        setPlaybackError(undefined);
+    } catch {
+      if (
+        mounted.current &&
+        linkedGeneration.current === generation &&
+        playbackRequest.current === key &&
+        activeRoute.current === key
+      )
+        setPlaybackError(new Error(t`Could not start playback. Try again.`));
+    }
+  }, [bvid, detail, pageParam, play, playPart, player, summary, t, timeParam]);
+  useEffect(() => {
+    const key = `${bvid}:${pageParam ?? ''}:${timeParam ?? ''}`;
+    if (
+      playbackRequest.current === key ||
+      (current?.bvid === bvid && !pageParam && !timeParam)
+    )
+      return;
+    if (summary && detail?.bvid === bvid) {
+      void Promise.resolve().then(() => {
+        if (activeRoute.current === key && playbackRequest.current !== key)
+          return openLinkedVideo();
+      });
+    }
+  }, [
+    bvid,
+    current?.bvid,
+    detail?.bvid,
+    openLinkedVideo,
+    pageParam,
+    summary,
+    timeParam,
+  ]);
   const loadComments = useCallback(async () => {
     const cursor = nextCursor ?? initialComments.data?.next;
     if (!detail || commentLoading || !cursor) return;
@@ -118,6 +209,29 @@ export default function VideoScreen() {
           ) : null}
           <ThemedText type="smallBold">{detail.uploader}</ThemedText>
         </View>
+        {playbackError ? (
+          <ScreenState
+            error={playbackError}
+            onRetry={() => void openLinkedVideo()}
+          />
+        ) : null}
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => {
+            void Share.share({
+              message: canonicalVideoUrl(detail.bvid),
+              title: detail.title,
+            }).catch(() => {
+              Alert.alert(t`Could not share video`, t`Please try again.`);
+            });
+          }}
+          style={[
+            styles.action,
+            { backgroundColor: theme.backgroundElement, marginHorizontal: 16 },
+          ]}
+        >
+          <ThemedText>{t`Share video`}</ThemedText>
+        </Pressable>
         <View style={styles.actions}>
           <Pressable
             onPress={() => setChoosingPlaylist((value) => !value)}
@@ -175,7 +289,14 @@ export default function VideoScreen() {
               {detail.parts.map((part: VideoPart) => (
                 <Pressable
                   key={part.cid}
-                  onPress={() => void playPart(summary, part)}
+                  onPress={() => {
+                    linkedGeneration.current += 1;
+                    void playPart(summary, part).catch(() =>
+                      setPlaybackError(
+                        new Error(t`Could not start playback. Try again.`),
+                      ),
+                    );
+                  }}
                   style={[
                     styles.part,
                     { backgroundColor: theme.backgroundElement },

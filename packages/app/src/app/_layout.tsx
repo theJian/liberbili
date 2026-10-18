@@ -33,6 +33,10 @@ export default function RootLayout() {
                   name="video/[bvid]"
                   options={{ headerShown: false }}
                 />
+                <Stack.Screen
+                  name="open-video"
+                  options={{ presentation: 'modal' }}
+                />
                 <Stack.Screen name="playlist/[id]" options={{ title: '' }} />
               </Stack>
             </ThemeProvider>

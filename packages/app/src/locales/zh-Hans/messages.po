@@ -12,162 +12,201 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 
 #. placeholder {0}: comment.replyCount
-#: src/components/comment-card.tsx:15
+#: src/components/comment-card.tsx:43
 msgid "{0, plural, one {# reply} other {# replies}}"
 msgstr "{0, plural, other {# 条回复}}"
 
 #. placeholder {0}: item.items.length
-#: src/app/(tabs)/playlists.tsx:23
+#: src/app/(tabs)/playlists.tsx:41
 msgid "{0, plural, one {# video} other {# videos}}"
 msgstr "{0, plural, other {# 个视频}}"
 
-#: src/app/video/[bvid].tsx:46
+#: src/app/video/[bvid].tsx:243
 msgid "Add to playlist"
 msgstr "添加到播放列表"
 
-#: src/app/video/[bvid].tsx:49
+#: src/app/video/[bvid].tsx:328
 msgid "All comments"
 msgstr "全部评论"
 
-#: src/components/screen-state.tsx:15
+#: src/components/screen-state.tsx:30
 msgid "Bilibili blocked this request. Please retry."
 msgstr "请求被哔哩哔哩拦截，请重试。"
 
-#: src/components/screen-state.tsx:15
+#: src/components/screen-state.tsx:38
 msgid "Bilibili returned an unexpected response."
 msgstr "哔哩哔哩返回了异常数据。"
 
-#: src/app/video/[bvid].tsx:46
+#: src/app/video/[bvid].tsx:201
 msgid "Comments"
 msgstr "评论"
 
-#: src/app/video/[bvid].tsx:47
+#: src/app/open-video.tsx:108
+msgid "Could not open this link. Use a regular Bilibili video link or BV/av ID, check your connection, and try again."
+msgstr "无法打开此链接。请使用普通哔哩哔哩视频链接或 BV/av 号，检查网络后重试。"
+
+#: src/app/video/[bvid].tsx:225
+msgid "Could not share video"
+msgstr "无法分享视频"
+
+#: src/app/video/[bvid].tsx:134
+#: src/app/video/[bvid].tsx:296
+msgid "Could not start playback. Try again."
+msgstr "无法开始播放，请重试。"
+
+#: src/app/video/[bvid].tsx:274
 msgid "Create a playlist first."
 msgstr "请先创建播放列表。"
 
-#: src/app/playlist/[id].tsx:27
+#: src/app/playlist/[id].tsx:58
 msgid "Delete"
 msgstr "删除"
 
-#: src/app/video/[bvid].tsx:49
+#: src/app/video/[bvid].tsx:319
 msgid "Description"
 msgstr "简介"
 
-#: src/app/video/[bvid].tsx:46
+#: src/app/video/[bvid].tsx:250
 msgid "Download"
 msgstr "下载"
 
-#: src/app/(tabs)/downloads.tsx:22
+#: src/app/(tabs)/downloads.tsx:47
 msgid "Downloaded"
 msgstr "已下载"
 
-#: src/app/(tabs)/downloads.tsx:22
+#: src/app/(tabs)/downloads.tsx:49
 msgid "Downloading"
 msgstr "下载中"
 
-#: src/app/(tabs)/_layout.tsx:19
-#: src/app/(tabs)/downloads.tsx:27
+#: src/app/(tabs)/downloads.tsx:92
+#: src/app/(tabs)/library.tsx:15
 msgid "Downloads"
 msgstr "下载"
 
-#: src/app/(tabs)/downloads.tsx:22
+#: src/app/(tabs)/downloads.tsx:54
 msgid "Failed"
 msgstr "失败"
 
-#: src/app/(tabs)/_layout.tsx:11
-msgid "Home"
-msgstr "首页"
-
-msgid "Language"
-msgstr "语言"
-
-msgid "Library"
-msgstr "资料库"
-
-msgid "Settings"
-msgstr "设置"
-
-#: src/app/(tabs)/downloads.tsx:22
+#: src/app/(tabs)/downloads.tsx:53
 msgid "Interrupted"
 msgstr "已中断"
 
-#: src/app/video/[bvid].tsx:46
+#: src/app/(tabs)/settings.tsx:28
+msgid "Language"
+msgstr "语言"
+
+#: src/app/(tabs)/library.tsx:23
+msgid "Library"
+msgstr "资料库"
+
+#: src/app/video/[bvid].tsx:200
 msgid "likes"
 msgstr "点赞"
 
-#: src/components/mini-player.tsx:22
+#: src/components/mini-player.tsx:57
 msgid "Next"
 msgstr "下一个"
 
-#: src/components/screen-state.tsx:16
+#: src/components/screen-state.tsx:44
 msgid "Nothing here yet"
 msgstr "这里还没有内容"
 
-#: src/app/video/[bvid].tsx:48
+#: src/app/open-video.tsx:102
+msgid "Open video"
+msgstr "打开视频"
+
+#: src/app/(tabs)/library.tsx:13
+#: src/app/open-video.tsx:56
+msgid "Open video link"
+msgstr "打开视频链接"
+
+#: src/app/video/[bvid].tsx:283
 msgid "Parts"
 msgstr "分P"
 
-#: src/components/mini-player.tsx:21
+#: src/app/open-video.tsx:57
+msgid "Paste a Bilibili video link, b23.tv short link, or BV/av ID."
+msgstr "粘贴哔哩哔哩视频链接、b23.tv 短链接或 BV/av 号。"
+
+#: src/components/mini-player.tsx:50
 msgid "Pause"
 msgstr "暂停"
 
-#: src/app/(tabs)/downloads.tsx:22
+#: src/app/(tabs)/downloads.tsx:51
 msgid "Paused"
 msgstr "已暂停"
 
-#: src/app/playlist/[id].tsx:27
-#: src/components/mini-player.tsx:21
+#: src/app/playlist/[id].tsx:50
+#: src/components/mini-player.tsx:50
 msgid "Play"
 msgstr "播放"
 
-#: src/app/(tabs)/playlists.tsx:29
+#: src/app/(tabs)/playlists.tsx:62
 msgid "Playlist name"
 msgstr "播放列表名称"
 
-#: src/app/(tabs)/_layout.tsx:15
-#: src/app/(tabs)/playlists.tsx:28
+#: src/app/(tabs)/library.tsx:14
+#: src/app/(tabs)/playlists.tsx:54
 msgid "Playlists"
 msgstr "播放列表"
 
-#: src/app/(tabs)/index.tsx:26
+#: src/app/video/[bvid].tsx:225
+msgid "Please try again."
+msgstr "请重试。"
+
+#: src/app/(tabs)/index.tsx:41
 msgid "Recommended"
 msgstr "推荐视频"
 
-#: src/app/playlist/[id].tsx:22
+#: src/app/playlist/[id].tsx:34
 msgid "Remove"
 msgstr "移除"
 
-#: src/app/(tabs)/index.tsx:27
-#: src/app/search.tsx:35
+#: src/app/(tabs)/index.tsx:49
+#: src/app/search.tsx:58
 msgid "Search"
 msgstr "搜索"
 
-#: src/app/search.tsx:37
+#: src/app/search.tsx:66
 msgid "Search Bilibili videos"
 msgstr "搜索哔哩哔哩视频"
 
-#: src/components/screen-state.tsx:15
+#: src/app/(tabs)/settings.tsx:23
+msgid "Settings"
+msgstr "设置"
+
+#: src/app/video/[bvid].tsx:233
+msgid "Share video"
+msgstr "分享视频"
+
+#: src/components/screen-state.tsx:36
 msgid "This content requires a Bilibili account."
 msgstr "该内容需要登录哔哩哔哩账号。"
 
-#: src/components/screen-state.tsx:15
+#: src/components/screen-state.tsx:34
 msgid "This video is not available in your region."
 msgstr "该视频在当前地区不可用。"
 
-#: src/components/screen-state.tsx:15
+#: src/components/screen-state.tsx:32
 msgid "This video is unavailable."
 msgstr "该视频不可用。"
 
-#: src/components/screen-state.tsx:17
+#: src/app/open-video.tsx:102
+#: src/components/screen-state.tsx:51
 msgid "Try again"
 msgstr "重试"
 
-#: src/components/screen-state.tsx:15
-#: src/components/screen-state.tsx:15
+#: src/components/screen-state.tsx:39
+#: src/components/screen-state.tsx:40
 msgid "Unable to reach Bilibili."
 msgstr "无法连接哔哩哔哩。"
 
-#: src/app/video/[bvid].tsx:46
-#: src/components/video-card.tsx:25
+#: src/app/open-video.tsx:59
+#: src/app/open-video.tsx:60
+msgid "Video link or ID"
+msgstr "视频链接或编号"
+
+#: src/app/video/[bvid].tsx:199
+#: src/components/video-card.tsx:54
 msgid "views"
 msgstr "播放"
