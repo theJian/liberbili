@@ -1,3 +1,9 @@
+/**
+ * Expo Router's root layout supplies app-wide state, localization, theme, and
+ * navigation. Route files render inside this provider tree and stack, with the
+ * splash overlay covering startup. HistoryProvider encloses PlayerProvider
+ * because playback reads saved positions and records progress through useHistory.
+ */
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import { I18nProvider } from '@lingui/react';
 import * as SplashScreen from 'expo-splash-screen';

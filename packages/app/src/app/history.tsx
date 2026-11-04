@@ -1,3 +1,10 @@
+/**
+ * Watch-history route for resuming a saved part and managing on-device records.
+ * Expo Router mounts this screen under HistoryProvider and PlayerProvider in the
+ * root layout. Opening an entry loads that exact part before navigating to its
+ * video route; failures stay on this screen. Pausing recording still allows
+ * removal and clearing of existing records.
+ */
 import { useLingui } from '@lingui/react/macro';
 import { Stack, router } from 'expo-router';
 import { useState } from 'react';

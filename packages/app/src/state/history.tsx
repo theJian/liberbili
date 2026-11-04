@@ -1,3 +1,10 @@
+/**
+ * Provides on-device watch history to the app. Wrap the consuming subtree in
+ * HistoryProvider, then call useHistory() within it. The provider normalizes
+ * stored data on startup and persists changes to entries and the pause setting.
+ * Consumers render reactive entries; asynchronous playback calls getEntries()
+ * after awaits to read the latest records instead of a captured render's entries.
+ */
 import {
   createContext,
   useCallback,
@@ -26,6 +33,7 @@ type Value = HistoryState & {
 };
 const Context = createContext<Value | null>(null);
 
+/** Loads persisted history and shares its state and actions with descendants. */
 export function HistoryProvider({ children }: PropsWithChildren) {
   const [state, setState] = useState(() =>
     normalizeHistory(storage.getString(KEY)),
@@ -69,6 +77,12 @@ export function HistoryProvider({ children }: PropsWithChildren) {
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }
 
+/**
+ * Returns reactive history state and actions from a parent HistoryProvider.
+ * Pass historyKey(entry) to remove(key). Pausing suppresses record(entry), but
+ * remove and clear still work; actions persist any resulting state changes.
+ * Calling this hook outside the provider throws.
+ */
 export function useHistory(): Value {
   const value = useContext(Context);
   if (!value) throw new Error('useHistory must be inside HistoryProvider');

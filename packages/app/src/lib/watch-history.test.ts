@@ -1,3 +1,10 @@
+/**
+ * Offline regression tests for the pure watch-history helpers: stored-record
+ * validation, bounded per-part updates, pause behavior, and resume selection.
+ * Run `bun test packages/app/src/lib/watch-history.test.ts` from the repository
+ * root. These fixtures need no account or network and do not exercise storage,
+ * React providers, or the native player.
+ */
 import { describe, expect, test } from 'bun:test';
 import {
   HISTORY_LIMIT,

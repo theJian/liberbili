@@ -1,3 +1,13 @@
+/**
+ * Shares an Expo Video player and queue for streamed videos and local downloads.
+ * Mount PlayerProvider beneath HistoryProvider, then call usePlayer() for state
+ * and controls; render the re-exported VideoView with the returned player.
+ * Streamed playback fetches video parts and progressive MP4 URLs from bilibiliApi
+ * and uses watch history to select a part and resume position. Once playback
+ * starts, it records progress periodically, on pause/background, on completion,
+ * and before replacing the source. Local downloads neither resume nor record
+ * their progress because they lack a saved part identity.
+ */
 import { useVideoPlayer, VideoPlayer, VideoView } from 'expo-video';
 import {
   createContext,
@@ -22,21 +32,49 @@ import { useHistory } from '@/state/history';
 
 import { bilibiliApi } from '@/lib/bilibili';
 
+/**
+ * Shared playback state and controls. current and index describe the selected
+ * queue item, which can differ from the loaded source while loading or after an
+ * error. The play methods update the queue before loading and reject on API or
+ * source-replacement failure without restoring the previous queue. A newer play
+ * request can supersede an older one without rejecting its promise.
+ */
 type Value = {
   player: VideoPlayer;
   current?: VideoSummary;
   queue: VideoSummary[];
   index: number;
   isPlaying: boolean;
+  /**
+   * Starts the video's most recently saved part if still available, otherwise
+   * its first part, resuming eligible progress. Defaults to a one-video queue;
+   * a supplied queue should contain video (the first matching bvid is selected,
+   * or index 0 if absent). Rejects if no part or compatible MP4 stream exists.
+   */
   play(video: VideoSummary, queue?: VideoSummary[]): Promise<void>;
+  /**
+   * Replaces the queue with video and resumes the requested part's eligible
+   * progress. Rejects if its cid is unavailable rather than choosing another part,
+   * or if no compatible MP4 stream exists.
+   */
   playPart(video: VideoSummary, part: VideoPart): Promise<void>;
+  /** Replaces the queue with video and plays uri without resuming or recording it. */
   playLocal(video: VideoSummary, uri: string): Promise<void>;
+  /** Pauses or plays the currently loaded source. */
   toggle(): void;
+  /** Selects the next queue item, if any; its asynchronous load is not awaited. */
   next(): void;
+  /** Selects the previous queue item, if any; its asynchronous load is not awaited. */
   previous(): void;
 };
 const Context = createContext<Value | null>(null);
 
+/**
+ * Owns the shared player and its playback/background listeners for descendants.
+ * Requires a parent HistoryProvider; usePlayer consumers must be inside this
+ * provider. Listeners are removed on unmount; progress is not explicitly saved
+ * on unmount, so persistence relies on the playback events described above.
+ */
 export function PlayerProvider({ children }: PropsWithChildren) {
   const { getEntries, record } = useHistory();
   const active = useRef<
@@ -239,6 +277,11 @@ export function PlayerProvider({ children }: PropsWithChildren) {
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }
 
+/**
+ * Returns the parent PlayerProvider's reactive state, native player, and controls.
+ * Await play, playPart, or playLocal to handle load failures. Queue selection may
+ * already have changed when they reject. Throws outside PlayerProvider.
+ */
 export function usePlayer() {
   const value = useContext(Context);
   if (!value) throw new Error('usePlayer must be inside PlayerProvider');

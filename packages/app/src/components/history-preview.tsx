@@ -1,3 +1,9 @@
+/**
+ * HistoryPreview shows the most recent entry with resumable progress, or nothing
+ * when none qualifies. Render it beneath HistoryProvider, as the Library tab
+ * does. Pressing the preview opens the history route to choose and resume a part;
+ * the preview itself does not start playback.
+ */
 import { useLingui } from '@lingui/react/macro';
 import { router } from 'expo-router';
 import { Pressable, View } from 'react-native';

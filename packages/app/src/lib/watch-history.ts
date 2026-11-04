@@ -1,6 +1,14 @@
+/**
+ * Models local watch history by video part and keeps persisted records safe to use.
+ * The history provider calls normalizeHistory on stored JSON at startup and
+ * recordHistory to update the bounded list. Playback uses selectHistoryPart to choose
+ * a part and resumePosition to decide whether its saved progress is worth seeking.
+ * Progress and durations are in seconds; watchedAt is a Unix timestamp in milliseconds.
+ */
 import type { VideoPart, VideoSummary } from '@liberbili/api/types';
 
 export const HISTORY_LIMIT = 200;
+/** One saved playback position for a video part, identified by bvid and cid. */
 export type HistoryEntry = {
   video: VideoSummary;
   part: VideoPart;
@@ -10,11 +18,17 @@ export type HistoryEntry = {
   completed: boolean;
 };
 export type HistoryState = { paused: boolean; entries: HistoryEntry[] };
+/** Returns the stable video-part identity used for replacement and removal. */
 export const historyKey = (entry: HistoryEntry): string =>
   `${entry.video.bvid}:${entry.part.cid}`;
 const finite = (value: unknown): value is number =>
   typeof value === 'number' && Number.isFinite(value) && value >= 0;
 
+/**
+ * Reads stored JSON, discarding invalid records and retaining the latest record
+ * per part, up to HISTORY_LIMIT. Invalid storage yields an unpaused empty history.
+ * Positions beyond a known positive duration are clamped to that duration.
+ */
 export function normalizeHistory(raw?: string): HistoryState {
   const empty = { paused: false, entries: [] };
   try {
@@ -70,6 +84,12 @@ export function normalizeHistory(raw?: string): HistoryState {
   }
 }
 
+/**
+ * Returns the saved position in seconds, or 0 to start over. Completed entries,
+ * progress before 5 seconds, and progress at or beyond the start of the final
+ * min(10 seconds, 5% of duration) do not resume. A nonpositive or nonfinite
+ * supplied duration also returns 0.
+ */
 export function resumePosition(
   entry: HistoryEntry | undefined,
   duration: number,
@@ -86,6 +106,11 @@ export function resumePosition(
   return entry.position;
 }
 
+/**
+ * Selects an explicitly requested part if it still exists. Otherwise uses the
+ * first history entry for the video, falling back to the first available part.
+ * An unavailable explicit request or an empty parts list returns undefined.
+ */
 export function selectHistoryPart(
   parts: VideoPart[],
   entries: HistoryEntry[],
@@ -97,6 +122,10 @@ export function selectHistoryPart(
   return parts.find((part) => part.cid === latest?.part.cid) ?? parts[0];
 }
 
+/**
+ * Replaces a part's record at the front of the bounded list. When history is
+ * paused, returns the original state without recording the entry.
+ */
 export function recordHistory(
   state: HistoryState,
   entry: HistoryEntry,
