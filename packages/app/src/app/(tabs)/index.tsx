@@ -1,5 +1,5 @@
-import { AppIcon } from '@/components/app-icon';
 import { FlashList } from '@shopify/flash-list';
+import { Search } from '@doodle-icons/react-native';
 import { useLingui } from '@lingui/react/macro';
 import { router } from 'expo-router';
 import { useCallback } from 'react';
@@ -50,7 +50,7 @@ export default function HomeScreen() {
           accessibilityRole="button"
           accessibilityLabel={t`Search`}
         >
-          <AppIcon name="search" />
+          <Search />
         </Pressable>
       </View>
       <FlashList

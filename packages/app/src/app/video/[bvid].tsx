@@ -1,5 +1,5 @@
-import { AppIcon } from '@/components/app-icon';
 import { FlashList } from '@shopify/flash-list';
+import { Download, FolderAdd } from '@doodle-icons/react-native';
 import { useLingui } from '@lingui/react/macro';
 import { Image } from 'expo-image';
 import { useLocalSearchParams } from 'expo-router';
@@ -127,14 +127,14 @@ export default function VideoScreen() {
               { backgroundColor: theme.backgroundElement },
             ]}
           >
-            <AppIcon name="addPlaylist" size={20} />
+            <FolderAdd size={20} />
             <ThemedText>{t`Add to playlist`}</ThemedText>
           </Pressable>
           <Pressable
             onPress={() => void start(summary)}
             style={[styles.action, { backgroundColor: theme.accent }]}
           >
-            <AppIcon name="download" size={20} color="#fff" />
+            <Download size={20} color="#fff" />
             <ThemedText style={styles.actionPrimary}>{t`Download`}</ThemedText>
           </Pressable>
         </View>

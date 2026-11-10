@@ -1,5 +1,5 @@
-import { AppIcon } from '@/components/app-icon';
 import { Image } from 'expo-image';
+import { Forward, Pause, Play } from '@doodle-icons/react-native';
 import { useLingui } from '@lingui/react/macro';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -52,7 +52,7 @@ export function MiniPlayer() {
         accessibilityLabel={isPlaying ? t`Pause` : t`Play`}
         style={styles.control}
       >
-        <AppIcon name={isPlaying ? 'pause' : 'play'} />
+        {isPlaying ? <Pause /> : <Play />}
       </Pressable>
       <Pressable
         onPress={next}
@@ -60,7 +60,7 @@ export function MiniPlayer() {
         accessibilityLabel={t`Next`}
         style={styles.control}
       >
-        <AppIcon name="next" />
+        <Forward />
       </Pressable>
     </View>
   );

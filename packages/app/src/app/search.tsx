@@ -1,5 +1,5 @@
-import { AppIcon } from '@/components/app-icon';
 import { FlashList } from '@shopify/flash-list';
+import { Search } from '@doodle-icons/react-native';
 import { useLingui } from '@lingui/react/macro';
 import { Stack } from 'expo-router';
 import { useCallback, useState } from 'react';
@@ -75,7 +75,7 @@ export default function SearchScreen() {
           accessibilityLabel={t`Search`}
           style={[styles.submit, { backgroundColor: theme.accent }]}
         >
-          <AppIcon name="search" color="#fff" />
+          <Search color="#fff" />
         </Pressable>
       </View>
       <FlashList

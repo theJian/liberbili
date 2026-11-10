@@ -1,5 +1,5 @@
-import { AppIcon } from '@/components/app-icon';
 import { Image } from 'expo-image';
+import { Heart } from '@doodle-icons/react-native';
 import { plural } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react/macro';
 import { memo } from 'react';
@@ -39,7 +39,7 @@ export const CommentCard = memo(function CommentCard({
           />
         ) : null}
         <View style={styles.meta}>
-          <AppIcon name="heart" size={16} themeColor="textSecondary" />
+          <Heart size={16} color={theme.textSecondary} />
           <ThemedText type="small" themeColor="textSecondary">
             {formatCount(comment.likes, i18n.locale)}
             {comment.replyCount

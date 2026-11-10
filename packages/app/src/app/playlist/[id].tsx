@@ -1,5 +1,5 @@
-import { AppIcon } from '@/components/app-icon';
 import { FlashList } from '@shopify/flash-list';
+import { Play } from '@doodle-icons/react-native';
 import { useLingui } from '@lingui/react/macro';
 import { Stack, useLocalSearchParams, router } from 'expo-router';
 import { useCallback } from 'react';
@@ -48,7 +48,7 @@ export default function PlaylistScreen() {
           onPress={() => void play(playlist.items[0], playlist.items)}
           style={[styles.play, { backgroundColor: theme.accent }]}
         >
-          <AppIcon name="play" size={20} color="#fff" />
+          <Play size={20} color="#fff" />
           <ThemedText style={styles.playText}>{t`Play`}</ThemedText>
         </Pressable>
         <Pressable

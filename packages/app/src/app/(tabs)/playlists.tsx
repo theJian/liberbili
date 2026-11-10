@@ -1,5 +1,5 @@
-import { AppIcon } from '@/components/app-icon';
 import { FlashList } from '@shopify/flash-list';
+import { ChevronsRight, FolderAdd, List } from '@doodle-icons/react-native';
 import { plural } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react/macro';
 import { router } from 'expo-router';
@@ -34,7 +34,7 @@ export default function PlaylistsScreen() {
         <View
           style={[styles.art, { backgroundColor: theme.backgroundElement }]}
         >
-          <AppIcon name="playlist" />
+          <List />
         </View>
         <View style={styles.rowText}>
           <ThemedText style={styles.name}>{item.name}</ThemedText>
@@ -42,7 +42,7 @@ export default function PlaylistsScreen() {
             {plural(item.items.length, { one: '# video', other: '# videos' })}
           </ThemedText>
         </View>
-        <AppIcon name="chevronRight" size={18} />
+        <ChevronsRight size={18} />
       </Pressable>
     ),
     [theme],
@@ -70,7 +70,7 @@ export default function PlaylistsScreen() {
           accessibilityLabel={t`Create playlist`}
           style={[styles.button, { backgroundColor: theme.accent }]}
         >
-          <AppIcon name="addPlaylist" color="#fff" />
+          <FolderAdd color="#fff" />
         </Pressable>
       </View>
       <FlashList

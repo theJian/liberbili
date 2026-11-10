@@ -1,5 +1,5 @@
-import { AppIcon } from '@/components/app-icon';
 import { FlashList } from '@shopify/flash-list';
+import { Cross, Pause, Play } from '@doodle-icons/react-native';
 import { useLingui } from '@lingui/react/macro';
 import { Image } from 'expo-image';
 import { useCallback } from 'react';
@@ -76,7 +76,7 @@ export default function DownloadsScreen() {
             style={styles.control}
             onPress={() => void pause(item.id)}
           >
-            <AppIcon name="pause" size={20} />
+            <Pause size={20} />
           </Pressable>
         ) : item.status !== 'completed' ? (
           <Pressable
@@ -85,7 +85,7 @@ export default function DownloadsScreen() {
             style={styles.control}
             onPress={() => void resume(item.id)}
           >
-            <AppIcon name="play" size={20} />
+            <Play size={20} />
           </Pressable>
         ) : null}
         <Pressable
@@ -94,7 +94,7 @@ export default function DownloadsScreen() {
           style={styles.control}
           onPress={() => remove(item.id)}
         >
-          <AppIcon name="close" size={20} themeColor="textSecondary" />
+          <Cross size={20} color={theme.textSecondary} />
         </Pressable>
       </View>
     ),

@@ -25,7 +25,7 @@
       "name": "@liberbili/app",
       "version": "1.0.0",
       "dependencies": {
-        "@doodle-icons/react-native": "^0.2.0",
+        "@doodle-icons/react-native": "0.2.0",
         "@expo/ui": "~57.0.14",
         "@formatjs/intl-locale": "^5.3.10",
         "@formatjs/intl-pluralrules": "^6.3.13",
