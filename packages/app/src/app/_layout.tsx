@@ -1,3 +1,9 @@
+/**
+ * Expo Router's root layout supplies app-wide state, localization, theme, and
+ * navigation. Route files render inside this provider tree and stack, with the
+ * splash overlay covering startup. HistoryProvider encloses PlayerProvider
+ * because playback reads saved positions and records progress through useHistory.
+ */
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import { I18nProvider } from '@lingui/react';
 import * as SplashScreen from 'expo-splash-screen';
@@ -6,6 +12,7 @@ import { useColorScheme } from 'react-native';
 import { AnimatedSplashOverlay } from '@/components/animated-splash-overlay';
 import { i18n } from '@lingui/core';
 import { DownloadProvider } from '@/state/downloads';
+import { HistoryProvider } from '@/state/history';
 import { PlayerProvider } from '@/state/player';
 import { PlaylistProvider } from '@/state/playlists';
 
@@ -18,25 +25,32 @@ export default function RootLayout() {
     <I18nProvider i18n={i18n}>
       <PlaylistProvider>
         <DownloadProvider>
-          <PlayerProvider>
-            <ThemeProvider
-              value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
-            >
-              <AnimatedSplashOverlay />
-              <Stack screenOptions={{ headerBackButtonDisplayMode: 'minimal' }}>
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen
-                  name="search"
-                  options={{ presentation: 'modal' }}
-                />
-                <Stack.Screen
-                  name="video/[bvid]"
-                  options={{ headerShown: false }}
-                />
-                <Stack.Screen name="playlist/[id]" options={{ title: '' }} />
-              </Stack>
-            </ThemeProvider>
-          </PlayerProvider>
+          <HistoryProvider>
+            <PlayerProvider>
+              <ThemeProvider
+                value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+              >
+                <AnimatedSplashOverlay />
+                <Stack
+                  screenOptions={{ headerBackButtonDisplayMode: 'minimal' }}
+                >
+                  <Stack.Screen
+                    name="(tabs)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="search"
+                    options={{ presentation: 'modal' }}
+                  />
+                  <Stack.Screen
+                    name="video/[bvid]"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen name="playlist/[id]" options={{ title: '' }} />
+                </Stack>
+              </ThemeProvider>
+            </PlayerProvider>
+          </HistoryProvider>
         </DownloadProvider>
       </PlaylistProvider>
     </I18nProvider>

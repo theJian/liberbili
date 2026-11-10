@@ -1,15 +1,22 @@
+/**
+ * Library tab route: opens watch history, playlists, and downloads through Expo
+ * Router. Its HistoryPreview links unfinished playback to the history screen;
+ * the root layout supplies the HistoryProvider required by that preview.
+ */
 import { useLingui } from '@lingui/react/macro';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
+import { HistoryPreview } from '@/components/history-preview';
 import { useTheme } from '@/hooks/use-theme';
 
 export default function LibraryScreen() {
   const { t } = useLingui();
   const theme = useTheme();
   const items = [
+    { title: t`Watch history`, icon: '◷', route: '/history' as const },
     { title: t`Playlists`, icon: '♫', route: '/(tabs)/playlists' as const },
     { title: t`Downloads`, icon: '↓', route: '/(tabs)/downloads' as const },
   ];
@@ -36,6 +43,7 @@ export default function LibraryScreen() {
           </Pressable>
         ))}
       </View>
+      <HistoryPreview />
     </SafeAreaView>
   );
 }
