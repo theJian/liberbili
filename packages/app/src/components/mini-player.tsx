@@ -1,4 +1,5 @@
 import { Image } from 'expo-image';
+import { Forward, Pause, Play } from '@doodle-icons/react-native';
 import { useLingui } from '@lingui/react/macro';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -47,17 +48,19 @@ export function MiniPlayer() {
       </Pressable>
       <Pressable
         onPress={toggle}
+        accessibilityRole="button"
         accessibilityLabel={isPlaying ? t`Pause` : t`Play`}
         style={styles.control}
       >
-        <ThemedText style={styles.icon}>{isPlaying ? 'Ⅱ' : '▶'}</ThemedText>
+        {isPlaying ? <Pause /> : <Play />}
       </Pressable>
       <Pressable
         onPress={next}
+        accessibilityRole="button"
         accessibilityLabel={t`Next`}
         style={styles.control}
       >
-        <ThemedText style={styles.icon}>▶|</ThemedText>
+        <Forward />
       </Pressable>
     </View>
   );
@@ -80,5 +83,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     height: 56,
   },
-  icon: { fontWeight: '800' },
 });
