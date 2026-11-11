@@ -1,4 +1,5 @@
 import { FlashList } from '@shopify/flash-list';
+import { Search } from '@doodle-icons/react-native';
 import { useLingui } from '@lingui/react/macro';
 import { Stack } from 'expo-router';
 import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
@@ -118,7 +119,7 @@ export default function SearchScreen() {
           onPress={() => search()}
           style={[styles.submit, { backgroundColor: theme.accent }]}
         >
-          <ThemedText style={styles.submitText}>⌕</ThemedText>
+          <Search color="#fff" />
         </Pressable>
       </View>
       <View style={styles.filters}>
@@ -252,7 +253,6 @@ const styles = StyleSheet.create({
   },
   input: { flex: 1, height: 48, fontSize: 16 },
   submit: { width: 54, alignItems: 'center', justifyContent: 'center' },
-  submitText: { color: '#fff', fontSize: 24, textAlign: 'center' },
   footer: { padding: 20 },
   filters: { gap: 8, paddingHorizontal: 12 },
   chip: {

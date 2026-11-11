@@ -12,32 +12,32 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 
 #. placeholder {0}: comment.replyCount
-#: src/components/comment-card.tsx:43
+#: src/components/comment-card.tsx:46
 msgid "{0, plural, one {# reply} other {# replies}}"
 msgstr "{0, plural, other {# 条回复}}"
 
 #. placeholder {0}: item.items.length
-#: src/app/(tabs)/playlists.tsx:41
+#: src/app/(tabs)/playlists.tsx:42
 msgid "{0, plural, one {# video} other {# videos}}"
 msgstr "{0, plural, other {# 个视频}}"
 
-#: src/app/search.tsx:88
+#: src/app/search.tsx:89
 msgid "10–30 minutes"
 msgstr "10–30分钟"
 
-#: src/app/search.tsx:89
+#: src/app/search.tsx:90
 msgid "30–60 minutes"
 msgstr "30–60分钟"
 
-#: src/app/video/[bvid].tsx:129
+#: src/app/video/[bvid].tsx:131
 msgid "Add to playlist"
 msgstr "添加到播放列表"
 
-#: src/app/video/[bvid].tsx:207
+#: src/app/video/[bvid].tsx:208
 msgid "All comments"
 msgstr "全部评论"
 
-#: src/app/search.tsx:86
+#: src/app/search.tsx:87
 msgid "Any duration"
 msgstr "全部时长"
 
@@ -49,52 +49,81 @@ msgstr "请求被哔哩哔哩拦截，请重试。"
 msgid "Bilibili returned an unexpected response."
 msgstr "哔哩哔哩返回了异常数据。"
 
-#: src/app/search.tsx:182
+#: src/app/history.tsx:76
+msgid "Cancel"
+msgstr "取消"
+
+#: src/app/history.tsx:78
+#: src/app/history.tsx:87
+msgid "Clear history"
+msgstr "清空历史记录"
+
+#: src/app/search.tsx:183
 msgid "Clear searches"
 msgstr "清空搜索"
 
-#: src/app/video/[bvid].tsx:110
+#: src/app/history.tsx:73
+msgid "Clear watch history?"
+msgstr "清空观看历史？"
+
+#: src/app/video/[bvid].tsx:111
 msgid "Comments"
 msgstr "评论"
 
-#: src/app/video/[bvid].tsx:160
+#: src/app/history.tsx:118
+msgid "Completed"
+msgstr "已看完"
+
+#: src/components/history-preview.tsx:23
+msgid "Continue watching"
+msgstr "继续观看"
+
+#: src/app/video/[bvid].tsx:161
 msgid "Create a playlist first."
 msgstr "请先创建播放列表。"
 
-#: src/app/playlist/[id].tsx:58
+#: src/app/(tabs)/playlists.tsx:70
+msgid "Create playlist"
+msgstr "创建播放列表"
+
+#: src/app/playlist/[id].tsx:60
 msgid "Delete"
 msgstr "删除"
 
-#: src/app/video/[bvid].tsx:198
+#: src/app/video/[bvid].tsx:199
 msgid "Description"
 msgstr "简介"
 
-#: src/app/video/[bvid].tsx:136
+#: src/app/video/[bvid].tsx:138
 msgid "Download"
 msgstr "下载"
 
-#: src/app/(tabs)/downloads.tsx:47
+#: src/app/(tabs)/downloads.tsx:48
 msgid "Downloaded"
 msgstr "已下载"
 
-#: src/app/(tabs)/downloads.tsx:49
+#: src/app/(tabs)/downloads.tsx:50
 msgid "Downloading"
 msgstr "下载中"
 
-#: src/app/(tabs)/downloads.tsx:92
-#: src/app/(tabs)/library.tsx:14
+#: src/app/(tabs)/downloads.tsx:108
+#: src/app/(tabs)/library.tsx:44
 msgid "Downloads"
 msgstr "下载"
 
-#: src/app/(tabs)/downloads.tsx:54
+#: src/app/(tabs)/downloads.tsx:55
 msgid "Failed"
 msgstr "失败"
+
+#: src/app/history.tsx:67
+msgid "History is stored on this device. Downloaded videos do not update history."
+msgstr "历史记录保存在此设备上。下载的视频不会更新历史记录。"
 
 #: src/app/(tabs)/_layout.tsx:11
 #~ msgid "Home"
 #~ msgstr "首页"
 
-#: src/app/(tabs)/downloads.tsx:53
+#: src/app/(tabs)/downloads.tsx:54
 msgid "Interrupted"
 msgstr "已中断"
 
@@ -102,27 +131,27 @@ msgstr "已中断"
 msgid "Language"
 msgstr "语言"
 
-#: src/app/(tabs)/library.tsx:22
+#: src/app/(tabs)/library.tsx:55
 msgid "Library"
 msgstr "资料库"
 
-#: src/app/video/[bvid].tsx:109
+#: src/app/video/[bvid].tsx:110
 msgid "likes"
 msgstr "点赞"
 
-#: src/app/search.tsx:83
+#: src/app/search.tsx:84
 msgid "Most saved"
 msgstr "最多收藏"
 
-#: src/app/search.tsx:81
+#: src/app/search.tsx:82
 msgid "Most viewed"
 msgstr "最多播放"
 
-#: src/app/search.tsx:82
+#: src/app/search.tsx:83
 msgid "Newest"
 msgstr "最新发布"
 
-#: src/components/mini-player.tsx:57
+#: src/components/mini-player.tsx:60
 msgid "Next"
 msgstr "下一个"
 
@@ -130,63 +159,85 @@ msgstr "下一个"
 msgid "Nothing here yet"
 msgstr "这里还没有内容"
 
-#: src/app/search.tsx:90
+#: src/app/search.tsx:91
 msgid "Over 60 minutes"
 msgstr "60分钟以上"
 
-#: src/app/video/[bvid].tsx:169
+#: src/app/video/[bvid].tsx:170
 msgid "Parts"
 msgstr "分P"
 
-#: src/components/mini-player.tsx:50
+#: src/components/mini-player.tsx:52
 msgid "Pause"
 msgstr "暂停"
 
-#: src/app/(tabs)/downloads.tsx:51
+#: src/app/(tabs)/downloads.tsx:75
+msgid "Pause download"
+msgstr "暂停下载"
+
+#: src/app/history.tsx:57
+#: src/app/history.tsx:59
+msgid "Pause watch history"
+msgstr "暂停记录观看历史"
+
+#: src/app/(tabs)/downloads.tsx:52
 msgid "Paused"
 msgstr "已暂停"
 
-#: src/app/playlist/[id].tsx:50
-#: src/components/mini-player.tsx:50
+#: src/app/playlist/[id].tsx:52
+#: src/components/mini-player.tsx:52
 msgid "Play"
 msgstr "播放"
 
-#: src/app/(tabs)/playlists.tsx:62
+#: src/app/(tabs)/playlists.tsx:63
 msgid "Playlist name"
 msgstr "播放列表名称"
 
-#: src/app/(tabs)/library.tsx:13
-#: src/app/(tabs)/playlists.tsx:54
+#: src/app/(tabs)/library.tsx:39
+#: src/app/(tabs)/playlists.tsx:55
 msgid "Playlists"
 msgstr "播放列表"
 
-#: src/app/search.tsx:177
+#: src/app/search.tsx:178
 msgid "Recent searches"
 msgstr "最近搜索"
 
-#: src/app/(tabs)/index.tsx:41
+#: src/app/(tabs)/index.tsx:42
 msgid "Recommended"
 msgstr "推荐视频"
 
-#: src/app/search.tsx:80
+#: src/app/search.tsx:81
 msgid "Relevance"
 msgstr "综合排序"
 
-#: src/app/playlist/[id].tsx:34
+#: src/app/playlist/[id].tsx:35
 msgid "Remove"
 msgstr "移除"
 
-#: src/app/search.tsx:203
+#: src/app/(tabs)/downloads.tsx:93
+msgid "Remove download"
+msgstr "移除下载"
+
+#: src/app/history.tsx:124
+#: src/app/history.tsx:128
+msgid "Remove from watch history"
+msgstr "从观看历史中移除"
+
+#: src/app/search.tsx:204
 msgid "Remove search: {text}"
 msgstr "删除搜索：{text}"
 
-#: src/app/(tabs)/index.tsx:49
-#: src/app/search.tsx:101
-#: src/app/search.tsx:117
+#: src/app/(tabs)/downloads.tsx:84
+msgid "Resume download"
+msgstr "继续下载"
+
+#: src/app/(tabs)/index.tsx:51
+#: src/app/search.tsx:102
+#: src/app/search.tsx:118
 msgid "Search"
 msgstr "搜索"
 
-#: src/app/search.tsx:109
+#: src/app/search.tsx:110
 msgid "Search Bilibili videos"
 msgstr "搜索哔哩哔哩视频"
 
@@ -197,6 +248,10 @@ msgstr "设置"
 #: src/components/screen-state.tsx:36
 msgid "This content requires a Bilibili account."
 msgstr "该内容需要登录哔哩哔哩账号。"
+
+#: src/app/history.tsx:74
+msgid "This removes saved playback positions on this device."
+msgstr "这将移除此设备上保存的播放进度。"
 
 #: src/components/screen-state.tsx:34
 msgid "This video is not available in your region."
@@ -215,11 +270,24 @@ msgstr "重试"
 msgid "Unable to reach Bilibili."
 msgstr "无法连接哔哩哔哩。"
 
-#: src/app/search.tsx:87
+#: src/app/history.tsx:37
+msgid "Unable to resume this video. Try again."
+msgstr "无法继续播放此视频，请重试。"
+
+#: src/app/search.tsx:88
 msgid "Under 10 minutes"
 msgstr "10分钟以内"
 
-#: src/app/video/[bvid].tsx:108
+#: src/app/history.tsx:95
+msgid "Videos you watch will appear here."
+msgstr "观看过的视频会显示在这里。"
+
+#: src/app/video/[bvid].tsx:109
 #: src/components/video-card.tsx:54
 msgid "views"
 msgstr "播放"
+
+#: src/app/(tabs)/library.tsx:34
+#: src/app/history.tsx:44
+msgid "Watch history"
+msgstr "观看历史"
