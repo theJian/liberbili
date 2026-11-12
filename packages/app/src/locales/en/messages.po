@@ -41,13 +41,17 @@ msgstr "Bilibili returned an unexpected response."
 msgid "Comments"
 msgstr "Comments"
 
-#: src/app/(tabs)/downloads.tsx:71
+#: src/app/(tabs)/downloads.tsx:73
 msgid "Could not pause the download. Try again."
 msgstr "Could not pause the download. Try again."
 
 #: src/app/(tabs)/downloads.tsx:36
 msgid "Could not play download"
 msgstr "Could not play download"
+
+#: src/app/(tabs)/downloads.tsx:71
+msgid "Could not remove download. Try again."
+msgstr "Could not remove download. Try again."
 
 #: src/app/video/[bvid].tsx:160
 msgid "Create a playlist first."
@@ -77,7 +81,7 @@ msgstr "Downloaded file is missing. Download it again."
 msgid "Downloading"
 msgstr "Downloading"
 
-#: src/app/(tabs)/downloads.tsx:125
+#: src/app/(tabs)/downloads.tsx:129
 #: src/app/(tabs)/library.tsx:14
 msgid "Downloads"
 msgstr "Downloads"
@@ -122,7 +126,7 @@ msgstr "Parts"
 msgid "Pause"
 msgstr "Pause"
 
-#: src/app/(tabs)/downloads.tsx:92
+#: src/app/(tabs)/downloads.tsx:94
 msgid "Pause download"
 msgstr "Pause download"
 
@@ -160,11 +164,11 @@ msgstr "Recommended"
 msgid "Remove"
 msgstr "Remove"
 
-#: src/app/(tabs)/downloads.tsx:110
+#: src/app/(tabs)/downloads.tsx:114
 msgid "Remove download"
 msgstr "Remove download"
 
-#: src/app/(tabs)/downloads.tsx:101
+#: src/app/(tabs)/downloads.tsx:105
 msgid "Retry download"
 msgstr "Retry download"
 
@@ -181,7 +185,7 @@ msgstr "Search Bilibili videos"
 msgid "Settings"
 msgstr "Settings"
 
-#: src/app/(tabs)/downloads.tsx:72
+#: src/app/(tabs)/downloads.tsx:74
 msgid "The download could not finish. Try again."
 msgstr "The download could not finish. Try again."
 

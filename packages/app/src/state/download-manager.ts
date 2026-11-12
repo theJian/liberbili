@@ -18,6 +18,7 @@ export type DownloadItem = {
   fileUri?: string;
   destinationUri?: string;
   thumbnailUri?: string;
+  cleanupUris?: string[];
   error?: string;
   pauseState?: DownloadPauseState;
 };
@@ -113,6 +114,11 @@ export function parseDownloads(raw: string | undefined): DownloadItem[] {
           fileUri: string(item.fileUri),
           destinationUri: string(item.destinationUri),
           thumbnailUri: string(item.thumbnailUri),
+          cleanupUris: Array.isArray(item.cleanupUris)
+            ? item.cleanupUris.filter(
+                (uri): uri is string => typeof uri === 'string',
+              )
+            : undefined,
           error: string(item.error),
           pauseState:
             item.pauseState &&
@@ -143,6 +149,7 @@ export class DownloadManager {
   constructor(private readonly deps: DownloadDependencies) {
     this.items = parseDownloads(deps.load()).map((item) =>
       item.status === 'completed' &&
+      item.error !== 'removeFailed' &&
       (!item.fileUri || !this.exists(item.fileUri))
         ? {
             ...item,
@@ -200,15 +207,17 @@ export class DownloadManager {
   private owns(op: Operation): boolean {
     return this.operations.get(op.id) === op;
   }
-  private clean(...uris: (string | undefined)[]): void {
+  private clean(...uris: (string | undefined)[]): string[] {
+    const failed: string[] = [];
     for (const uri of new Set(uris)) {
       if (!uri) continue;
       try {
         this.deps.remove(uri);
       } catch {
-        /* Retry owned-path cleanup when pending work settles. */
+        failed.push(uri);
       }
     }
+    return failed;
   }
   private release(task?: ManagedDownloadTask): void {
     try {
@@ -288,6 +297,7 @@ export class DownloadManager {
     }
     const item = this.items.find((candidate) => candidate.id === id);
     if (!item) return;
+    if (item.error === 'removeFailed') return;
     if (
       item.status === 'completed' &&
       item.fileUri &&
@@ -436,16 +446,21 @@ export class DownloadManager {
     this.cancel(op?.task);
     if (!op?.pending) this.release(op?.task);
     const legacy = validId(id) ? this.deps.paths(id) : undefined;
-    this.clean(
+    const failed = this.clean(
       op?.paths.video,
       op?.paths.thumbnail,
       item?.fileUri,
       item?.destinationUri,
       item?.thumbnailUri,
       item?.pauseState?.fileUri,
+      ...(item?.cleanupUris ?? []),
       legacy?.video,
       legacy?.thumbnail,
     );
+    if (failed.length && item) {
+      this.patch(id, { error: 'removeFailed', cleanupUris: failed });
+      return;
+    }
     this.items = this.items.filter((candidate) => candidate.id !== id);
     this.emit();
   };
@@ -453,6 +468,7 @@ export class DownloadManager {
   verify = (id: string): boolean => {
     const item = this.items.find((candidate) => candidate.id === id);
     if (item?.status !== 'completed') return false;
+    if (item.error === 'removeFailed') return false;
     if (item.fileUri && this.exists(item.fileUri)) return true;
     this.patch(id, {
       status: 'failed',

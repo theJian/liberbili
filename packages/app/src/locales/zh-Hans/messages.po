@@ -41,13 +41,17 @@ msgstr "哔哩哔哩返回了异常数据。"
 msgid "Comments"
 msgstr "评论"
 
-#: src/app/(tabs)/downloads.tsx:71
+#: src/app/(tabs)/downloads.tsx:73
 msgid "Could not pause the download. Try again."
 msgstr "无法暂停下载，请重试。"
 
 #: src/app/(tabs)/downloads.tsx:36
 msgid "Could not play download"
 msgstr "无法播放下载视频"
+
+#: src/app/(tabs)/downloads.tsx:71
+msgid "Could not remove download. Try again."
+msgstr "无法移除下载，请重试。"
 
 #: src/app/video/[bvid].tsx:160
 msgid "Create a playlist first."
@@ -77,7 +81,7 @@ msgstr "下载文件已丢失，请重新下载。"
 msgid "Downloading"
 msgstr "下载中"
 
-#: src/app/(tabs)/downloads.tsx:125
+#: src/app/(tabs)/downloads.tsx:129
 #: src/app/(tabs)/library.tsx:14
 msgid "Downloads"
 msgstr "下载"
@@ -122,7 +126,7 @@ msgstr "分P"
 msgid "Pause"
 msgstr "暂停"
 
-#: src/app/(tabs)/downloads.tsx:92
+#: src/app/(tabs)/downloads.tsx:94
 msgid "Pause download"
 msgstr "暂停下载"
 
@@ -160,11 +164,11 @@ msgstr "推荐视频"
 msgid "Remove"
 msgstr "移除"
 
-#: src/app/(tabs)/downloads.tsx:110
+#: src/app/(tabs)/downloads.tsx:114
 msgid "Remove download"
 msgstr "移除下载"
 
-#: src/app/(tabs)/downloads.tsx:101
+#: src/app/(tabs)/downloads.tsx:105
 msgid "Retry download"
 msgstr "重试下载"
 
@@ -181,7 +185,7 @@ msgstr "搜索哔哩哔哩视频"
 msgid "Settings"
 msgstr "设置"
 
-#: src/app/(tabs)/downloads.tsx:72
+#: src/app/(tabs)/downloads.tsx:74
 msgid "The download could not finish. Try again."
 msgstr "下载未能完成，请重试。"
 

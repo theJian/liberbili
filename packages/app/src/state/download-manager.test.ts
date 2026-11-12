@@ -397,6 +397,50 @@ describe('download task ownership', () => {
     expect(f.files.has(f.tasks[0].destination)).toBe(false);
   });
 
+  test('keeps failed deletion paths across restart so removal can be retried', async () => {
+    const f = fixture();
+    const run = f.manager.start(video);
+    await tick();
+    f.tasks[0].finish();
+    await run;
+    const completed = f.manager.getSnapshot()[0];
+    const thumbnailUri = completed.thumbnailUri!;
+    f.deps.remove = (uri) => {
+      if (uri === thumbnailUri) throw new Error('File is busy');
+      f.files.delete(uri);
+    };
+
+    f.manager.remove(video.bvid);
+    expect(f.manager.getSnapshot()[0]).toMatchObject({
+      error: 'removeFailed',
+      fileUri: completed.fileUri,
+      thumbnailUri,
+      cleanupUris: [thumbnailUri],
+    });
+    expect(f.files.has(completed.fileUri!)).toBe(false);
+    expect(f.files.has(thumbnailUri)).toBe(true);
+
+    const restored = fixture({
+      load: () => JSON.stringify(f.saved.at(-1)),
+      exists: (uri) => f.files.has(uri),
+      remove: (uri) => {
+        f.files.delete(uri);
+      },
+    });
+    expect(restored.manager.getSnapshot()[0]).toMatchObject({
+      error: 'removeFailed',
+      fileUri: completed.fileUri,
+      thumbnailUri,
+      cleanupUris: [thumbnailUri],
+    });
+    expect(restored.manager.verify(video.bvid)).toBe(false);
+    await restored.manager.resume(video.bvid);
+    expect(restored.tasks).toHaveLength(0);
+    restored.manager.remove(video.bvid);
+    expect(restored.manager.getSnapshot()).toEqual([]);
+    expect(f.files.size).toBe(0);
+  });
+
   test('failed transfers release handles and retry clears their partial destination', async () => {
     const f = fixture();
     const first = f.manager.start(video);

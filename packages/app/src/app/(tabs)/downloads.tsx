@@ -20,7 +20,7 @@ export default function DownloadsScreen() {
     ({ item }: { item: DownloadItem }) => (
       <View style={[styles.row, { borderBottomColor: theme.border }]}>
         <Pressable
-          disabled={!item.fileUri}
+          disabled={!item.fileUri || item.error === 'removeFailed'}
           accessibilityRole="button"
           accessibilityLabel={t`Play downloaded video`}
           onPress={() => {
@@ -67,9 +67,11 @@ export default function DownloadsScreen() {
             <ThemedText type="small" themeColor="textSecondary">
               {item.error === 'missingFile'
                 ? t`Downloaded file is missing. Download it again.`
-                : item.error === 'pauseFailed'
-                  ? t`Could not pause the download. Try again.`
-                  : t`The download could not finish. Try again.`}
+                : item.error === 'removeFailed'
+                  ? t`Could not remove download. Try again.`
+                  : item.error === 'pauseFailed'
+                    ? t`Could not pause the download. Try again.`
+                    : t`The download could not finish. Try again.`}
             </ThemedText>
           ) : null}
           <View
@@ -86,7 +88,7 @@ export default function DownloadsScreen() {
             />
           </View>
         </View>
-        {item.status === 'downloading' ? (
+        {item.status === 'downloading' && item.error !== 'removeFailed' ? (
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={t`Pause download`}
@@ -95,7 +97,9 @@ export default function DownloadsScreen() {
           >
             <ThemedText>Ⅱ</ThemedText>
           </Pressable>
-        ) : item.status !== 'completed' && item.status !== 'queued' ? (
+        ) : item.status !== 'completed' &&
+          item.status !== 'queued' &&
+          item.error !== 'removeFailed' ? (
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={t`Retry download`}
