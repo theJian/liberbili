@@ -1,7 +1,3 @@
-/**
- * These tests cover recent-query normalization and the asynchronous pagination
- * lifecycle of submitted searches.
- */
 import { describe, expect, test } from 'bun:test';
 import type { PageResult, VideoSummary } from '@liberbili/api/types';
 import {

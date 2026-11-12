@@ -1,8 +1,3 @@
-/**
- * This screen searches Bilibili videos with sorting and duration filters.
- * Recent queries let users repeat searches, while SearchSession manages the
- * submitted results and pagination as they edit the search controls.
- */
 import { FlashList } from '@shopify/flash-list';
 import { Search } from '@doodle-icons/react-native';
 import { useLingui } from '@lingui/react/macro';
