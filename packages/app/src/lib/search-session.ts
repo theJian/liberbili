@@ -45,12 +45,19 @@ type FetchPage = (
   page: number,
 ) => Promise<PageResult<VideoSummary>>;
 
-// Own the submitted selection independently of the editable input and reject late responses.
+/** Keep submitted results independent of editable input and ignore late responses. */
 export class SearchSession {
   private state: State = { items: [], loading: false };
   private generation = 0;
   private pendingPage = 1;
   private listeners = new Set<() => void>();
+
+  /**
+   * Create a session with a numbered-page fetcher. Its `next` cursor must convert
+   * to an integer greater than the requested page; other values end pagination.
+   * The promises returned by `submit`, `more`, and `retry` resolve on fetch
+   * failure; the current search's error appears in `getSnapshot().error`.
+   */
   constructor(private fetchPage: FetchPage) {}
   getSnapshot = (): State => this.state;
   subscribe = (listener: () => void): (() => void) => {

@@ -1,6 +1,6 @@
 # Search history and filters
 
-Baseline: search has no recent queries or filters. Its pagination reads the editable input rather than a submitted search, and in-flight requests block new searches. Pagination errors have no retry while results exist.
+Search keeps recent queries on this device and offers ordering and duration filters. Results and pagination stay tied to the submitted query and filters while users edit the search input.
 
 ## Acceptance
 
@@ -13,10 +13,6 @@ Baseline: search has no recent queries or filters. Its pagination reads the edit
 
 ## Verification
 
-`bun run test` passes 17 tests, including six offline search history and request lifecycle regressions. `bun run typecheck` and `bun run lint` pass. `bun run i18n:extract` updates both catalogs; every new Chinese entry is filled.
+Run `bun run test`, `bun run typecheck`, and `bun run lint` for automated checks.
 
-Device follow-up: check keyboard submission, horizontal filter/history scrolling, history after restart, VoiceOver/TalkBack, and real Bilibili search pagination on iOS/Android. No authenticated account is required. No simulator/device screenshot was available in this worktree run.
-
-## Integration
-
-Independent branch from ca3dd2f. Search UI and both Lingui catalogs may overlap other feature PRs; regenerate catalogs after integration and retain all translations.
+On iOS and Android, check keyboard submission, horizontal filter/history scrolling, history after restart, VoiceOver/TalkBack, and real Bilibili search pagination. No authenticated account is required.
