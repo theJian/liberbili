@@ -1,8 +1,10 @@
 /**
- * Search Bilibili videos with recent queries and ordering and duration filters.
- * The screen owns editable controls and local history, while SearchSession owns
- * submitted results and the request lifecycle. Filter changes search the
- * submitted query; editing the input leaves its pagination unchanged.
+ * The default `SearchScreen` export is Expo Router's `/search` screen, opened with
+ * `router.push('/search')` and no route parameters. It renders Bilibili video
+ * results for submitted text and the current ordering and duration filters,
+ * alongside recent queries. The screen owns editable controls and local history;
+ * `SearchSession` owns submitted results and the request lifecycle. Filter changes
+ * search the submitted query; editing the input leaves its pagination unchanged.
  */
 import { FlashList } from '@shopify/flash-list';
 import { Search } from '@doodle-icons/react-native';

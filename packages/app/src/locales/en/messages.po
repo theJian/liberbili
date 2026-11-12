@@ -21,11 +21,11 @@ msgstr "{0, plural, one {# reply} other {# replies}}"
 msgid "{0, plural, one {# video} other {# videos}}"
 msgstr "{0, plural, one {# video} other {# videos}}"
 
-#: src/app/search.tsx:95
+#: src/app/search.tsx:97
 msgid "10–30 minutes"
 msgstr "10–30 minutes"
 
-#: src/app/search.tsx:96
+#: src/app/search.tsx:98
 msgid "30–60 minutes"
 msgstr "30–60 minutes"
 
@@ -37,7 +37,7 @@ msgstr "Add to playlist"
 msgid "All comments"
 msgstr "All comments"
 
-#: src/app/search.tsx:93
+#: src/app/search.tsx:95
 msgid "Any duration"
 msgstr "Any duration"
 
@@ -58,7 +58,7 @@ msgstr "Cancel"
 msgid "Clear history"
 msgstr "Clear history"
 
-#: src/app/search.tsx:189
+#: src/app/search.tsx:191
 msgid "Clear searches"
 msgstr "Clear searches"
 
@@ -139,15 +139,15 @@ msgstr "Library"
 msgid "likes"
 msgstr "likes"
 
-#: src/app/search.tsx:90
+#: src/app/search.tsx:92
 msgid "Most saved"
 msgstr "Most saved"
 
-#: src/app/search.tsx:88
+#: src/app/search.tsx:90
 msgid "Most viewed"
 msgstr "Most viewed"
 
-#: src/app/search.tsx:89
+#: src/app/search.tsx:91
 msgid "Newest"
 msgstr "Newest"
 
@@ -159,7 +159,7 @@ msgstr "Next"
 msgid "Nothing here yet"
 msgstr "Nothing here yet"
 
-#: src/app/search.tsx:97
+#: src/app/search.tsx:99
 msgid "Over 60 minutes"
 msgstr "Over 60 minutes"
 
@@ -198,7 +198,7 @@ msgstr "Playlist name"
 msgid "Playlists"
 msgstr "Playlists"
 
-#: src/app/search.tsx:184
+#: src/app/search.tsx:186
 msgid "Recent searches"
 msgstr "Recent searches"
 
@@ -206,7 +206,7 @@ msgstr "Recent searches"
 msgid "Recommended"
 msgstr "Recommended"
 
-#: src/app/search.tsx:87
+#: src/app/search.tsx:89
 msgid "Relevance"
 msgstr "Relevance"
 
@@ -223,7 +223,7 @@ msgstr "Remove download"
 msgid "Remove from watch history"
 msgstr "Remove from watch history"
 
-#: src/app/search.tsx:210
+#: src/app/search.tsx:212
 msgid "Remove search: {text}"
 msgstr "Remove search: {text}"
 
@@ -232,12 +232,12 @@ msgid "Resume download"
 msgstr "Resume download"
 
 #: src/app/(tabs)/index.tsx:51
-#: src/app/search.tsx:108
-#: src/app/search.tsx:124
+#: src/app/search.tsx:110
+#: src/app/search.tsx:126
 msgid "Search"
 msgstr "Search"
 
-#: src/app/search.tsx:116
+#: src/app/search.tsx:118
 msgid "Search Bilibili videos"
 msgstr "Search Bilibili videos"
 
@@ -274,7 +274,7 @@ msgstr "Unable to reach Bilibili."
 msgid "Unable to resume this video. Try again."
 msgstr "Unable to resume this video. Try again."
 
-#: src/app/search.tsx:94
+#: src/app/search.tsx:96
 msgid "Under 10 minutes"
 msgstr "Under 10 minutes"
 
