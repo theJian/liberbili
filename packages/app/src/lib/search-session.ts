@@ -1,31 +1,62 @@
 /**
  * Coordinates paginated video searches and recent-query history for search screens.
- * To restore history, pass the serialized JSON string read from SEARCH_HISTORY_KEY
- * to readRecentSearches; it returns a normalized string array, or an empty array
- * for missing or invalid data. Pass that array and a query to rememberSearch,
- * then serialize and persist the new array it returns under the same key.
- * To normalize untrusted values directly, use recentSearches(value): it returns
- * a new array of trimmed, distinct, nonempty strings in first-occurrence order,
- * capped at SEARCH_HISTORY_LIMIT. Both history helpers return arrays with this
- * normalization; rememberSearch puts the submitted query first.
  *
- * Construct SearchSession with an async loader accepting a SearchSelection and
- * a page number starting at 1. The selection has the shape { query: string,
- * order: SearchOrder, duration: SearchDuration }; the loader receives the trimmed
- * submitted query. Return { items: VideoSummary[], next?: string }, where next
- * represents an integer page greater than the fetched page; omit next when
- * pagination ends.
+ * @remarks
+ * To restore history, pass the serialized JSON string read from
+ * `SEARCH_HISTORY_KEY` to `readRecentSearches`; it returns a normalized string
+ * array, or an empty array for missing or invalid data. Pass that array and a
+ * query to `rememberSearch`, then serialize and persist the new array it returns
+ * under the same key. To normalize untrusted values directly, use
+ * `recentSearches(value)`. All three helpers return new arrays of trimmed,
+ * distinct, nonempty strings in first-occurrence order, capped at
+ * `SEARCH_HISTORY_LIMIT`; `rememberSearch` moves a nonempty trimmed query first.
  *
- * Call submit with a selection to start fresh results, keeping editable input
- * separately. getSnapshot() returns { selection?: SearchSelection,
- * items: VideoSummary[], loading: boolean, error?: Error, next?: string }.
- * subscribe(listener) calls the listener without arguments when the snapshot
+ * Construct `SearchSession` with an async loader accepting a `SearchSelection`
+ * and a page number starting at 1. The loader receives the trimmed submitted
+ * query and returns video summaries with an optional next-page cursor:
+ *
+ * ```ts
+ * type SearchSelection = {
+ *   query: string;
+ *   order: SearchOrder;
+ *   duration: SearchDuration;
+ * };
+ *
+ * type FetchPage = (
+ *   selection: SearchSelection,
+ *   page: number,
+ * ) => Promise<{
+ *   items: VideoSummary[];
+ *   next?: string;
+ * }>;
+ * ```
+ *
+ * `SearchOrder`, `SearchDuration`, and `VideoSummary` come from
+ * `@liberbili/api/types`. Return `next` as a string representing an integer page
+ * greater than the fetched page; omit it when pagination ends.
+ *
+ * Call `submit` with a selection to start fresh results, keeping editable input
+ * separately. `getSnapshot()` returns the current state:
+ *
+ * ```ts
+ * type State = {
+ *   selection?: SearchSelection;
+ *   items: VideoSummary[];
+ *   loading: boolean;
+ *   error?: Error;
+ *   next?: string;
+ * };
+ * ```
+ *
+ * `subscribe(listener)` calls the listener without arguments when the snapshot
  * changes and returns an unsubscribe function to call when the consumer detaches.
- * Later pages append results, deduplicated by bvid. more loads the next page for
- * the submitted selection, while retry repeats the last attempted page. Newer
- * submissions supersede pending responses from earlier searches. Render loader
- * failures from the snapshot's error; page-loading promises resolve after those
- * failures have been handled.
+ * Later pages append results, deduplicated by `bvid`. `more` loads the next page
+ * for the submitted selection, while `retry` repeats the last attempted page.
+ * Newer submissions supersede pending responses from earlier searches. Render
+ * loader failures from the snapshot's `error`; page-loading promises resolve
+ * after those failures have been handled.
+ *
+ * @module
  */
 import type {
   PageResult,
