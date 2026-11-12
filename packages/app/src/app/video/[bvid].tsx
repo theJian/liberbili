@@ -1,4 +1,5 @@
 import { FlashList } from '@shopify/flash-list';
+import { Download, FolderAdd } from '@doodle-icons/react-native';
 import { useLingui } from '@lingui/react/macro';
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -139,15 +140,15 @@ export default function VideoScreen() {
               { backgroundColor: theme.backgroundElement },
             ]}
           >
-            <ThemedText>＋ {t`Add to playlist`}</ThemedText>
+            <FolderAdd size={20} />
+            <ThemedText>{t`Add to playlist`}</ThemedText>
           </Pressable>
           <Pressable
             onPress={() => void start(summary)}
             style={[styles.action, { backgroundColor: theme.accent }]}
           >
-            <ThemedText style={styles.actionPrimary}>
-              ↓ {t`Download`}
-            </ThemedText>
+            <Download size={20} color="#fff" />
+            <ThemedText style={styles.actionPrimary}>{t`Download`}</ThemedText>
           </Pressable>
         </View>
         {choosingPlaylist ? (
@@ -263,7 +264,15 @@ const styles = StyleSheet.create({
   },
   avatar: { width: 32, height: 32, borderRadius: 16 },
   actions: { flexDirection: 'row', gap: 10, paddingHorizontal: 16 },
-  action: { flex: 1, borderRadius: 999, padding: 11, alignItems: 'center' },
+  action: {
+    flex: 1,
+    borderRadius: 999,
+    padding: 11,
+    flexDirection: 'row',
+    gap: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   actionPrimary: { color: '#fff', fontWeight: '700' },
   playlistChoices: { paddingHorizontal: 16, gap: 8 },
   chip: {
