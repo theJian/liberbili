@@ -1,3 +1,10 @@
+/**
+ * Renders `CreatorScreen` at `/creator/[id]` for a Bilibili creator ID written as
+ * decimal digits representing a positive safe integer. It loads the profile and
+ * paginated uploads independently, with separate retry controls. Invalid IDs
+ * show a profile error and do not request uploads. Changing `id` replaces the
+ * keyed content so each creator owns its profile, upload list, and pending work.
+ */
 import { FlashList } from '@shopify/flash-list';
 import { useLingui } from '@lingui/react/macro';
 import { Image } from 'expo-image';

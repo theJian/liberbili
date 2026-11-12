@@ -1,3 +1,24 @@
+/**
+ * Fetches normalized video metadata, progressive playback sources, and comments
+ * through the shared Bilibili session. Use `bilibiliApi`, or subclass
+ * `BilibiliClient` to customize request handling. `getRecommendations()` returns
+ * video summaries; `searchVideos(query, page)` starts at page 1 and returns
+ * summaries in `items`. Convert its `next` string to a number for the next search
+ * request.
+ *
+ * Call `getVideo(bvid)` with a BV ID, choose an entry from the returned `parts`,
+ * and pass it to `getProgressiveStreams(part)`. Each returned MP4 source includes
+ * a URL and request `headers` to pass to the player or downloader. For discussion,
+ * use the detail's numeric `aid` with `getComments(aid, cursor)`, read comments
+ * from `items`, and pass its opaque `next` string unchanged; omit the cursor for
+ * the first page. An absent `next` ends either pagination workflow.
+ * HTTP/API failures use `BilibiliError`,
+ * whose `kind` supports recovery decisions; session setup can also reject.
+ *
+ * For integrations handling API responses directly, `recommendationsUrl()` builds
+ * the recommendations endpoint and `normalizeSummary(item)` converts one parsed
+ * Bilibili video object into a `VideoSummary`.
+ */
 import { signWbi } from './crypto';
 import { bilibiliSession, dmImgParams } from './session';
 import {
@@ -44,6 +65,12 @@ function mapError(code: number, message = 'Bilibili request failed') {
 export const recommendationsUrl = () =>
   `${API}/x/web-interface/index/top/rcmd?fresh_type=3`;
 
+/**
+ * Normalizes a parsed recommendation, search result, or video-detail object.
+ * Supply an item containing a BV ID in `bvid`, `uri`, or `arcurl`. Duration is
+ * converted to seconds, markup is removed from titles, and available creator IDs
+ * are returned as strings.
+ */
 export function normalizeSummary(item: Json): VideoSummary {
   const bvid =
     item.bvid ||
@@ -202,6 +229,11 @@ export class BilibiliClient {
     };
   }
 
+  /**
+   * Returns the available progressive sources for a part from `getVideo()`.
+   * An empty array means no progressive source was supplied. Use each source's
+   * `headers` when requesting its URL, including for downloads.
+   */
   async getProgressiveStreams(part: VideoPart): Promise<ProgressiveStream[]> {
     const url = await this.wbi('/x/player/wbi/playurl', {
       avid: part.aid,
@@ -255,6 +287,10 @@ export class BilibiliClient {
     return { items, next };
   }
 
+  /**
+   * Fetches replies using a parent comment's `oid` and `root`. Start at page 1;
+   * convert a returned `next` string to a number for the following request.
+   */
   async getCommentReplies(
     oid: number,
     root: number,

@@ -1,3 +1,61 @@
+/**
+ * Extends the video client with Bilibili search, creator discovery, and playback
+ * extraction. Use `bilibiliExtractorApi` or instantiate `BilibiliExtractorApi`;
+ * both use the shared session from `session.ts`. Methods return parsed,
+ * normalized models rather than Bilibili response envelopes and reject on
+ * request failures. The inherited request handler uses `BilibiliError`;
+ * extraction methods can also reject with ordinary errors.
+ *
+ * For discovery, `search(query, { type, order, duration, page })` returns
+ * a page of summaries in `items`. It defaults to `type: 'video'` and page 1.
+ * Request `type: 'bili_user'` for creator summaries, whose result discriminator
+ * is `type: 'channel'`. Convert `next` to a number for the next page.
+ * `getRelated(bvid)` returns video summaries for a BV ID.
+ * `getChannel(mid)` takes a creator's decimal ID string and returns a profile;
+ * `getChannelVideosWithFallback(mid, cursor, lastAid)` returns upload summaries
+ * in `items`. Start with cursor 1, then pass `next` unchanged with the list's final
+ * numeric `aid`. An absent `next` ends pagination.
+ *
+ * For creator collections, `getChannelPlaylists(mid, page)` returns collections
+ * in `items`. Pass a collection's `id` and `type` with that creator ID to
+ * `getRemotePlaylist(mid, id, type, page)` for videos in `items` and collection
+ * metadata in `playlist`. Both methods default to page 1; convert their `next`
+ * strings to numbers for subsequent page arguments, stopping when `next` is absent.
+ *
+ * For playback, `resolveStreamUrl(url)` accepts a full video, premium, live, or
+ * b23.tv URL and returns a `StreamReference` discriminated by `kind`. A video
+ * reference provides `bvid`, one-based `page`, and `timestamp` in seconds. Pass
+ * its BV ID to `getVideoParts()` and select a part for `getPlayback(part)`;
+ * the result contains progressive sources in `progressive` and DASH tracks in
+ * the `video` and `audio` arrays.
+ * Progressive sources include request headers to forward to the media consumer.
+ * `getVideoComplete(bvid, page)` adds tags and related videos to video details.
+ * Parts also identify subtitles and recorded danmaku through `getSubtitles(part)`
+ * and `getRecordedDanmaku(part.cid)`; `getSubtitleSrt(subtitle)` returns SRT text.
+ *
+ * A premium reference's `ss…` or `ep…` ID goes to `getPremiumSeason(id)`, which
+ * returns `episodes` and `selectedEpisode`. Adapt the selected episode to a
+ * `VideoPart` and request premium playback:
+ *
+ * ```ts
+ * const season = await bilibiliExtractorApi.getPremiumSeason(id);
+ * const part = {
+ *   ...season.selectedEpisode,
+ *   page: 1,
+ * };
+ * const playback = await bilibiliExtractorApi.getPlayback(part, {
+ *   premium: true,
+ * });
+ * ```
+ *
+ * A live reference's ID goes to `getLiveRoom(id)`; use the returned numeric
+ * `roomId` with `getLiveStream()` for media URLs or `getLiveDanmakuCredentials()`
+ * for its token.
+ *
+ * `isBilibiliUrl` and `isBilibiliMediaUrl` recognize page and media hosts;
+ * `videoQualityLabel` and `audioQualityLabel` translate numeric quality IDs to
+ * display strings.
+ */
 import { inflateRaw } from 'pako';
 
 import { BilibiliClient, normalizeSummary } from './bilibili';
@@ -330,6 +388,12 @@ export class BilibiliExtractorApi extends BilibiliClient {
     }));
   }
 
+  /**
+   * Extracts sources for a known video part. `quality` is a Bilibili quality ID;
+   * availability is reflected in the returned `quality` and `acceptedQualities`.
+   * Set `premium` for a premium episode and `dash: false` to request progressive
+   * playback. `authenticated` includes the shared session's saved account cookie.
+   */
   async getPlayback(
     part: VideoPart,
     options: {
@@ -505,6 +569,13 @@ export class BilibiliExtractorApi extends BilibiliClient {
     };
   }
 
+  /**
+   * Reads one creator endpoint directly. Web (the default) and search modes use
+   * one-based `page` values and return the next page number as a string. Client
+   * mode uses `lastAid` instead, returning the final video's numeric archive ID
+   * as a string. Prefer `getChannelVideosWithFallback()` to retain mode information
+   * across pages automatically.
+   */
   async getChannelVideos(
     mid: string,
     options: {
@@ -695,6 +766,12 @@ export class BilibiliExtractorApi extends BilibiliClient {
     return (data.durl ?? []).map((item: Json) => https(item.url));
   }
 
+  /**
+   * Extracts the recorded video currently being replayed by a live room. Supply
+   * a numeric room ID and a Unix timestamp in milliseconds (default: now).
+   * `playTime` is the current offset in seconds; pass `nextTimestamp` back as the
+   * timestamp to query the following replay. Rejects when no replay is available.
+   */
   async getRoundPlay(
     roomId: number,
     timestamp = Date.now(),
@@ -717,6 +794,28 @@ export class BilibiliExtractorApi extends BilibiliClient {
     };
   }
 
+  /**
+   * Loads uploads for a creator's decimal ID string, trying web, search, then
+   * client endpoints until one succeeds, including a successful empty response.
+   * Start at page 1. For subsequent pages, pass `next` unchanged and the previous
+   * list's final numeric `aid`, allowing a switch to client pagination:
+   *
+   * ```ts
+   * const first = await api.getChannelVideosWithFallback(mid);
+   * if (first.next) {
+   *   const second = await api.getChannelVideosWithFallback(
+   *     mid,
+   *     first.next,
+   *     first.items.at(-1)?.aid,
+   *   );
+   * }
+   * ```
+   *
+   * A `client:` cursor keeps subsequent requests on the client endpoint and
+   * carries its archive ID; a missing `next` ends pagination. If all three
+   * endpoint attempts fail, rejects with an `AggregateError` containing each
+   * failure. Requests already using a client cursor propagate that failure.
+   */
   async getChannelVideosWithFallback(
     mid: string,
     page: number | string = 1,

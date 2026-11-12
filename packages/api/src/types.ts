@@ -1,3 +1,20 @@
+/**
+ * Defines the normalized video, playback, creator, and discussion models returned
+ * by the API clients. Paginated results use `PageResult<T>`: consume `items` and
+ * continue with `next` according to the producing method's cursor convention.
+ *
+ * `BilibiliError` is the runtime error class used by `BilibiliClient`. Construct
+ * it with a `kind` from `BilibiliErrorKind`, a human-readable `message`, and an
+ * optional numeric upstream `code`:
+ *
+ * ```ts
+ * const error = new BilibiliError('network', 'Request failed');
+ * ```
+ *
+ * Catchers can use `instanceof BilibiliError` and inspect `kind` to choose recovery
+ * behavior, such as offering sign-in for `'loginRequired'`, while retaining the
+ * message and code for diagnostics.
+ */
 export type VideoSummary = {
   bvid: string;
   aid: number;
@@ -6,6 +23,7 @@ export type VideoSummary = {
   uploader: string;
   uploaderAvatar?: string;
   uploaderId?: string;
+  /** Duration in seconds; live summaries use -1. */
   duration: number;
   views: number;
   publishedAt?: number;
@@ -144,6 +162,7 @@ export type VideoShot = {
   columns: number;
   rows: number;
   totalFrames: number;
+  /** Milliseconds per thumbnail frame. */
   durationPerFrame: number;
   points: number[];
 };

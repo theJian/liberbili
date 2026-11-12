@@ -1,3 +1,9 @@
+/**
+ * `RelatedVideos({ bvid })` fetches recommendations for a BV ID and renders unique
+ * videos excluding that ID. It initially shows up to three cards, with expansion
+ * controls for longer lists and a retry control on failure. Changing `bvid`
+ * replaces the keyed content, resetting its request and expansion state.
+ */
 import { useLingui } from '@lingui/react/macro';
 import { useState } from 'react';
 import { Pressable, View } from 'react-native';
@@ -8,7 +14,6 @@ import { ScreenState } from './screen-state';
 import { ThemedText } from './themed-text';
 import { VideoCard } from './video-card';
 
-// The keyed child owns a single BV ID so its data never leaks across routes.
 export function RelatedVideos({ bvid }: { bvid: string }) {
   return <RelatedContent key={bvid} bvid={bvid} />;
 }

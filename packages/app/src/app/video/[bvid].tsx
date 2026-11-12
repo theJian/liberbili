@@ -1,3 +1,11 @@
+/**
+ * Renders `VideoScreen` at `/video/[bvid]` for a BV ID within the app's player,
+ * download, and playlist providers. Once matching video details arrive, it starts
+ * shared playback if the player's current BV ID differs. Viewers can select a
+ * part, download the video, add it to an existing playlist, open its creator,
+ * browse related videos, and load further comment pages. Detail loading errors
+ * expose a retry control; playback remains owned by the shared player provider.
+ */
 import { FlashList } from '@shopify/flash-list';
 import { Download, FolderAdd } from '@doodle-icons/react-native';
 import { useLingui } from '@lingui/react/macro';

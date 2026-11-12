@@ -11,7 +11,7 @@ const video = (bvid: string, aid = 1): VideoSummary => ({
   views: 0,
 });
 
-test('deduplicates concurrent uploads and repeated cursor loops', async () => {
+test('suppresses concurrent page loads and stops repeated cursor loops', async () => {
   let resolve!: (value: PageResult<VideoSummary>) => void;
   let requests = 0;
   const uploads = new CreatorUploads(async (cursor) => {

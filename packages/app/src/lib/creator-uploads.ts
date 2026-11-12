@@ -1,3 +1,26 @@
+/**
+ * Maintains a paginated upload list for one creator. Validate a route ID with
+ * `isCreatorId(value)` (a positive safe integer written as decimal digits), then
+ * create one `CreatorUploads(fetchPage)` instance per creator. The callback is:
+ *
+ * ```ts
+ * (cursor?: string, lastAid?: number) => Promise<{
+ *   items: VideoSummary[];
+ *   next?: string;
+ * }>
+ * ```
+ *
+ * The first call receives two `undefined` arguments. Later calls receive the
+ * previous result's opaque `next` and the accumulated list's final numeric `aid`,
+ * which lets the API continue through a creator endpoint fallback.
+ *
+ * Subscribe with `subscribe` and `getSnapshot` (suitable for React's
+ * `useSyncExternalStore`) to observe accumulated `items`, request `loading` and
+ * `error`, and pagination `next`. Call `load()` to start or explicitly retry a
+ * failed page, and `more()` for scroll-driven loading. Fetch failures appear in
+ * the snapshot rather than rejecting the load promise. Loaded videos are unique
+ * by BV ID, and a repeated completed cursor ends pagination to prevent loops.
+ */
 import type { PageResult, VideoSummary } from '@liberbili/api/types';
 
 export function isCreatorId(value: string): boolean {
@@ -13,6 +36,7 @@ type State = {
   loading: boolean;
   error?: Error;
   next?: string;
+  /** True after the first successful page, including an empty page. */
   started: boolean;
 };
 export class CreatorUploads {
@@ -37,6 +61,10 @@ export class CreatorUploads {
     this.state = state;
     this.listeners.forEach((listener) => listener());
   }
+  /**
+   * Loads the current cursor or retries it after failure, retaining existing
+   * items. Does nothing while loading or after a successful page with no `next`.
+   */
   load = async (): Promise<void> => {
     if (
       this.state.loading ||
@@ -74,6 +102,7 @@ export class CreatorUploads {
       });
     }
   };
+  /** Stops automatic pagination after an error until `load()` explicitly retries. */
   more = (): Promise<void> =>
     this.state.error ? Promise.resolve() : this.load();
 }
