@@ -21,6 +21,14 @@ msgstr "{0, plural, one {# reply} other {# replies}}"
 msgid "{0, plural, one {# video} other {# videos}}"
 msgstr "{0, plural, one {# video} other {# videos}}"
 
+#: src/app/search.tsx:97
+msgid "10–30 minutes"
+msgstr "10–30 minutes"
+
+#: src/app/search.tsx:98
+msgid "30–60 minutes"
+msgstr "30–60 minutes"
+
 #: src/app/video/[bvid].tsx:131
 msgid "Add to playlist"
 msgstr "Add to playlist"
@@ -28,6 +36,10 @@ msgstr "Add to playlist"
 #: src/app/video/[bvid].tsx:208
 msgid "All comments"
 msgstr "All comments"
+
+#: src/app/search.tsx:95
+msgid "Any duration"
+msgstr "Any duration"
 
 #: src/components/screen-state.tsx:30
 msgid "Bilibili blocked this request. Please retry."
@@ -45,6 +57,10 @@ msgstr "Cancel"
 #: src/app/history.tsx:87
 msgid "Clear history"
 msgstr "Clear history"
+
+#: src/app/search.tsx:191
+msgid "Clear searches"
+msgstr "Clear searches"
 
 #: src/app/history.tsx:73
 msgid "Clear watch history?"
@@ -123,6 +139,18 @@ msgstr "Library"
 msgid "likes"
 msgstr "likes"
 
+#: src/app/search.tsx:92
+msgid "Most saved"
+msgstr "Most saved"
+
+#: src/app/search.tsx:90
+msgid "Most viewed"
+msgstr "Most viewed"
+
+#: src/app/search.tsx:91
+msgid "Newest"
+msgstr "Newest"
+
 #: src/components/mini-player.tsx:60
 msgid "Next"
 msgstr "Next"
@@ -130,6 +158,10 @@ msgstr "Next"
 #: src/components/screen-state.tsx:44
 msgid "Nothing here yet"
 msgstr "Nothing here yet"
+
+#: src/app/search.tsx:99
+msgid "Over 60 minutes"
+msgstr "Over 60 minutes"
 
 #: src/app/video/[bvid].tsx:170
 msgid "Parts"
@@ -166,9 +198,17 @@ msgstr "Playlist name"
 msgid "Playlists"
 msgstr "Playlists"
 
+#: src/app/search.tsx:186
+msgid "Recent searches"
+msgstr "Recent searches"
+
 #: src/app/(tabs)/index.tsx:42
 msgid "Recommended"
 msgstr "Recommended"
+
+#: src/app/search.tsx:89
+msgid "Relevance"
+msgstr "Relevance"
 
 #: src/app/playlist/[id].tsx:35
 msgid "Remove"
@@ -183,17 +223,21 @@ msgstr "Remove download"
 msgid "Remove from watch history"
 msgstr "Remove from watch history"
 
+#: src/app/search.tsx:212
+msgid "Remove search: {text}"
+msgstr "Remove search: {text}"
+
 #: src/app/(tabs)/downloads.tsx:84
 msgid "Resume download"
 msgstr "Resume download"
 
 #: src/app/(tabs)/index.tsx:51
-#: src/app/search.tsx:58
-#: src/app/search.tsx:75
+#: src/app/search.tsx:110
+#: src/app/search.tsx:126
 msgid "Search"
 msgstr "Search"
 
-#: src/app/search.tsx:66
+#: src/app/search.tsx:118
 msgid "Search Bilibili videos"
 msgstr "Search Bilibili videos"
 
@@ -229,6 +273,10 @@ msgstr "Unable to reach Bilibili."
 #: src/app/history.tsx:37
 msgid "Unable to resume this video. Try again."
 msgstr "Unable to resume this video. Try again."
+
+#: src/app/search.tsx:96
+msgid "Under 10 minutes"
+msgstr "Under 10 minutes"
 
 #: src/app/history.tsx:95
 msgid "Videos you watch will appear here."
