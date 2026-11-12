@@ -16,8 +16,9 @@
  * in `items`. Start with cursor 1, then pass `next` unchanged with the list's final
  * numeric `aid`. An absent `next` ends pagination.
  *
- * For creator collections, `getChannelPlaylists(mid, page)` returns collections
- * in `items`. Pass a collection's `id` and `type` with that creator ID to
+ * For creator collections, `getChannelPlaylists(mid, page)` returns season and
+ * series collections in `items`. Narrow a collection's `type` to `'season'` or
+ * `'series'` before passing it and the collection's `id` with that creator ID to
  * `getRemotePlaylist(mid, id, type, page)` for videos in `items` and collection
  * metadata in `playlist`. Both methods default to page 1; convert their `next`
  * strings to numbers for subsequent page arguments, stopping when `next` is absent.
@@ -547,6 +548,11 @@ export class BilibiliExtractorApi extends BilibiliClient {
     };
   }
 
+  /**
+   * Loads a creator profile and enriches it with a live summary when active.
+   * The profile and live-status requests run together; either failure rejects
+   * the whole call, even though the returned `live` field is optional.
+   */
   async getChannel(mid: string): Promise<Channel> {
     const [profile, live] = await Promise.all([
       this.request<Json>(
@@ -636,6 +642,11 @@ export class BilibiliExtractorApi extends BilibiliClient {
     return { items, next: items.length ? String(page + 1) : undefined };
   }
 
+  /**
+   * Returns nonempty season and series collections. The declared `RemotePlaylist`
+   * model also permits `'parts'`, so check `collection.type !== 'parts'` before
+   * passing a collection's type to `getRemotePlaylist()`.
+   */
   async getChannelPlaylists(
     mid: string,
     page = 1,
@@ -798,12 +809,13 @@ export class BilibiliExtractorApi extends BilibiliClient {
    * Loads uploads for a creator's decimal ID string, trying web, search, then
    * client endpoints until one succeeds, including a successful empty response.
    * Start at page 1. For subsequent pages, pass `next` unchanged and the previous
-   * list's final numeric `aid`, allowing a switch to client pagination:
+   * list's final numeric `aid`, allowing a switch to client pagination. Given
+   * a creator ID `mid`:
    *
    * ```ts
-   * const first = await api.getChannelVideosWithFallback(mid);
+   * const first = await bilibiliExtractorApi.getChannelVideosWithFallback(mid);
    * if (first.next) {
-   *   const second = await api.getChannelVideosWithFallback(
+   *   const second = await bilibiliExtractorApi.getChannelVideosWithFallback(
    *     mid,
    *     first.next,
    *     first.items.at(-1)?.aid,
