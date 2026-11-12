@@ -1,3 +1,9 @@
+/**
+ * Search Bilibili videos with recent queries and ordering and duration filters.
+ * The screen owns editable controls and local history, while SearchSession owns
+ * submitted results and the request lifecycle. Filter changes search the
+ * submitted query; editing the input leaves its pagination unchanged.
+ */
 import { FlashList } from '@shopify/flash-list';
 import { Search } from '@doodle-icons/react-native';
 import { useLingui } from '@lingui/react/macro';

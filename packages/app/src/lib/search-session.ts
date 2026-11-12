@@ -1,3 +1,9 @@
+/**
+ * Recent-query helpers normalize locally stored history, and SearchSession
+ * exposes observable results for the search screen. The session owns the
+ * submitted query and filters so pagination remains independent of edits to
+ * the screen's controls.
+ */
 import type {
   PageResult,
   SearchDuration,
@@ -45,7 +51,7 @@ type FetchPage = (
   page: number,
 ) => Promise<PageResult<VideoSummary>>;
 
-/** Keep submitted results independent of editable input and ignore late responses. */
+/** Track submitted results independently of editable input, ignoring stale responses. */
 export class SearchSession {
   private state: State = { items: [], loading: false };
   private generation = 0;
@@ -53,12 +59,17 @@ export class SearchSession {
   private listeners = new Set<() => void>();
 
   /**
-   * Create a session with a numbered-page fetcher. Its `next` cursor must convert
-   * to an integer greater than the requested page; other values end pagination.
-   * The promises returned by `submit`, `more`, and `retry` resolve on fetch
-   * failure; the current search's error appears in `getSnapshot().error`.
+   * Create a session whose fetcher returns numbered pages. To continue
+   * pagination, `next` must convert to an integer greater than the requested
+   * page; other values end pagination.
    */
   constructor(private fetchPage: FetchPage) {}
+
+  /**
+   * Read the current state, including fetch errors. The promises returned by
+   * `submit`, `more`, and `retry` resolve after fetch failures, so callers read
+   * errors from this snapshot.
+   */
   getSnapshot = (): State => this.state;
   subscribe = (listener: () => void): (() => void) => {
     this.listeners.add(listener);
@@ -70,6 +81,10 @@ export class SearchSession {
     this.state = state;
     this.listeners.forEach((listener) => listener());
   }
+  /**
+   * Start page 1 for a new selection, trimming its query. A blank query leaves
+   * the current search unchanged.
+   */
   submit(selection: SearchSelection): Promise<void> {
     if (!selection.query.trim()) return Promise.resolve();
     ++this.generation;
@@ -81,10 +96,12 @@ export class SearchSession {
     });
     return this.load(1);
   }
+  /** Load the next page when available; after an error, use `retry` instead. */
   more = (): Promise<void> =>
     this.state.next && !this.state.error
       ? this.load(Number(this.state.next))
       : Promise.resolve();
+  /** Reload the last requested page, retaining results from earlier pages. */
   retry = (): Promise<void> => this.load(this.pendingPage);
   private async load(page: number): Promise<void> {
     const { selection } = this.state;

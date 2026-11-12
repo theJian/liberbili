@@ -21,11 +21,11 @@ msgstr "{0, plural, other {# 条回复}}"
 msgid "{0, plural, one {# video} other {# videos}}"
 msgstr "{0, plural, other {# 个视频}}"
 
-#: src/app/search.tsx:89
+#: src/app/search.tsx:95
 msgid "10–30 minutes"
 msgstr "10–30分钟"
 
-#: src/app/search.tsx:90
+#: src/app/search.tsx:96
 msgid "30–60 minutes"
 msgstr "30–60分钟"
 
@@ -37,7 +37,7 @@ msgstr "添加到播放列表"
 msgid "All comments"
 msgstr "全部评论"
 
-#: src/app/search.tsx:87
+#: src/app/search.tsx:93
 msgid "Any duration"
 msgstr "全部时长"
 
@@ -58,7 +58,7 @@ msgstr "取消"
 msgid "Clear history"
 msgstr "清空历史记录"
 
-#: src/app/search.tsx:183
+#: src/app/search.tsx:189
 msgid "Clear searches"
 msgstr "清空搜索"
 
@@ -139,15 +139,15 @@ msgstr "资料库"
 msgid "likes"
 msgstr "点赞"
 
-#: src/app/search.tsx:84
+#: src/app/search.tsx:90
 msgid "Most saved"
 msgstr "最多收藏"
 
-#: src/app/search.tsx:82
+#: src/app/search.tsx:88
 msgid "Most viewed"
 msgstr "最多播放"
 
-#: src/app/search.tsx:83
+#: src/app/search.tsx:89
 msgid "Newest"
 msgstr "最新发布"
 
@@ -159,7 +159,7 @@ msgstr "下一个"
 msgid "Nothing here yet"
 msgstr "这里还没有内容"
 
-#: src/app/search.tsx:91
+#: src/app/search.tsx:97
 msgid "Over 60 minutes"
 msgstr "60分钟以上"
 
@@ -198,7 +198,7 @@ msgstr "播放列表名称"
 msgid "Playlists"
 msgstr "播放列表"
 
-#: src/app/search.tsx:178
+#: src/app/search.tsx:184
 msgid "Recent searches"
 msgstr "最近搜索"
 
@@ -206,7 +206,7 @@ msgstr "最近搜索"
 msgid "Recommended"
 msgstr "推荐视频"
 
-#: src/app/search.tsx:81
+#: src/app/search.tsx:87
 msgid "Relevance"
 msgstr "综合排序"
 
@@ -223,7 +223,7 @@ msgstr "移除下载"
 msgid "Remove from watch history"
 msgstr "从观看历史中移除"
 
-#: src/app/search.tsx:204
+#: src/app/search.tsx:210
 msgid "Remove search: {text}"
 msgstr "删除搜索：{text}"
 
@@ -232,12 +232,12 @@ msgid "Resume download"
 msgstr "继续下载"
 
 #: src/app/(tabs)/index.tsx:51
-#: src/app/search.tsx:102
-#: src/app/search.tsx:118
+#: src/app/search.tsx:108
+#: src/app/search.tsx:124
 msgid "Search"
 msgstr "搜索"
 
-#: src/app/search.tsx:110
+#: src/app/search.tsx:116
 msgid "Search Bilibili videos"
 msgstr "搜索哔哩哔哩视频"
 
@@ -274,7 +274,7 @@ msgstr "无法连接哔哩哔哩。"
 msgid "Unable to resume this video. Try again."
 msgstr "无法继续播放此视频，请重试。"
 
-#: src/app/search.tsx:88
+#: src/app/search.tsx:94
 msgid "Under 10 minutes"
 msgstr "10分钟以内"
 
