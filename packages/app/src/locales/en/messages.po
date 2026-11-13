@@ -95,6 +95,18 @@ msgstr "Continue watching"
 msgid "Could not open this link. Use a regular Bilibili video link or BV/av ID, check your connection, and try again."
 msgstr "Could not open this link. Use a regular Bilibili video link or BV/av ID, check your connection, and try again."
 
+#: src/app/(tabs)/downloads.tsx:74
+msgid "Could not pause the download. Try again."
+msgstr "Could not pause the download. Try again."
+
+#: src/app/(tabs)/downloads.tsx:37
+msgid "Could not play download"
+msgstr "Could not play download"
+
+#: src/app/(tabs)/downloads.tsx:72
+msgid "Could not remove download. Try again."
+msgstr "Could not remove download. Try again."
+
 #: src/app/video/[bvid].tsx:272
 msgid "Could not share video"
 msgstr "Could not share video"
@@ -128,20 +140,24 @@ msgstr "Description"
 msgid "Download"
 msgstr "Download"
 
-#: src/app/(tabs)/downloads.tsx:48
+#: src/app/(tabs)/downloads.tsx:55
 msgid "Downloaded"
 msgstr "Downloaded"
 
-#: src/app/(tabs)/downloads.tsx:50
+#: src/app/(tabs)/downloads.tsx:70
+msgid "Downloaded file is missing. Download it again."
+msgstr "Downloaded file is missing. Download it again."
+
+#: src/app/(tabs)/downloads.tsx:57
 msgid "Downloading"
 msgstr "Downloading"
 
-#: src/app/(tabs)/downloads.tsx:108
+#: src/app/(tabs)/downloads.tsx:130
 #: src/app/(tabs)/library.tsx:50
 msgid "Downloads"
 msgstr "Downloads"
 
-#: src/app/(tabs)/downloads.tsx:55
+#: src/app/(tabs)/downloads.tsx:64
 msgid "Failed"
 msgstr "Failed"
 
@@ -157,7 +173,7 @@ msgstr "History is stored on this device. Downloaded videos do not update histor
 #~ msgid "Home"
 #~ msgstr "Home"
 
-#: src/app/(tabs)/downloads.tsx:54
+#: src/app/(tabs)/downloads.tsx:61
 msgid "Interrupted"
 msgstr "Interrupted"
 
@@ -236,7 +252,7 @@ msgstr "Paste a Bilibili video link, b23.tv short link, or BV/av ID."
 msgid "Pause"
 msgstr "Pause"
 
-#: src/app/(tabs)/downloads.tsx:75
+#: src/app/(tabs)/downloads.tsx:95
 msgid "Pause download"
 msgstr "Pause download"
 
@@ -245,7 +261,7 @@ msgstr "Pause download"
 msgid "Pause watch history"
 msgstr "Pause watch history"
 
-#: src/app/(tabs)/downloads.tsx:52
+#: src/app/(tabs)/downloads.tsx:59
 msgid "Paused"
 msgstr "Paused"
 
@@ -258,6 +274,10 @@ msgstr "Play"
 #: src/app/playback.tsx:174
 msgid "Play a video or playlist to build your queue."
 msgstr "Play a video or playlist to build your queue."
+
+#: src/app/(tabs)/downloads.tsx:26
+msgid "Play downloaded video"
+msgstr "Play downloaded video"
 
 #: src/app/playback.tsx:36
 #: src/app/video/[bvid].tsx:230
@@ -290,6 +310,10 @@ msgstr "Please try again."
 msgid "Previous"
 msgstr "Previous"
 
+#: src/app/(tabs)/downloads.tsx:63
+msgid "Queued"
+msgstr "Queued"
+
 #: src/app/search.tsx:186
 msgid "Recent searches"
 msgstr "Recent searches"
@@ -311,7 +335,7 @@ msgstr "Relevance"
 msgid "Remove"
 msgstr "Remove"
 
-#: src/app/(tabs)/downloads.tsx:93
+#: src/app/(tabs)/downloads.tsx:115
 msgid "Remove download"
 msgstr "Remove download"
 
@@ -341,8 +365,12 @@ msgid "Repeat one"
 msgstr "Repeat one"
 
 #: src/app/(tabs)/downloads.tsx:84
-msgid "Resume download"
-msgstr "Resume download"
+#~ msgid "Resume download"
+#~ msgstr "Resume download"
+
+#: src/app/(tabs)/downloads.tsx:106
+msgid "Retry download"
+msgstr "Retry download"
 
 #: src/components/mini-player.tsx:52
 #: src/components/playback-status.tsx:29
@@ -383,6 +411,10 @@ msgstr "Sleep timer"
 msgid "Sleep timer is off"
 msgstr "Sleep timer is off"
 
+#: src/app/(tabs)/downloads.tsx:75
+msgid "The download could not finish. Try again."
+msgstr "The download could not finish. Try again."
+
 #: src/components/screen-state.tsx:36
 msgid "This content requires a Bilibili account."
 msgstr "This content requires a Bilibili account."
@@ -403,6 +435,10 @@ msgstr "This video is unavailable."
 #: src/components/screen-state.tsx:51
 msgid "Try again"
 msgstr "Try again"
+
+#: src/app/(tabs)/downloads.tsx:38
+msgid "Try downloading this video again."
+msgstr "Try downloading this video again."
 
 #: src/components/playback-status.tsx:23
 msgid "Unable to play this video. Check your connection and try again."

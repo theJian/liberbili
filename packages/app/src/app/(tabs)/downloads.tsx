@@ -3,7 +3,7 @@ import { Cross, Pause, Play } from '@doodle-icons/react-native';
 import { useLingui } from '@lingui/react/macro';
 import { Image } from 'expo-image';
 import { useCallback } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ScreenState } from '@/components/screen-state';
@@ -13,7 +13,7 @@ import { usePlayer } from '@/state/player';
 import { useTheme } from '@/hooks/use-theme';
 
 export default function DownloadsScreen() {
-  const { downloads, pause, resume, remove } = useDownloads();
+  const { downloads, pause, resume, remove, verify } = useDownloads();
   const { t } = useLingui();
   const theme = useTheme();
   const { playLocal } = usePlayer();
@@ -21,17 +21,24 @@ export default function DownloadsScreen() {
     ({ item }: { item: DownloadItem }) => (
       <View style={[styles.row, { borderBottomColor: theme.border }]}>
         <Pressable
-          disabled={!item.fileUri}
-          onPress={() =>
-            item.fileUri &&
+          disabled={!item.fileUri || item.error === 'removeFailed'}
+          accessibilityRole="button"
+          accessibilityLabel={t`Play downloaded video`}
+          onPress={() => {
+            if (!item.fileUri || !verify(item.id)) return;
             void playLocal(
               {
                 ...item.video,
                 thumbnail: item.thumbnailUri ?? item.video.thumbnail,
               },
               item.fileUri,
-            )
-          }
+            ).catch(() =>
+              Alert.alert(
+                t`Could not play download`,
+                t`Try downloading this video again.`,
+              ),
+            );
+          }}
         >
           <Image
             source={{ uri: item.thumbnailUri ?? item.video.thumbnail }}
@@ -52,9 +59,22 @@ export default function DownloadsScreen() {
                   ? t`Paused`
                   : item.status === 'interrupted'
                     ? t`Interrupted`
-                    : t`Failed`}{' '}
+                    : item.status === 'queued'
+                      ? t`Queued`
+                      : t`Failed`}{' '}
             · {Math.round(item.progress * 100)}%
           </ThemedText>
+          {item.error ? (
+            <ThemedText type="small" themeColor="textSecondary">
+              {item.error === 'missingFile'
+                ? t`Downloaded file is missing. Download it again.`
+                : item.error === 'removeFailed'
+                  ? t`Could not remove download. Try again.`
+                  : item.error === 'pauseFailed'
+                    ? t`Could not pause the download. Try again.`
+                    : t`The download could not finish. Try again.`}
+            </ThemedText>
+          ) : null}
           <View
             style={[styles.track, { backgroundColor: theme.backgroundElement }]}
           >
@@ -69,7 +89,7 @@ export default function DownloadsScreen() {
             />
           </View>
         </View>
-        {item.status === 'downloading' ? (
+        {item.status === 'downloading' && item.error !== 'removeFailed' ? (
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={t`Pause download`}
@@ -78,10 +98,12 @@ export default function DownloadsScreen() {
           >
             <Pause size={20} />
           </Pressable>
-        ) : item.status !== 'completed' ? (
+        ) : item.status !== 'completed' &&
+          item.status !== 'queued' &&
+          item.error !== 'removeFailed' ? (
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={t`Resume download`}
+            accessibilityLabel={t`Retry download`}
             style={styles.control}
             onPress={() => void resume(item.id)}
           >
@@ -98,7 +120,7 @@ export default function DownloadsScreen() {
         </Pressable>
       </View>
     ),
-    [pause, playLocal, remove, resume, t, theme],
+    [pause, playLocal, remove, resume, t, theme, verify],
   );
   return (
     <SafeAreaView

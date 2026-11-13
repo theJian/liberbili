@@ -95,6 +95,18 @@ msgstr "继续观看"
 msgid "Could not open this link. Use a regular Bilibili video link or BV/av ID, check your connection, and try again."
 msgstr "无法打开此链接。请使用普通哔哩哔哩视频链接或 BV/av 号，检查网络后重试。"
 
+#: src/app/(tabs)/downloads.tsx:74
+msgid "Could not pause the download. Try again."
+msgstr "无法暂停下载，请重试。"
+
+#: src/app/(tabs)/downloads.tsx:37
+msgid "Could not play download"
+msgstr "无法播放下载视频"
+
+#: src/app/(tabs)/downloads.tsx:72
+msgid "Could not remove download. Try again."
+msgstr "无法移除下载，请重试。"
+
 #: src/app/video/[bvid].tsx:272
 msgid "Could not share video"
 msgstr "无法分享视频"
@@ -128,20 +140,24 @@ msgstr "简介"
 msgid "Download"
 msgstr "下载"
 
-#: src/app/(tabs)/downloads.tsx:48
+#: src/app/(tabs)/downloads.tsx:55
 msgid "Downloaded"
 msgstr "已下载"
 
-#: src/app/(tabs)/downloads.tsx:50
+#: src/app/(tabs)/downloads.tsx:70
+msgid "Downloaded file is missing. Download it again."
+msgstr "下载文件已丢失，请重新下载。"
+
+#: src/app/(tabs)/downloads.tsx:57
 msgid "Downloading"
 msgstr "下载中"
 
-#: src/app/(tabs)/downloads.tsx:108
+#: src/app/(tabs)/downloads.tsx:130
 #: src/app/(tabs)/library.tsx:50
 msgid "Downloads"
 msgstr "下载"
 
-#: src/app/(tabs)/downloads.tsx:55
+#: src/app/(tabs)/downloads.tsx:64
 msgid "Failed"
 msgstr "失败"
 
@@ -157,7 +173,7 @@ msgstr "历史记录保存在此设备上。下载的视频不会更新历史记
 #~ msgid "Home"
 #~ msgstr "首页"
 
-#: src/app/(tabs)/downloads.tsx:54
+#: src/app/(tabs)/downloads.tsx:61
 msgid "Interrupted"
 msgstr "已中断"
 
@@ -236,7 +252,7 @@ msgstr "粘贴哔哩哔哩视频链接、b23.tv 短链接或 BV/av 号。"
 msgid "Pause"
 msgstr "暂停"
 
-#: src/app/(tabs)/downloads.tsx:75
+#: src/app/(tabs)/downloads.tsx:95
 msgid "Pause download"
 msgstr "暂停下载"
 
@@ -245,7 +261,7 @@ msgstr "暂停下载"
 msgid "Pause watch history"
 msgstr "暂停记录观看历史"
 
-#: src/app/(tabs)/downloads.tsx:52
+#: src/app/(tabs)/downloads.tsx:59
 msgid "Paused"
 msgstr "已暂停"
 
@@ -258,6 +274,10 @@ msgstr "播放"
 #: src/app/playback.tsx:174
 msgid "Play a video or playlist to build your queue."
 msgstr "播放视频或播放列表以创建播放队列。"
+
+#: src/app/(tabs)/downloads.tsx:26
+msgid "Play downloaded video"
+msgstr "播放已下载视频"
 
 #: src/app/playback.tsx:36
 #: src/app/video/[bvid].tsx:230
@@ -290,6 +310,10 @@ msgstr "请重试。"
 msgid "Previous"
 msgstr "上一个"
 
+#: src/app/(tabs)/downloads.tsx:63
+msgid "Queued"
+msgstr "排队中"
+
 #: src/app/search.tsx:186
 msgid "Recent searches"
 msgstr "最近搜索"
@@ -311,7 +335,7 @@ msgstr "综合排序"
 msgid "Remove"
 msgstr "移除"
 
-#: src/app/(tabs)/downloads.tsx:93
+#: src/app/(tabs)/downloads.tsx:115
 msgid "Remove download"
 msgstr "移除下载"
 
@@ -341,8 +365,12 @@ msgid "Repeat one"
 msgstr "单个循环"
 
 #: src/app/(tabs)/downloads.tsx:84
-msgid "Resume download"
-msgstr "继续下载"
+#~ msgid "Resume download"
+#~ msgstr "继续下载"
+
+#: src/app/(tabs)/downloads.tsx:106
+msgid "Retry download"
+msgstr "重试下载"
 
 #: src/components/mini-player.tsx:52
 #: src/components/playback-status.tsx:29
@@ -383,6 +411,10 @@ msgstr "睡眠定时"
 msgid "Sleep timer is off"
 msgstr "睡眠定时已关闭"
 
+#: src/app/(tabs)/downloads.tsx:75
+msgid "The download could not finish. Try again."
+msgstr "下载未能完成，请重试。"
+
 #: src/components/screen-state.tsx:36
 msgid "This content requires a Bilibili account."
 msgstr "该内容需要登录哔哩哔哩账号。"
@@ -403,6 +435,10 @@ msgstr "该视频不可用。"
 #: src/components/screen-state.tsx:51
 msgid "Try again"
 msgstr "重试"
+
+#: src/app/(tabs)/downloads.tsx:38
+msgid "Try downloading this video again."
+msgstr "请重新下载此视频。"
 
 #: src/components/playback-status.tsx:23
 msgid "Unable to play this video. Check your connection and try again."
