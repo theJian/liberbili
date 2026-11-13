@@ -5,6 +5,7 @@
  */
 import {
   ChevronsRight,
+  Link,
   Clock,
   Download,
   List,
@@ -28,8 +29,13 @@ export default function LibraryScreen() {
   const items: {
     title: string;
     icon: IconComponent;
-    route: '/history' | '/(tabs)/playlists' | '/(tabs)/downloads';
+    route:
+      | '/open-video'
+      | '/history'
+      | '/(tabs)/playlists'
+      | '/(tabs)/downloads';
   }[] = [
+    { title: t`Open video link`, icon: Link, route: '/open-video' },
     {
       title: t`Watch history`,
       icon: Clock,

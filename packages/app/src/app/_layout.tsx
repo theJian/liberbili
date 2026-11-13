@@ -50,6 +50,10 @@ export default function RootLayout() {
                       options={{ headerShown: false }}
                     />
                     <Stack.Screen
+                      name="open-video"
+                      options={{ presentation: 'modal' }}
+                    />
+                    <Stack.Screen
                       name="playlist/[id]"
                       options={{ title: '' }}
                     />

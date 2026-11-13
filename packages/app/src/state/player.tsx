@@ -49,7 +49,12 @@ import {
 import { storage } from '@/storage';
 
 const PREFERENCES_KEY = '@liberbili/playback/v1';
-type Selection = { video: VideoSummary; part?: VideoPart; uri?: string };
+type Selection = {
+  video: VideoSummary;
+  part?: VideoPart;
+  uri?: string;
+  position?: number;
+};
 type Value = QueueState &
   PlaybackPreferences & {
     player: VideoPlayer;
@@ -71,8 +76,12 @@ type Value = QueueState &
      * or autoplay after replacement completes.
      */
     play(video: VideoSummary, queue?: VideoSummary[]): Promise<void>;
-    /** Replaces the queue with [video] and resumes part; an unavailable cid sets error. */
-    playPart(video: VideoSummary, part: VideoPart): Promise<void>;
+    /** Loads part at an explicit position or its saved progress; retries retain the position. */
+    playPart(
+      video: VideoSummary,
+      part: VideoPart,
+      position?: number,
+    ): Promise<void>;
     /** Loads a download uri with queue [video], without resuming or recording its progress. */
     playLocal(video: VideoSummary, uri: string): Promise<void>;
     /** Retries an unready/failed selection; otherwise pauses, plays, or replays at the end. */
@@ -167,7 +176,7 @@ export function PlayerProvider({ children }: PropsWithChildren) {
       active.current = undefined;
       player.pause();
       try {
-        const { video, uri, part } = nextSelection;
+        const { video, uri, part, position: linkedPosition } = nextSelection;
         let source;
         let selected: VideoPart | undefined;
         if (uri) source = { uri, contentType: 'progressive' as const };
@@ -203,11 +212,11 @@ export function PlayerProvider({ children }: PropsWithChildren) {
             const entry = getEntries().find(
               (item) => historyKey(item) === `${video.bvid}:${selected.cid}`,
             );
-            const position = resumePosition(
-              entry,
-              player.duration || selected.duration,
-            );
-            if (position) player.seekBy(position - player.currentTime);
+            const position =
+              linkedPosition ??
+              resumePosition(entry, player.duration || selected.duration);
+            if (position || linkedPosition === 0)
+              player.seekBy(position - player.currentTime);
             active.current = { video, part: selected, started: false };
           }
           ready.current = true;
@@ -232,9 +241,9 @@ export function PlayerProvider({ children }: PropsWithChildren) {
     [load, updateQueue],
   );
   const playPart = useCallback(
-    async (video: VideoSummary, part: VideoPart) => {
+    async (video: VideoSummary, part: VideoPart, position?: number) => {
       updateQueue({ queue: [video], index: 0 });
-      await load({ video, part });
+      await load({ video, part, position });
     },
     [load, updateQueue],
   );

@@ -1,11 +1,13 @@
 /**
  * VideoScreen keeps `/video/[bvid]` details aligned with shared playback.
  * While focused, it uses videoRouteAction to open each route once matching
- * details arrive, starting playback only if the current BV ID differs. Queue
+ * details arrive, honoring explicit part/time changes even for the current video. Queue
  * changes are followed through router.setParams; synchronization waits for those
  * parameters to arrive, and new route opens wait for matching details.
  *
- * PlayerProvider owns playback; this screen attaches its VideoView while focused
+ * PlayerProvider owns playback and applies linked positions within its serialized
+ * source transitions so retries retain the position and superseded loads cannot seek.
+ * This screen attaches its VideoView while focused
  * and offers parts, downloads, playlists, related videos, and paginated comments.
  */
 import { FlashList } from '@shopify/flash-list';
@@ -17,7 +19,9 @@ import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Pressable,
+  Share,
   ScrollView,
   StyleSheet,
   View,
@@ -39,10 +43,18 @@ import { useDownloads } from '@/state/downloads';
 import { usePlayer, VideoView } from '@/state/player';
 import { usePlaylists } from '@/state/playlists';
 import { useTheme } from '@/hooks/use-theme';
+import { canonicalVideoUrl, playVideoReference } from '@/lib/video-links';
 
 export default function VideoScreen() {
-  const { bvid } = useLocalSearchParams<{ bvid: string }>();
-  const detailResource = useResource(() => bilibiliApi.getVideo(bvid), [bvid]);
+  const {
+    bvid,
+    p: pageParam,
+    t: timeParam,
+  } = useLocalSearchParams<{ bvid: string; p?: string; t?: string }>();
+  const detailResource = useResource(async () => {
+    canonicalVideoUrl(bvid);
+    return bilibiliApi.getVideo(bvid);
+  }, [bvid]);
   const detail =
     detailResource.data?.bvid === bvid ? detailResource.data : undefined;
   const { i18n, t } = useLingui();
@@ -69,6 +81,7 @@ export default function VideoScreen() {
   const [nextCursor, setNextCursor] = useState<string>();
   const [commentLoading, setCommentLoading] = useState(false);
   const [choosingPlaylist, setChoosingPlaylist] = useState(false);
+  const [playbackError, setPlaybackError] = useState<Error>();
   const summary = useMemo<VideoSummary | undefined>(
     () =>
       detail && {
@@ -84,13 +97,48 @@ export default function VideoScreen() {
       },
     [detail],
   );
+  const routeKey = `${bvid}:${pageParam ?? ''}:${timeParam ?? ''}`;
   const openedBvid = useRef<string | undefined>(undefined);
+  const openedRoute = useRef<string | undefined>(undefined);
   const pendingBvid = useRef<string | undefined>(undefined);
   const previousCurrent = useRef(current?.bvid);
+  const linkedGeneration = useRef(0);
+  const activeRoute = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    activeRoute.current = focused ? routeKey : undefined;
+    return () => {
+      activeRoute.current = undefined;
+    };
+  }, [focused, routeKey]);
+  const openLinkedVideo = useCallback(async () => {
+    if (!summary || !detail || activeRoute.current !== routeKey) return;
+    const generation = ++linkedGeneration.current;
+    try {
+      await playVideoReference(
+        summary,
+        detail.parts,
+        { page: pageParam, timestamp: timeParam },
+        { play, playPart },
+      );
+      if (
+        linkedGeneration.current === generation &&
+        activeRoute.current === routeKey
+      )
+        setPlaybackError(undefined);
+    } catch {
+      if (
+        linkedGeneration.current === generation &&
+        activeRoute.current === routeKey
+      )
+        setPlaybackError(new Error(t`Could not start playback. Try again.`));
+    }
+  }, [detail, pageParam, play, playPart, routeKey, summary, t, timeParam]);
   useEffect(() => {
     const action = videoRouteAction({
       focused,
       bvid,
+      routeKey,
+      openedRoute: openedRoute.current,
       summaryBvid: summary?.bvid,
       currentBvid: current?.bvid,
       previousCurrent: previousCurrent.current,
@@ -102,16 +150,36 @@ export default function VideoScreen() {
     if (pendingBvid.current === bvid) pendingBvid.current = undefined;
     previousCurrent.current = current?.bvid;
     if (action.type === 'follow') {
+      linkedGeneration.current += 1;
+      activeRoute.current = undefined;
       openedBvid.current = action.bvid;
+      openedRoute.current = `${action.bvid}::`;
       pendingBvid.current = action.bvid;
       router.setParams({ bvid: action.bvid, p: undefined, t: undefined });
       return;
     }
     if (action.type === 'open' && summary) {
       openedBvid.current = bvid;
-      if (current?.bvid !== bvid) void play(summary);
+      openedRoute.current = routeKey;
+      if (
+        current?.bvid !== bvid ||
+        pageParam !== undefined ||
+        timeParam !== undefined
+      )
+        void Promise.resolve().then(() => {
+          if (activeRoute.current === routeKey) return openLinkedVideo();
+        });
     }
-  }, [bvid, current?.bvid, focused, play, summary]);
+  }, [
+    bvid,
+    current?.bvid,
+    focused,
+    openLinkedVideo,
+    pageParam,
+    routeKey,
+    summary,
+    timeParam,
+  ]);
   const loadComments = useCallback(async () => {
     const cursor = nextCursor ?? initialComments.data?.next;
     if (!detail || commentLoading || !cursor) return;
@@ -186,6 +254,29 @@ export default function VideoScreen() {
           ) : null}
           <ThemedText type="smallBold">{detail.uploader}</ThemedText>
         </Pressable>
+        {playbackError ? (
+          <ScreenState
+            error={playbackError}
+            onRetry={() => void openLinkedVideo()}
+          />
+        ) : null}
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => {
+            void Share.share({
+              message: canonicalVideoUrl(detail.bvid),
+              title: detail.title,
+            }).catch(() => {
+              Alert.alert(t`Could not share video`, t`Please try again.`);
+            });
+          }}
+          style={[
+            styles.action,
+            { backgroundColor: theme.backgroundElement, marginHorizontal: 16 },
+          ]}
+        >
+          <ThemedText>{t`Share video`}</ThemedText>
+        </Pressable>
         <View style={styles.actions}>
           <Pressable
             onPress={() => setChoosingPlaylist((value) => !value)}
@@ -243,7 +334,14 @@ export default function VideoScreen() {
               {detail.parts.map((part: VideoPart) => (
                 <Pressable
                   key={part.cid}
-                  onPress={() => void playPart(summary, part)}
+                  onPress={() => {
+                    linkedGeneration.current += 1;
+                    void playPart(summary, part).catch(() =>
+                      setPlaybackError(
+                        new Error(t`Could not start playback. Try again.`),
+                      ),
+                    );
+                  }}
                   style={[
                     styles.part,
                     { backgroundColor: theme.backgroundElement },

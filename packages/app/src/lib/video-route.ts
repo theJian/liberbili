@@ -7,6 +7,9 @@
 type RouteState = {
   focused: boolean;
   bvid: string;
+  /** Full BV ID/part/time identity, when the route contains a linked position. */
+  routeKey?: string;
+  openedRoute?: string;
   summaryBvid?: string;
   currentBvid?: string;
   /** Player BV ID remembered from the screen's last processed synchronization. */
@@ -24,14 +27,20 @@ type RouteAction =
 export function videoRouteAction(state: RouteState): RouteAction {
   if (!state.focused || (state.pendingBvid && state.pendingBvid !== state.bvid))
     return { type: 'wait' };
+  const changedRoute =
+    state.routeKey !== undefined && state.openedRoute !== state.routeKey;
   if (
+    !changedRoute &&
     state.openedBvid === state.bvid &&
     state.currentBvid &&
     state.previousCurrent === state.openedBvid &&
     state.currentBvid !== state.openedBvid
   )
     return { type: 'follow', bvid: state.currentBvid };
-  if (state.summaryBvid === state.bvid && state.openedBvid !== state.bvid)
+  if (
+    state.summaryBvid === state.bvid &&
+    (state.openedBvid !== state.bvid || changedRoute)
+  )
     return { type: 'open' };
   return { type: 'wait' };
 }
