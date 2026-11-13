@@ -21,6 +21,10 @@ msgstr "{0, plural, other {# 条回复}}"
 msgid "{0, plural, one {# video} other {# videos}}"
 msgstr "{0, plural, other {# 个视频}}"
 
+#: src/app/playback.tsx:138
+msgid "{minutes} minutes"
+msgstr "{minutes} 分钟"
+
 #: src/app/search.tsx:97
 msgid "10–30 minutes"
 msgstr "10–30分钟"
@@ -29,17 +33,22 @@ msgstr "10–30分钟"
 msgid "30–60 minutes"
 msgstr "30–60分钟"
 
-#: src/app/video/[bvid].tsx:152
+#: src/app/video/[bvid].tsx:196
 msgid "Add to playlist"
 msgstr "添加到播放列表"
 
-#: src/app/video/[bvid].tsx:230
+#: src/app/video/[bvid].tsx:274
 msgid "All comments"
 msgstr "全部评论"
 
 #: src/app/search.tsx:95
 msgid "Any duration"
 msgstr "全部时长"
+
+#: src/app/playback.tsx:116
+#: src/app/playback.tsx:118
+msgid "Autoplay queue"
+msgstr "自动连播队列"
 
 #: src/components/screen-state.tsx:30
 msgid "Bilibili blocked this request. Please retry."
@@ -52,6 +61,10 @@ msgstr "哔哩哔哩返回了异常数据。"
 #: src/app/history.tsx:76
 msgid "Cancel"
 msgstr "取消"
+
+#: src/app/playback.tsx:156
+msgid "Cancel sleep timer"
+msgstr "取消睡眠定时"
 
 #: src/app/history.tsx:78
 #: src/app/history.tsx:87
@@ -66,7 +79,7 @@ msgstr "清空搜索"
 msgid "Clear watch history?"
 msgstr "清空观看历史？"
 
-#: src/app/video/[bvid].tsx:121
+#: src/app/video/[bvid].tsx:165
 msgid "Comments"
 msgstr "评论"
 
@@ -78,7 +91,7 @@ msgstr "已看完"
 msgid "Continue watching"
 msgstr "继续观看"
 
-#: src/app/video/[bvid].tsx:182
+#: src/app/video/[bvid].tsx:226
 msgid "Create a playlist first."
 msgstr "请先创建播放列表。"
 
@@ -94,11 +107,11 @@ msgstr "创作者"
 msgid "Delete"
 msgstr "删除"
 
-#: src/app/video/[bvid].tsx:220
+#: src/app/video/[bvid].tsx:264
 msgid "Description"
 msgstr "简介"
 
-#: src/app/video/[bvid].tsx:159
+#: src/app/video/[bvid].tsx:203
 msgid "Download"
 msgstr "下载"
 
@@ -147,9 +160,13 @@ msgstr "语言"
 msgid "Library"
 msgstr "资料库"
 
-#: src/app/video/[bvid].tsx:120
+#: src/app/video/[bvid].tsx:164
 msgid "likes"
 msgstr "点赞"
+
+#: src/components/playback-status.tsx:12
+msgid "Loading video"
+msgstr "正在加载视频"
 
 #: src/app/search.tsx:92
 msgid "Most saved"
@@ -159,11 +176,20 @@ msgstr "最多收藏"
 msgid "Most viewed"
 msgstr "最多播放"
 
+#: src/app/playback.tsx:207
+msgid "Move down"
+msgstr "下移"
+
+#: src/app/playback.tsx:199
+msgid "Move up"
+msgstr "上移"
+
 #: src/app/search.tsx:91
 msgid "Newest"
 msgstr "最新发布"
 
-#: src/components/mini-player.tsx:60
+#: src/app/playback.tsx:69
+#: src/components/mini-player.tsx:63
 msgid "Next"
 msgstr "下一个"
 
@@ -175,11 +201,12 @@ msgstr "这里还没有内容"
 msgid "Over 60 minutes"
 msgstr "60分钟以上"
 
-#: src/app/video/[bvid].tsx:191
+#: src/app/video/[bvid].tsx:235
 msgid "Parts"
 msgstr "分P"
 
-#: src/components/mini-player.tsx:52
+#: src/app/playback.tsx:61
+#: src/components/mini-player.tsx:47
 msgid "Pause"
 msgstr "暂停"
 
@@ -196,10 +223,28 @@ msgstr "暂停记录观看历史"
 msgid "Paused"
 msgstr "已暂停"
 
+#: src/app/playback.tsx:61
 #: src/app/playlist/[id].tsx:52
-#: src/components/mini-player.tsx:52
+#: src/components/mini-player.tsx:47
 msgid "Play"
 msgstr "播放"
+
+#: src/app/playback.tsx:169
+msgid "Play a video or playlist to build your queue."
+msgstr "播放视频或播放列表以创建播放队列。"
+
+#: src/app/playback.tsx:31
+#: src/app/video/[bvid].tsx:158
+msgid "Playback and queue"
+msgstr "播放与队列"
+
+#: src/app/playback.tsx:76
+msgid "Playback speed"
+msgstr "播放速度"
+
+#: src/app/playback.tsx:145
+msgid "Playback stops at"
+msgstr "播放将停止于"
 
 #: src/app/(tabs)/playlists.tsx:63
 msgid "Playlist name"
@@ -209,6 +254,11 @@ msgstr "播放列表名称"
 #: src/app/(tabs)/playlists.tsx:55
 msgid "Playlists"
 msgstr "播放列表"
+
+#: src/app/playback.tsx:48
+#: src/app/playback.tsx:53
+msgid "Previous"
+msgstr "上一个"
 
 #: src/app/search.tsx:186
 msgid "Recent searches"
@@ -226,6 +276,7 @@ msgstr "相关推荐"
 msgid "Relevance"
 msgstr "综合排序"
 
+#: src/app/playback.tsx:214
 #: src/app/playlist/[id].tsx:35
 msgid "Remove"
 msgstr "移除"
@@ -243,9 +294,30 @@ msgstr "从观看历史中移除"
 msgid "Remove search: {text}"
 msgstr "删除搜索：{text}"
 
+#: src/app/playback.tsx:98
+msgid "Repeat"
+msgstr "循环播放"
+
+#: src/app/playback.tsx:17
+msgid "Repeat all"
+msgstr "全部循环"
+
+#: src/app/playback.tsx:15
+msgid "Repeat off"
+msgstr "关闭循环"
+
+#: src/app/playback.tsx:16
+msgid "Repeat one"
+msgstr "单个循环"
+
 #: src/app/(tabs)/downloads.tsx:84
 msgid "Resume download"
 msgstr "继续下载"
+
+#: src/components/mini-player.tsx:47
+#: src/components/playback-status.tsx:25
+msgid "Retry playback"
+msgstr "重试播放"
 
 #: src/app/(tabs)/index.tsx:51
 #: src/app/search.tsx:110
@@ -269,6 +341,14 @@ msgstr "收起相关推荐"
 msgid "Show more related videos"
 msgstr "展开相关推荐"
 
+#: src/app/playback.tsx:129
+msgid "Sleep timer"
+msgstr "睡眠定时"
+
+#: src/app/playback.tsx:163
+msgid "Sleep timer is off"
+msgstr "睡眠定时已关闭"
+
 #: src/components/screen-state.tsx:36
 msgid "This content requires a Bilibili account."
 msgstr "该内容需要登录哔哩哔哩账号。"
@@ -289,6 +369,10 @@ msgstr "该视频不可用。"
 msgid "Try again"
 msgstr "重试"
 
+#: src/components/playback-status.tsx:19
+msgid "Unable to play this video. Check your connection and try again."
+msgstr "无法播放此视频，请检查网络连接后重试。"
+
 #: src/components/screen-state.tsx:39
 #: src/components/screen-state.tsx:40
 msgid "Unable to reach Bilibili."
@@ -302,6 +386,10 @@ msgstr "无法继续播放此视频，请重试。"
 msgid "Under 10 minutes"
 msgstr "10分钟以内"
 
+#: src/app/playback.tsx:167
+msgid "Up next"
+msgstr "待播队列"
+
 #: src/app/creator/[id].tsx:104
 msgid "Uploads"
 msgstr "投稿视频"
@@ -311,11 +399,11 @@ msgid "Videos you watch will appear here."
 msgstr "观看过的视频会显示在这里。"
 
 #. placeholder {0}: detail.uploader
-#: src/app/video/[bvid].tsx:126
+#: src/app/video/[bvid].tsx:170
 msgid "View creator: {0}"
 msgstr "查看创作者：{0}"
 
-#: src/app/video/[bvid].tsx:119
+#: src/app/video/[bvid].tsx:163
 #: src/components/video-card.tsx:54
 msgid "views"
 msgstr "播放"
@@ -324,3 +412,7 @@ msgstr "播放"
 #: src/app/history.tsx:44
 msgid "Watch history"
 msgstr "观看历史"
+
+#: src/app/playback.tsx:126
+msgid "When autoplay is off, playback stops after the current video, including repeats."
+msgstr "关闭自动连播后，当前视频结束时将停止播放，包括循环播放。"

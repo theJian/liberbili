@@ -21,6 +21,10 @@ msgstr "{0, plural, one {# reply} other {# replies}}"
 msgid "{0, plural, one {# video} other {# videos}}"
 msgstr "{0, plural, one {# video} other {# videos}}"
 
+#: src/app/playback.tsx:138
+msgid "{minutes} minutes"
+msgstr "{minutes} minutes"
+
 #: src/app/search.tsx:97
 msgid "10–30 minutes"
 msgstr "10–30 minutes"
@@ -29,17 +33,22 @@ msgstr "10–30 minutes"
 msgid "30–60 minutes"
 msgstr "30–60 minutes"
 
-#: src/app/video/[bvid].tsx:152
+#: src/app/video/[bvid].tsx:196
 msgid "Add to playlist"
 msgstr "Add to playlist"
 
-#: src/app/video/[bvid].tsx:230
+#: src/app/video/[bvid].tsx:274
 msgid "All comments"
 msgstr "All comments"
 
 #: src/app/search.tsx:95
 msgid "Any duration"
 msgstr "Any duration"
+
+#: src/app/playback.tsx:116
+#: src/app/playback.tsx:118
+msgid "Autoplay queue"
+msgstr "Autoplay queue"
 
 #: src/components/screen-state.tsx:30
 msgid "Bilibili blocked this request. Please retry."
@@ -52,6 +61,10 @@ msgstr "Bilibili returned an unexpected response."
 #: src/app/history.tsx:76
 msgid "Cancel"
 msgstr "Cancel"
+
+#: src/app/playback.tsx:156
+msgid "Cancel sleep timer"
+msgstr "Cancel sleep timer"
 
 #: src/app/history.tsx:78
 #: src/app/history.tsx:87
@@ -66,7 +79,7 @@ msgstr "Clear searches"
 msgid "Clear watch history?"
 msgstr "Clear watch history?"
 
-#: src/app/video/[bvid].tsx:121
+#: src/app/video/[bvid].tsx:165
 msgid "Comments"
 msgstr "Comments"
 
@@ -78,7 +91,7 @@ msgstr "Completed"
 msgid "Continue watching"
 msgstr "Continue watching"
 
-#: src/app/video/[bvid].tsx:182
+#: src/app/video/[bvid].tsx:226
 msgid "Create a playlist first."
 msgstr "Create a playlist first."
 
@@ -94,11 +107,11 @@ msgstr "Creator"
 msgid "Delete"
 msgstr "Delete"
 
-#: src/app/video/[bvid].tsx:220
+#: src/app/video/[bvid].tsx:264
 msgid "Description"
 msgstr "Description"
 
-#: src/app/video/[bvid].tsx:159
+#: src/app/video/[bvid].tsx:203
 msgid "Download"
 msgstr "Download"
 
@@ -147,9 +160,13 @@ msgstr "Language"
 msgid "Library"
 msgstr "Library"
 
-#: src/app/video/[bvid].tsx:120
+#: src/app/video/[bvid].tsx:164
 msgid "likes"
 msgstr "likes"
+
+#: src/components/playback-status.tsx:12
+msgid "Loading video"
+msgstr "Loading video"
 
 #: src/app/search.tsx:92
 msgid "Most saved"
@@ -159,11 +176,20 @@ msgstr "Most saved"
 msgid "Most viewed"
 msgstr "Most viewed"
 
+#: src/app/playback.tsx:207
+msgid "Move down"
+msgstr "Move down"
+
+#: src/app/playback.tsx:199
+msgid "Move up"
+msgstr "Move up"
+
 #: src/app/search.tsx:91
 msgid "Newest"
 msgstr "Newest"
 
-#: src/components/mini-player.tsx:60
+#: src/app/playback.tsx:69
+#: src/components/mini-player.tsx:63
 msgid "Next"
 msgstr "Next"
 
@@ -175,11 +201,12 @@ msgstr "Nothing here yet"
 msgid "Over 60 minutes"
 msgstr "Over 60 minutes"
 
-#: src/app/video/[bvid].tsx:191
+#: src/app/video/[bvid].tsx:235
 msgid "Parts"
 msgstr "Parts"
 
-#: src/components/mini-player.tsx:52
+#: src/app/playback.tsx:61
+#: src/components/mini-player.tsx:47
 msgid "Pause"
 msgstr "Pause"
 
@@ -196,10 +223,28 @@ msgstr "Pause watch history"
 msgid "Paused"
 msgstr "Paused"
 
+#: src/app/playback.tsx:61
 #: src/app/playlist/[id].tsx:52
-#: src/components/mini-player.tsx:52
+#: src/components/mini-player.tsx:47
 msgid "Play"
 msgstr "Play"
+
+#: src/app/playback.tsx:169
+msgid "Play a video or playlist to build your queue."
+msgstr "Play a video or playlist to build your queue."
+
+#: src/app/playback.tsx:31
+#: src/app/video/[bvid].tsx:158
+msgid "Playback and queue"
+msgstr "Playback and queue"
+
+#: src/app/playback.tsx:76
+msgid "Playback speed"
+msgstr "Playback speed"
+
+#: src/app/playback.tsx:145
+msgid "Playback stops at"
+msgstr "Playback stops at"
 
 #: src/app/(tabs)/playlists.tsx:63
 msgid "Playlist name"
@@ -209,6 +254,11 @@ msgstr "Playlist name"
 #: src/app/(tabs)/playlists.tsx:55
 msgid "Playlists"
 msgstr "Playlists"
+
+#: src/app/playback.tsx:48
+#: src/app/playback.tsx:53
+msgid "Previous"
+msgstr "Previous"
 
 #: src/app/search.tsx:186
 msgid "Recent searches"
@@ -226,6 +276,7 @@ msgstr "Related videos"
 msgid "Relevance"
 msgstr "Relevance"
 
+#: src/app/playback.tsx:214
 #: src/app/playlist/[id].tsx:35
 msgid "Remove"
 msgstr "Remove"
@@ -243,9 +294,30 @@ msgstr "Remove from watch history"
 msgid "Remove search: {text}"
 msgstr "Remove search: {text}"
 
+#: src/app/playback.tsx:98
+msgid "Repeat"
+msgstr "Repeat"
+
+#: src/app/playback.tsx:17
+msgid "Repeat all"
+msgstr "Repeat all"
+
+#: src/app/playback.tsx:15
+msgid "Repeat off"
+msgstr "Repeat off"
+
+#: src/app/playback.tsx:16
+msgid "Repeat one"
+msgstr "Repeat one"
+
 #: src/app/(tabs)/downloads.tsx:84
 msgid "Resume download"
 msgstr "Resume download"
+
+#: src/components/mini-player.tsx:47
+#: src/components/playback-status.tsx:25
+msgid "Retry playback"
+msgstr "Retry playback"
 
 #: src/app/(tabs)/index.tsx:51
 #: src/app/search.tsx:110
@@ -269,6 +341,14 @@ msgstr "Show fewer related videos"
 msgid "Show more related videos"
 msgstr "Show more related videos"
 
+#: src/app/playback.tsx:129
+msgid "Sleep timer"
+msgstr "Sleep timer"
+
+#: src/app/playback.tsx:163
+msgid "Sleep timer is off"
+msgstr "Sleep timer is off"
+
 #: src/components/screen-state.tsx:36
 msgid "This content requires a Bilibili account."
 msgstr "This content requires a Bilibili account."
@@ -289,6 +369,10 @@ msgstr "This video is unavailable."
 msgid "Try again"
 msgstr "Try again"
 
+#: src/components/playback-status.tsx:19
+msgid "Unable to play this video. Check your connection and try again."
+msgstr "Unable to play this video. Check your connection and try again."
+
 #: src/components/screen-state.tsx:39
 #: src/components/screen-state.tsx:40
 msgid "Unable to reach Bilibili."
@@ -302,6 +386,10 @@ msgstr "Unable to resume this video. Try again."
 msgid "Under 10 minutes"
 msgstr "Under 10 minutes"
 
+#: src/app/playback.tsx:167
+msgid "Up next"
+msgstr "Up next"
+
 #: src/app/creator/[id].tsx:104
 msgid "Uploads"
 msgstr "Uploads"
@@ -311,11 +399,11 @@ msgid "Videos you watch will appear here."
 msgstr "Videos you watch will appear here."
 
 #. placeholder {0}: detail.uploader
-#: src/app/video/[bvid].tsx:126
+#: src/app/video/[bvid].tsx:170
 msgid "View creator: {0}"
 msgstr "View creator: {0}"
 
-#: src/app/video/[bvid].tsx:119
+#: src/app/video/[bvid].tsx:163
 #: src/components/video-card.tsx:54
 msgid "views"
 msgstr "views"
@@ -324,3 +412,7 @@ msgstr "views"
 #: src/app/history.tsx:44
 msgid "Watch history"
 msgstr "Watch history"
+
+#: src/app/playback.tsx:126
+msgid "When autoplay is off, playback stops after the current video, including repeats."
+msgstr "When autoplay is off, playback stops after the current video, including repeats."
