@@ -1,3 +1,9 @@
+/**
+ * Shares the native player, playback preferences, transient queue, and sleep timer.
+ * Mount beneath HistoryProvider. Streamed videos resume and record per-part
+ * history; local downloads lack a part identity and do neither. Source changes
+ * are serialized, and superseded loads cannot seek or autoplay a newer selection.
+ */
 import { useVideoPlayer, type VideoPlayer, VideoView } from 'expo-video';
 import {
   createContext,
@@ -11,6 +17,12 @@ import {
 } from 'react';
 import { AppState } from 'react-native';
 import type { VideoPart, VideoSummary } from '@liberbili/api/types';
+import {
+  historyKey,
+  resumePosition,
+  selectHistoryPart,
+} from '@/lib/watch-history';
+import { useHistory } from '@/state/history';
 import { bilibiliApi } from '@/lib/bilibili';
 import { applyPlaybackRate } from '@/lib/native-player';
 import {
@@ -39,8 +51,11 @@ type Value = QueueState &
     loading: boolean;
     error?: string;
     sleepUntil?: number;
+    /** Starts the latest saved part, resuming eligible history. Load failures set error. */
     play(video: VideoSummary, queue?: VideoSummary[]): Promise<void>;
+    /** Resumes the requested part; an unavailable cid sets error. */
     playPart(video: VideoSummary, part: VideoPart): Promise<void>;
+    /** Plays a download without applying or recording streamed progress. */
     playLocal(video: VideoSummary, uri: string): Promise<void>;
     toggle(): void;
     next(): void;
@@ -55,9 +70,14 @@ type Value = QueueState &
 const Context = createContext<Value | null>(null);
 
 export function PlayerProvider({ children }: PropsWithChildren) {
+  const { getEntries, record } = useHistory();
+  const active = useRef<
+    { video: VideoSummary; part: VideoPart; started: boolean } | undefined
+  >(undefined);
   const player = useVideoPlayer(null, (instance) => {
     instance.staysActiveInBackground = true;
     instance.showNowPlayingNotification = true;
+    instance.timeUpdateEventInterval = 5;
   });
   const [state, setState] = useState<QueueState>({ queue: [], index: -1 });
   const latest = useRef(state);
@@ -88,6 +108,25 @@ export function PlayerProvider({ children }: PropsWithChildren) {
     applyPlaybackRate(player, preferences.speed);
   }, [player, preferences]);
 
+  const saveProgress = useCallback(
+    (completed = false) => {
+      const item = active.current;
+      if (!item?.started || !Number.isFinite(player.currentTime)) return;
+      const duration =
+        player.duration > 0 ? player.duration : item.part.duration;
+      record({
+        video: item.video,
+        part: item.part,
+        position: completed ? duration : Math.max(0, player.currentTime),
+        duration,
+        watchedAt: Date.now(),
+        completed,
+      });
+      if (completed) item.started = false;
+    },
+    [player, record],
+  );
+
   const load = useCallback(
     async (nextSelection: Selection) => {
       const token = transitions.begin();
@@ -95,16 +134,22 @@ export function PlayerProvider({ children }: PropsWithChildren) {
       selection.current = nextSelection;
       setLoading(true);
       setError(undefined);
+      saveProgress();
+      active.current = undefined;
       player.pause();
       try {
         const { video, uri, part } = nextSelection;
         let source;
+        let selected: VideoPart | undefined;
         if (uri) source = { uri, contentType: 'progressive' as const };
         else {
           const detail = await bilibiliApi.getVideo(video.bvid);
-          const selected = part
-            ? detail.parts.find((item) => item.cid === part.cid)
-            : detail.parts[0];
+          selected = selectHistoryPart(
+            detail.parts,
+            getEntries(),
+            video.bvid,
+            part,
+          );
           if (!selected) throw new Error('Video part unavailable');
           const streams = await bilibiliApi.getProgressiveStreams(selected);
           if (!streams[0]) throw new Error('No compatible MP4 stream');
@@ -125,6 +170,17 @@ export function PlayerProvider({ children }: PropsWithChildren) {
           }),
         );
         if (applied) {
+          if (selected) {
+            const entry = getEntries().find(
+              (item) => historyKey(item) === `${video.bvid}:${selected.cid}`,
+            );
+            const position = resumePosition(
+              entry,
+              player.duration || selected.duration,
+            );
+            if (position) player.seekBy(position - player.currentTime);
+            active.current = { video, part: selected, started: false };
+          }
           ready.current = true;
           setError(undefined);
           applyPlaybackRate(player, speedRef.current);
@@ -136,7 +192,7 @@ export function PlayerProvider({ children }: PropsWithChildren) {
         if (transitions.isCurrent(token)) setLoading(false);
       }
     },
-    [player, transitions],
+    [getEntries, player, saveProgress, transitions],
   );
 
   const play = useCallback(
@@ -202,6 +258,8 @@ export function PlayerProvider({ children }: PropsWithChildren) {
         const token = transitions.begin();
         ready.current = false;
         selection.current = undefined;
+        saveProgress();
+        active.current = undefined;
         player.pause();
         setLoading(false);
         setError(undefined);
@@ -212,7 +270,7 @@ export function PlayerProvider({ children }: PropsWithChildren) {
           });
       }
     },
-    [load, player, transitions, updateQueue],
+    [load, player, saveProgress, transitions, updateQueue],
   );
   const move = useCallback(
     (from: number, to: number) =>
@@ -247,8 +305,22 @@ export function PlayerProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     const playing = player.addListener(
       'playingChange',
-      ({ isPlaying: value }) => setIsPlaying(value),
+      ({ isPlaying: value }) => {
+        setIsPlaying(value);
+        if (value && ready.current && active.current)
+          active.current.started = true;
+        if (!value) saveProgress();
+      },
     );
+    const progress = player.addListener('timeUpdate', () => {
+      if (ready.current && player.playing && active.current) {
+        active.current.started = true;
+        saveProgress();
+      }
+    });
+    const background = AppState.addEventListener('change', (state) => {
+      if (state !== 'active') saveProgress();
+    });
     const status = player.addListener('statusChange', ({ status: value }) => {
       if (value === 'error') {
         setError('playback');
@@ -257,6 +329,7 @@ export function PlayerProvider({ children }: PropsWithChildren) {
     });
     const ended = player.addListener('playToEnd', () => {
       if (!ready.current) return;
+      saveProgress(true);
       if (sleepExpired(sleepRef.current, Date.now())) {
         player.pause();
         setSleepTimer();
@@ -275,8 +348,10 @@ export function PlayerProvider({ children }: PropsWithChildren) {
       playing.remove();
       status.remove();
       ended.remove();
+      progress.remove();
+      background.remove();
     };
-  }, [player, preferences, select, setSleepTimer]);
+  }, [player, preferences, saveProgress, select, setSleepTimer]);
   const value = useMemo(
     () => ({
       ...state,
@@ -325,6 +400,7 @@ export function PlayerProvider({ children }: PropsWithChildren) {
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }
 
+/** Returns shared playback state and controls; throws outside PlayerProvider. */
 export function usePlayer(): Value {
   const value = useContext(Context);
   if (!value) throw new Error('usePlayer must be inside PlayerProvider');
