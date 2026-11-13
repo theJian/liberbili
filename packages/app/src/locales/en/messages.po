@@ -29,11 +29,11 @@ msgstr "10–30 minutes"
 msgid "30–60 minutes"
 msgstr "30–60 minutes"
 
-#: src/app/video/[bvid].tsx:131
+#: src/app/video/[bvid].tsx:152
 msgid "Add to playlist"
 msgstr "Add to playlist"
 
-#: src/app/video/[bvid].tsx:208
+#: src/app/video/[bvid].tsx:230
 msgid "All comments"
 msgstr "All comments"
 
@@ -66,7 +66,7 @@ msgstr "Clear searches"
 msgid "Clear watch history?"
 msgstr "Clear watch history?"
 
-#: src/app/video/[bvid].tsx:111
+#: src/app/video/[bvid].tsx:121
 msgid "Comments"
 msgstr "Comments"
 
@@ -78,7 +78,7 @@ msgstr "Completed"
 msgid "Continue watching"
 msgstr "Continue watching"
 
-#: src/app/video/[bvid].tsx:161
+#: src/app/video/[bvid].tsx:182
 msgid "Create a playlist first."
 msgstr "Create a playlist first."
 
@@ -86,15 +86,19 @@ msgstr "Create a playlist first."
 msgid "Create playlist"
 msgstr "Create playlist"
 
+#: src/app/creator/[id].tsx:65
+msgid "Creator"
+msgstr "Creator"
+
 #: src/app/playlist/[id].tsx:60
 msgid "Delete"
 msgstr "Delete"
 
-#: src/app/video/[bvid].tsx:199
+#: src/app/video/[bvid].tsx:220
 msgid "Description"
 msgstr "Description"
 
-#: src/app/video/[bvid].tsx:138
+#: src/app/video/[bvid].tsx:159
 msgid "Download"
 msgstr "Download"
 
@@ -115,6 +119,10 @@ msgstr "Downloads"
 msgid "Failed"
 msgstr "Failed"
 
+#: src/app/creator/[id].tsx:90
+msgid "followers"
+msgstr "followers"
+
 #: src/app/history.tsx:67
 msgid "History is stored on this device. Downloaded videos do not update history."
 msgstr "History is stored on this device. Downloaded videos do not update history."
@@ -127,6 +135,10 @@ msgstr "History is stored on this device. Downloaded videos do not update histor
 msgid "Interrupted"
 msgstr "Interrupted"
 
+#: src/app/creator/[id].tsx:39
+msgid "Invalid creator"
+msgstr "Invalid creator"
+
 #: src/app/(tabs)/settings.tsx:28
 msgid "Language"
 msgstr "Language"
@@ -135,7 +147,7 @@ msgstr "Language"
 msgid "Library"
 msgstr "Library"
 
-#: src/app/video/[bvid].tsx:110
+#: src/app/video/[bvid].tsx:120
 msgid "likes"
 msgstr "likes"
 
@@ -163,7 +175,7 @@ msgstr "Nothing here yet"
 msgid "Over 60 minutes"
 msgstr "Over 60 minutes"
 
-#: src/app/video/[bvid].tsx:170
+#: src/app/video/[bvid].tsx:191
 msgid "Parts"
 msgstr "Parts"
 
@@ -206,6 +218,10 @@ msgstr "Recent searches"
 msgid "Recommended"
 msgstr "Recommended"
 
+#: src/components/related-videos.tsx:40
+msgid "Related videos"
+msgstr "Related videos"
+
 #: src/app/search.tsx:89
 msgid "Relevance"
 msgstr "Relevance"
@@ -245,6 +261,14 @@ msgstr "Search Bilibili videos"
 msgid "Settings"
 msgstr "Settings"
 
+#: src/components/related-videos.tsx:64
+msgid "Show fewer related videos"
+msgstr "Show fewer related videos"
+
+#: src/components/related-videos.tsx:65
+msgid "Show more related videos"
+msgstr "Show more related videos"
+
 #: src/components/screen-state.tsx:36
 msgid "This content requires a Bilibili account."
 msgstr "This content requires a Bilibili account."
@@ -278,11 +302,20 @@ msgstr "Unable to resume this video. Try again."
 msgid "Under 10 minutes"
 msgstr "Under 10 minutes"
 
+#: src/app/creator/[id].tsx:104
+msgid "Uploads"
+msgstr "Uploads"
+
 #: src/app/history.tsx:95
 msgid "Videos you watch will appear here."
 msgstr "Videos you watch will appear here."
 
-#: src/app/video/[bvid].tsx:109
+#. placeholder {0}: detail.uploader
+#: src/app/video/[bvid].tsx:126
+msgid "View creator: {0}"
+msgstr "View creator: {0}"
+
+#: src/app/video/[bvid].tsx:119
 #: src/components/video-card.tsx:54
 msgid "views"
 msgstr "views"

@@ -29,11 +29,11 @@ msgstr "10–30分钟"
 msgid "30–60 minutes"
 msgstr "30–60分钟"
 
-#: src/app/video/[bvid].tsx:131
+#: src/app/video/[bvid].tsx:152
 msgid "Add to playlist"
 msgstr "添加到播放列表"
 
-#: src/app/video/[bvid].tsx:208
+#: src/app/video/[bvid].tsx:230
 msgid "All comments"
 msgstr "全部评论"
 
@@ -66,7 +66,7 @@ msgstr "清空搜索"
 msgid "Clear watch history?"
 msgstr "清空观看历史？"
 
-#: src/app/video/[bvid].tsx:111
+#: src/app/video/[bvid].tsx:121
 msgid "Comments"
 msgstr "评论"
 
@@ -78,7 +78,7 @@ msgstr "已看完"
 msgid "Continue watching"
 msgstr "继续观看"
 
-#: src/app/video/[bvid].tsx:161
+#: src/app/video/[bvid].tsx:182
 msgid "Create a playlist first."
 msgstr "请先创建播放列表。"
 
@@ -86,15 +86,19 @@ msgstr "请先创建播放列表。"
 msgid "Create playlist"
 msgstr "创建播放列表"
 
+#: src/app/creator/[id].tsx:65
+msgid "Creator"
+msgstr "创作者"
+
 #: src/app/playlist/[id].tsx:60
 msgid "Delete"
 msgstr "删除"
 
-#: src/app/video/[bvid].tsx:199
+#: src/app/video/[bvid].tsx:220
 msgid "Description"
 msgstr "简介"
 
-#: src/app/video/[bvid].tsx:138
+#: src/app/video/[bvid].tsx:159
 msgid "Download"
 msgstr "下载"
 
@@ -115,6 +119,10 @@ msgstr "下载"
 msgid "Failed"
 msgstr "失败"
 
+#: src/app/creator/[id].tsx:90
+msgid "followers"
+msgstr "位粉丝"
+
 #: src/app/history.tsx:67
 msgid "History is stored on this device. Downloaded videos do not update history."
 msgstr "历史记录保存在此设备上。下载的视频不会更新历史记录。"
@@ -127,6 +135,10 @@ msgstr "历史记录保存在此设备上。下载的视频不会更新历史记
 msgid "Interrupted"
 msgstr "已中断"
 
+#: src/app/creator/[id].tsx:39
+msgid "Invalid creator"
+msgstr "无效的创作者"
+
 #: src/app/(tabs)/settings.tsx:28
 msgid "Language"
 msgstr "语言"
@@ -135,7 +147,7 @@ msgstr "语言"
 msgid "Library"
 msgstr "资料库"
 
-#: src/app/video/[bvid].tsx:110
+#: src/app/video/[bvid].tsx:120
 msgid "likes"
 msgstr "点赞"
 
@@ -163,7 +175,7 @@ msgstr "这里还没有内容"
 msgid "Over 60 minutes"
 msgstr "60分钟以上"
 
-#: src/app/video/[bvid].tsx:170
+#: src/app/video/[bvid].tsx:191
 msgid "Parts"
 msgstr "分P"
 
@@ -206,6 +218,10 @@ msgstr "最近搜索"
 msgid "Recommended"
 msgstr "推荐视频"
 
+#: src/components/related-videos.tsx:40
+msgid "Related videos"
+msgstr "相关推荐"
+
 #: src/app/search.tsx:89
 msgid "Relevance"
 msgstr "综合排序"
@@ -245,6 +261,14 @@ msgstr "搜索哔哩哔哩视频"
 msgid "Settings"
 msgstr "设置"
 
+#: src/components/related-videos.tsx:64
+msgid "Show fewer related videos"
+msgstr "收起相关推荐"
+
+#: src/components/related-videos.tsx:65
+msgid "Show more related videos"
+msgstr "展开相关推荐"
+
 #: src/components/screen-state.tsx:36
 msgid "This content requires a Bilibili account."
 msgstr "该内容需要登录哔哩哔哩账号。"
@@ -278,11 +302,20 @@ msgstr "无法继续播放此视频，请重试。"
 msgid "Under 10 minutes"
 msgstr "10分钟以内"
 
+#: src/app/creator/[id].tsx:104
+msgid "Uploads"
+msgstr "投稿视频"
+
 #: src/app/history.tsx:95
 msgid "Videos you watch will appear here."
 msgstr "观看过的视频会显示在这里。"
 
-#: src/app/video/[bvid].tsx:109
+#. placeholder {0}: detail.uploader
+#: src/app/video/[bvid].tsx:126
+msgid "View creator: {0}"
+msgstr "查看创作者：{0}"
+
+#: src/app/video/[bvid].tsx:119
 #: src/components/video-card.tsx:54
 msgid "views"
 msgstr "播放"
