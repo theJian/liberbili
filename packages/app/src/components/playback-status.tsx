@@ -1,3 +1,7 @@
+/**
+ * PlaybackStatus shows loading or a retryable failure from the shared usePlayer
+ * state. VideoScreen and PlaybackScreen use it without owning the load themselves.
+ */
 import { useLingui } from '@lingui/react/macro';
 import { ActivityIndicator, Pressable, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';

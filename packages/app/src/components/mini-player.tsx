@@ -1,3 +1,8 @@
+/**
+ * MiniPlayer presents the shared selection and transport controls from usePlayer,
+ * hiding when no video is selected. Opening it navigates to `/playback`;
+ * PlayerProvider handles loading, retrying, and advancing the queue.
+ */
 import { Image } from 'expo-image';
 import { Forward, Pause, Play } from '@doodle-icons/react-native';
 import { useLingui } from '@lingui/react/macro';

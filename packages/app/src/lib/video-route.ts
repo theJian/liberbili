@@ -1,10 +1,19 @@
+/**
+ * Decides how VideoScreen synchronizes its route with the shared player.
+ * videoRouteAction returns `follow` for a queue change, `open` for a new route
+ * with matching details, or `wait`. The screen performs navigation/playback and
+ * maintains the remembered IDs below; this helper only decides the next action.
+ */
 type RouteState = {
   focused: boolean;
   bvid: string;
   summaryBvid?: string;
   currentBvid?: string;
+  /** Player BV ID remembered from the screen's last processed synchronization. */
   previousCurrent?: string;
+  /** Last route BV ID handled by opening it or following a queue change. */
   openedBvid?: string;
+  /** BV ID requested through setParams, until the route reports that ID. */
   pendingBvid?: string;
 };
 type RouteAction =

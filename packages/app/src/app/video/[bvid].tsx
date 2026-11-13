@@ -1,10 +1,12 @@
 /**
- * Renders `VideoScreen` at `/video/[bvid]` for a BV ID within the app's player,
- * download, and playlist providers. Once matching video details arrive, it starts
- * shared playback if the player's current BV ID differs. Viewers can select a
- * part, download the video, add it to an existing playlist, open its creator,
- * browse related videos, and load further comment pages. Detail loading errors
- * expose a retry control; playback remains owned by the shared player provider.
+ * VideoScreen keeps `/video/[bvid]` details aligned with shared playback.
+ * While focused, it uses videoRouteAction to open each route once matching
+ * details arrive, starting playback only if the current BV ID differs. Queue
+ * changes are followed through router.setParams; synchronization waits for those
+ * parameters to arrive, and new route opens wait for matching details.
+ *
+ * PlayerProvider owns playback; this screen attaches its VideoView while focused
+ * and offers parts, downloads, playlists, related videos, and paginated comments.
  */
 import { FlashList } from '@shopify/flash-list';
 import { Download, FolderAdd } from '@doodle-icons/react-native';

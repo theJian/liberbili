@@ -1,8 +1,15 @@
 /**
- * Shares the native player, playback preferences, transient queue, and sleep timer.
- * Mount beneath HistoryProvider. Streamed videos resume and record per-part
- * history; local downloads lack a part identity and do neither. Source changes
- * are serialized, and superseded loads cannot seek or autoplay a newer selection.
+ * PlayerProvider owns the shared native player. Mount it beneath HistoryProvider,
+ * then usePlayer for state and controls and render VideoView with its `player`.
+ * Start a stream with `play`, an explicit part with `playPart`, or a download URI
+ * with `playLocal`; their loading and failure contracts are documented below.
+ *
+ * usePlayer exposes `toggle`, `next`, `previous`, and `retry` for transport;
+ * `select`, `remove`, and `move` for the queue; and `setPreferences`/`setSleepTimer`.
+ * PLAYBACK_SPEEDS lists supported rates. Preferences persist; queue and timer do not.
+ * lib/playback supplies queue policy and serialized source replacement, while
+ * lib/watch-history selects streamed parts and resume positions. Playback events
+ * record streamed progress through HistoryProvider; local downloads skip history.
  */
 import { useVideoPlayer, type VideoPlayer, VideoView } from 'expo-video';
 import {
@@ -46,31 +53,53 @@ type Selection = { video: VideoSummary; part?: VideoPart; uri?: string };
 type Value = QueueState &
   PlaybackPreferences & {
     player: VideoPlayer;
+    /** Selected queue item, updated before its native source has loaded. */
     current?: VideoSummary;
     isPlaying: boolean;
     loading: boolean;
     error?: string;
+    /** Unix millisecond deadline, or undefined when the sleep timer is off. */
     sleepUntil?: number;
-    /** Starts the latest saved part, resuming eligible history. Load failures set error. */
+    /**
+     * Replaces the queue with the supplied videos (default: [video]), deduplicated
+     * by BV ID, and selects video, prepending it if absent. Loads the latest saved
+     * part or the first available part and resumes eligible history.
+     *
+     * play, playPart, and playLocal update queue/current before loading. API and
+     * native load failures are caught and reported through error; awaiting these
+     * methods does not establish playback success. Superseded loads cannot seek
+     * or autoplay after replacement completes.
+     */
     play(video: VideoSummary, queue?: VideoSummary[]): Promise<void>;
-    /** Resumes the requested part; an unavailable cid sets error. */
+    /** Replaces the queue with [video] and resumes part; an unavailable cid sets error. */
     playPart(video: VideoSummary, part: VideoPart): Promise<void>;
-    /** Plays a download without applying or recording streamed progress. */
+    /** Loads a download uri with queue [video], without resuming or recording its progress. */
     playLocal(video: VideoSummary, uri: string): Promise<void>;
+    /** Retries an unready/failed selection; otherwise pauses, plays, or replays at the end. */
     toggle(): void;
     next(): void;
     previous(): void;
     select(position: number): void;
+    /**
+     * Removing the selected item starts its successor, or its predecessor at the
+     * end of the queue. Removing the final item clears playback.
+     */
     remove(position: number): void;
     move(from: number, to: number): void;
+    /** Reloads the last video/part/URI selection, or does nothing without one. */
     retry(): void;
     setPreferences(patch: Partial<PlaybackPreferences>): void;
+    /** Starts a 15/30/60-minute timer; no argument or an unsupported value cancels it. */
     setSleepTimer(minutes?: number): void;
   };
 const Context = createContext<Value | null>(null);
 
 export function PlayerProvider({ children }: PropsWithChildren) {
   const { getEntries, record } = useHistory();
+  // selection keeps the last request, including local URIs, for retry; active
+  // tracks only the loaded streamed part for history. ready gates use of the
+  // loaded source. A new load clears active and ready; the timer's expiry
+  // callback clears ready but retains selection for retry.
   const active = useRef<
     { video: VideoSummary; part: VideoPart; started: boolean } | undefined
   >(undefined);

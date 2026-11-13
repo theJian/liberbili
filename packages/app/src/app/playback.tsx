@@ -1,3 +1,8 @@
+/**
+ * PlaybackScreen renders `/playback` using the shared player from usePlayer.
+ * It attaches VideoView to that player and exposes queue editing, preferences,
+ * and the sleep timer; PlayerProvider owns playback and PlaybackStatus shows failures.
+ */
 import { useLingui } from '@lingui/react/macro';
 import { Stack } from 'expo-router';
 import { Pressable, ScrollView, Switch, View } from 'react-native';
