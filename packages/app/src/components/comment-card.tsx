@@ -1,4 +1,5 @@
 import { Image } from 'expo-image';
+import { Heart } from '@doodle-icons/react-native';
 import { plural } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react/macro';
 import { memo } from 'react';
@@ -37,12 +38,15 @@ export const CommentCard = memo(function CommentCard({
             contentFit="cover"
           />
         ) : null}
-        <ThemedText type="small" themeColor="textSecondary">
-          ♡ {formatCount(comment.likes, i18n.locale)}
-          {comment.replyCount
-            ? ` · ${plural(comment.replyCount, { one: '# reply', other: '# replies' })}`
-            : ''}
-        </ThemedText>
+        <View style={styles.meta}>
+          <Heart size={16} color={theme.textSecondary} />
+          <ThemedText type="small" themeColor="textSecondary">
+            {formatCount(comment.likes, i18n.locale)}
+            {comment.replyCount
+              ? ` · ${plural(comment.replyCount, { one: '# reply', other: '# replies' })}`
+              : ''}
+          </ThemedText>
+        </View>
         {comment.replies.slice(0, 2).map((reply) => (
           <View
             key={reply.id}

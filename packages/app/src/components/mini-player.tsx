@@ -1,4 +1,10 @@
+/**
+ * MiniPlayer presents the shared selection and transport controls from usePlayer,
+ * hiding when no video is selected. Opening it navigates to `/playback`;
+ * PlayerProvider handles loading, retrying, and advancing the queue.
+ */
 import { Image } from 'expo-image';
+import { Forward, Pause, Play } from '@doodle-icons/react-native';
 import { useLingui } from '@lingui/react/macro';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -8,7 +14,8 @@ import { useTheme } from '@/hooks/use-theme';
 import { ThemedText } from './themed-text';
 
 export function MiniPlayer() {
-  const { current, isPlaying, toggle, next } = usePlayer();
+  const { current, isPlaying, toggle, next, index, queue, loading, error } =
+    usePlayer();
   const { t } = useLingui();
   const theme = useTheme();
   if (!current) return null;
@@ -22,15 +29,7 @@ export function MiniPlayer() {
         },
       ]}
     >
-      <Pressable
-        style={styles.main}
-        onPress={() =>
-          router.push({
-            pathname: '/video/[bvid]',
-            params: { bvid: current.bvid },
-          })
-        }
-      >
+      <Pressable style={styles.main} onPress={() => router.push('/playback')}>
         <Image
           source={{ uri: current.thumbnail }}
           style={styles.image}
@@ -47,17 +46,29 @@ export function MiniPlayer() {
       </Pressable>
       <Pressable
         onPress={toggle}
-        accessibilityLabel={isPlaying ? t`Pause` : t`Play`}
+        accessibilityRole="button"
+        disabled={loading}
+        accessibilityLabel={
+          error ? t`Retry playback` : isPlaying ? t`Pause` : t`Play`
+        }
         style={styles.control}
       >
-        <ThemedText style={styles.icon}>{isPlaying ? 'Ⅱ' : '▶'}</ThemedText>
+        {loading || error ? (
+          <ThemedText>{loading ? '…' : '↻'}</ThemedText>
+        ) : isPlaying ? (
+          <Pause />
+        ) : (
+          <Play />
+        )}
       </Pressable>
       <Pressable
         onPress={next}
+        accessibilityRole="button"
+        disabled={index >= queue.length - 1}
         accessibilityLabel={t`Next`}
         style={styles.control}
       >
-        <ThemedText style={styles.icon}>▶|</ThemedText>
+        <Forward />
       </Pressable>
     </View>
   );
@@ -80,5 +91,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     height: 56,
   },
-  icon: { fontWeight: '800' },
 });

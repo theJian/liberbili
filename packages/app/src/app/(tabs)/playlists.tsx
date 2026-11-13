@@ -1,4 +1,5 @@
 import { FlashList } from '@shopify/flash-list';
+import { ChevronsRight, FolderAdd, List } from '@doodle-icons/react-native';
 import { plural } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react/macro';
 import { router } from 'expo-router';
@@ -33,7 +34,7 @@ export default function PlaylistsScreen() {
         <View
           style={[styles.art, { backgroundColor: theme.backgroundElement }]}
         >
-          <ThemedText style={styles.artIcon}>♫</ThemedText>
+          <List />
         </View>
         <View style={styles.rowText}>
           <ThemedText style={styles.name}>{item.name}</ThemedText>
@@ -41,7 +42,7 @@ export default function PlaylistsScreen() {
             {plural(item.items.length, { one: '# video', other: '# videos' })}
           </ThemedText>
         </View>
-        <ThemedText>›</ThemedText>
+        <ChevronsRight size={18} />
       </Pressable>
     ),
     [theme],
@@ -65,9 +66,11 @@ export default function PlaylistsScreen() {
         />
         <Pressable
           onPress={submit}
+          accessibilityRole="button"
+          accessibilityLabel={t`Create playlist`}
           style={[styles.button, { backgroundColor: theme.accent }]}
         >
-          <ThemedText style={styles.buttonText}>＋</ThemedText>
+          <FolderAdd color="#fff" />
         </Pressable>
       </View>
       <FlashList
@@ -93,7 +96,6 @@ const styles = StyleSheet.create({
   },
   input: { flex: 1, height: 48 },
   button: { width: 52, alignItems: 'center', justifyContent: 'center' },
-  buttonText: { color: '#fff', fontSize: 24 },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -108,7 +110,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  artIcon: { fontSize: 24 },
   rowText: { flex: 1, gap: 3 },
   name: { fontWeight: '700' },
 });

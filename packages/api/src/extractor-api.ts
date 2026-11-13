@@ -1,3 +1,62 @@
+/**
+ * Extends the video client with Bilibili search, creator discovery, and playback
+ * extraction. Use `bilibiliExtractorApi` or instantiate `BilibiliExtractorApi`;
+ * both use the shared session from `session.ts`. Methods return parsed,
+ * normalized models rather than Bilibili response envelopes and reject on
+ * request failures. The inherited request handler uses `BilibiliError`;
+ * extraction methods can also reject with ordinary errors.
+ *
+ * For discovery, `search(query, { type, order, duration, page })` returns
+ * a page of summaries in `items`. It defaults to `type: 'video'` and page 1.
+ * Request `type: 'bili_user'` for creator summaries, whose result discriminator
+ * is `type: 'channel'`. Convert `next` to a number for the next page.
+ * `getRelated(bvid)` returns video summaries for a BV ID.
+ * `getChannel(mid)` takes a creator's decimal ID string and returns a profile;
+ * `getChannelVideosWithFallback(mid, cursor, lastAid)` returns upload summaries
+ * in `items`. Start with cursor 1, then pass `next` unchanged with the list's final
+ * numeric `aid`. An absent `next` ends pagination.
+ *
+ * For creator collections, `getChannelPlaylists(mid, page)` returns season and
+ * series collections in `items`. Narrow a collection's `type` to `'season'` or
+ * `'series'` before passing it and the collection's `id` with that creator ID to
+ * `getRemotePlaylist(mid, id, type, page)` for videos in `items` and collection
+ * metadata in `playlist`. Both methods default to page 1; convert their `next`
+ * strings to numbers for subsequent page arguments, stopping when `next` is absent.
+ *
+ * For playback, `resolveStreamUrl(url)` accepts a full video, premium, live, or
+ * b23.tv URL and returns a `StreamReference` discriminated by `kind`. A video
+ * reference provides `bvid`, one-based `page`, and `timestamp` in seconds. Pass
+ * its BV ID to `getVideoParts()` and select a part for `getPlayback(part)`;
+ * the result contains progressive sources in `progressive` and DASH tracks in
+ * the `video` and `audio` arrays.
+ * Progressive sources include request headers to forward to the media consumer.
+ * `getVideoComplete(bvid, page)` adds tags and related videos to video details.
+ * Parts also identify subtitles and recorded danmaku through `getSubtitles(part)`
+ * and `getRecordedDanmaku(part.cid)`; `getSubtitleSrt(subtitle)` returns SRT text.
+ *
+ * A premium reference's `ss…` or `ep…` ID goes to `getPremiumSeason(id)`, which
+ * returns `episodes` and `selectedEpisode`. Adapt the selected episode to a
+ * `VideoPart` and request premium playback:
+ *
+ * ```ts
+ * const season = await bilibiliExtractorApi.getPremiumSeason(id);
+ * const part = {
+ *   ...season.selectedEpisode,
+ *   page: 1,
+ * };
+ * const playback = await bilibiliExtractorApi.getPlayback(part, {
+ *   premium: true,
+ * });
+ * ```
+ *
+ * A live reference's ID goes to `getLiveRoom(id)`; use the returned numeric
+ * `roomId` with `getLiveStream()` for media URLs or `getLiveDanmakuCredentials()`
+ * for its token.
+ *
+ * `isBilibiliUrl` and `isBilibiliMediaUrl` recognize page and media hosts;
+ * `videoQualityLabel` and `audioQualityLabel` translate numeric quality IDs to
+ * display strings.
+ */
 import { inflateRaw } from 'pako';
 
 import { BilibiliClient, normalizeSummary } from './bilibili';
@@ -175,33 +234,77 @@ export class BilibiliExtractorApi extends BilibiliClient {
   }
 
   async resolveStreamUrl(input: string): Promise<StreamReference> {
-    let url = input;
-    if (url.includes('b23.tv')) {
-      const response = await fetch(url, { redirect: 'manual' });
-      url = response.headers.get('location') ?? response.url;
+    const value = input.trim();
+    const rawId = /^(BV1[1-9A-HJ-NP-Za-km-z]{9}|av[1-9]\d*)$/.test(value);
+    let parsed = new URL(
+      rawId ? `https://www.bilibili.com/video/${value}` : value,
+    );
+    const validateHost = (url: URL) => {
+      if (
+        !['https:', 'http:'].includes(url.protocol) ||
+        url.username ||
+        url.password ||
+        url.port ||
+        ![
+          'www.bilibili.com',
+          'bilibili.com',
+          'm.bilibili.com',
+          'live.bilibili.com',
+          'b23.tv',
+        ].includes(url.hostname)
+      )
+        throw new Error('Not a supported Bilibili URL');
+    };
+    for (let redirects = 0; ; redirects += 1) {
+      validateHost(parsed);
+      if (parsed.hostname !== 'b23.tv') break;
+      if (redirects >= 3 || !/^\/[A-Za-z0-9]+\/?$/.test(parsed.pathname))
+        throw new Error('Unable to resolve short link');
+      const response = await fetch(parsed.toString(), {
+        redirect: 'manual',
+        signal: AbortSignal.timeout(15000),
+      });
+      if (response.status < 200 || response.status >= 400)
+        throw new Error('Unable to resolve short link');
+      const location = response.headers.get('location');
+      const target = location
+        ? new URL(location, parsed)
+        : new URL(response.url || parsed.toString());
+      if (target.toString() === parsed.toString())
+        throw new Error('Unable to resolve short link');
+      parsed = target;
     }
-    const parsed = new URL(url);
-    const timestamp = Number(parsed.searchParams.get('t') ?? 0);
-    const page = Number(parsed.searchParams.get('p') ?? 1);
+    const pageValue = parsed.searchParams.get('p') ?? '1';
+    const timestampValue = parsed.searchParams.get('t') ?? '0';
+    const page = Number(pageValue);
+    const timestamp = Number(timestampValue);
+    if (
+      !/^\d+$/.test(pageValue) ||
+      !Number.isSafeInteger(page) ||
+      page < 1 ||
+      !/^\d+(?:\.\d+)?$/.test(timestampValue) ||
+      !Number.isFinite(timestamp) ||
+      timestamp < 0
+    )
+      throw new Error('Invalid video part or timestamp');
     const premium = parsed.pathname.match(
-      /\/bangumi\/play\/(ss\d+|ep\d+)/,
+      /^\/bangumi\/play\/(ss[1-9]\d*|ep[1-9]\d*)\/?$/,
     )?.[1];
-    if (premium) return { kind: 'premium', id: premium };
-    if (parsed.hostname === 'live.bilibili.com')
-      return {
-        kind: 'live',
-        id: parsed.pathname.split('/').filter(Boolean).at(-1)!,
-      };
-    const rawId =
-      parsed.pathname.match(/\/(BV[\w]+|av\d+)/)?.[1] ??
-      parsed.searchParams.get('bvid') ??
-      (parsed.searchParams.get('aid')
-        ? `av${parsed.searchParams.get('aid')}`
-        : undefined);
-    if (!rawId) throw new Error('Not a Bilibili stream URL');
-    const bvid = rawId.startsWith('av')
-      ? avToBv(Number(rawId.slice(2)))
-      : rawId;
+    if (premium && parsed.hostname !== 'live.bilibili.com')
+      return { kind: 'premium', id: premium };
+    if (parsed.hostname === 'live.bilibili.com') {
+      const id = parsed.pathname.match(/^\/([1-9]\d*)\/?$/)?.[1];
+      if (!id) throw new Error('Not a live room URL');
+      return { kind: 'live', id };
+    }
+    const id = parsed.pathname.match(
+      /^\/video\/(BV1[1-9A-HJ-NP-Za-km-z]{9}|av[1-9]\d*)\/?$/,
+    )?.[1];
+    if (!id) throw new Error('Not a Bilibili video URL');
+    const aid = id.startsWith('av') ? Number(id.slice(2)) : undefined;
+    if (aid !== undefined && (!Number.isSafeInteger(aid) || aid >= 2 ** 51))
+      throw new Error('Invalid AV identifier');
+    const bvid = aid === undefined ? id : avToBv(aid);
     return {
       kind: 'video',
       id: `${bvid}?p=${page}${timestamp ? `#timestamp=${timestamp}` : ''}`,
@@ -330,6 +433,12 @@ export class BilibiliExtractorApi extends BilibiliClient {
     }));
   }
 
+  /**
+   * Extracts sources for a known video part. `quality` is a Bilibili quality ID;
+   * availability is reflected in the returned `quality` and `acceptedQualities`.
+   * Set `premium` for a premium episode and `dash: false` to request progressive
+   * playback. `authenticated` includes the shared session's saved account cookie.
+   */
   async getPlayback(
     part: VideoPart,
     options: {
@@ -483,6 +592,11 @@ export class BilibiliExtractorApi extends BilibiliClient {
     };
   }
 
+  /**
+   * Loads a creator profile and enriches it with a live summary when active.
+   * The profile and live-status requests run together; either failure rejects
+   * the whole call, even though the returned `live` field is optional.
+   */
   async getChannel(mid: string): Promise<Channel> {
     const [profile, live] = await Promise.all([
       this.request<Json>(
@@ -505,6 +619,13 @@ export class BilibiliExtractorApi extends BilibiliClient {
     };
   }
 
+  /**
+   * Reads one creator endpoint directly. Web (the default) and search modes use
+   * one-based `page` values and return the next page number as a string. Client
+   * mode uses `lastAid` instead, returning the final video's numeric archive ID
+   * as a string. Prefer `getChannelVideosWithFallback()` to retain mode information
+   * across pages automatically.
+   */
   async getChannelVideos(
     mid: string,
     options: {
@@ -565,6 +686,11 @@ export class BilibiliExtractorApi extends BilibiliClient {
     return { items, next: items.length ? String(page + 1) : undefined };
   }
 
+  /**
+   * Returns nonempty season and series collections. The declared `RemotePlaylist`
+   * model also permits `'parts'`, so check `collection.type !== 'parts'` before
+   * passing a collection's type to `getRemotePlaylist()`.
+   */
   async getChannelPlaylists(
     mid: string,
     page = 1,
@@ -695,6 +821,12 @@ export class BilibiliExtractorApi extends BilibiliClient {
     return (data.durl ?? []).map((item: Json) => https(item.url));
   }
 
+  /**
+   * Extracts the recorded video currently being replayed by a live room. Supply
+   * a numeric room ID and a Unix timestamp in milliseconds (default: now).
+   * `playTime` is the current offset in seconds; pass `nextTimestamp` back as the
+   * timestamp to query the following replay. Rejects when no replay is available.
+   */
   async getRoundPlay(
     roomId: number,
     timestamp = Date.now(),
@@ -717,11 +849,59 @@ export class BilibiliExtractorApi extends BilibiliClient {
     };
   }
 
-  async getChannelVideosWithFallback(mid: string, page = 1) {
+  /**
+   * Loads uploads for a creator's decimal ID string, trying web, search, then
+   * client endpoints until one succeeds, including a successful empty response.
+   * Start at page 1. For subsequent pages, pass `next` unchanged and the previous
+   * list's final numeric `aid`, allowing a switch to client pagination. Given
+   * a creator ID `mid`:
+   *
+   * ```ts
+   * const first = await bilibiliExtractorApi.getChannelVideosWithFallback(mid);
+   * if (first.next) {
+   *   const second = await bilibiliExtractorApi.getChannelVideosWithFallback(
+   *     mid,
+   *     first.next,
+   *     first.items.at(-1)?.aid,
+   *   );
+   * }
+   * ```
+   *
+   * A `client:` cursor keeps subsequent requests on the client endpoint and
+   * carries its archive ID; a missing `next` ends pagination. If all three
+   * endpoint attempts fail, rejects with an `AggregateError` containing each
+   * failure. Requests already using a client cursor propagate that failure.
+   */
+  async getChannelVideosWithFallback(
+    mid: string,
+    page: number | string = 1,
+    lastAid?: number,
+  ): Promise<PageResult<VideoSummary>> {
+    if (typeof page === 'string' && page.startsWith('client:')) {
+      const result = await this.getChannelVideos(mid, {
+        mode: 'client',
+        lastAid: Number(page.slice(7)),
+      });
+      return {
+        ...result,
+        next: result.next ? `client:${result.next}` : undefined,
+      };
+    }
     const failures: unknown[] = [];
     for (const mode of ['web', 'search', 'client'] as const) {
       try {
-        return await this.getChannelVideos(mid, { page, mode });
+        const result = await this.getChannelVideos(mid, {
+          page: Number(page),
+          mode,
+          lastAid,
+        });
+        return {
+          ...result,
+          next:
+            mode === 'client' && result.next
+              ? `client:${result.next}`
+              : result.next,
+        };
       } catch (error) {
         failures.push(error);
       }

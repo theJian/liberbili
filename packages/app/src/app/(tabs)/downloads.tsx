@@ -1,4 +1,5 @@
 import { FlashList } from '@shopify/flash-list';
+import { Cross, Pause, Play } from '@doodle-icons/react-native';
 import { useLingui } from '@lingui/react/macro';
 import { Image } from 'expo-image';
 import { useCallback } from 'react';
@@ -95,7 +96,7 @@ export default function DownloadsScreen() {
             style={styles.control}
             onPress={() => void pause(item.id)}
           >
-            <ThemedText>Ⅱ</ThemedText>
+            <Pause size={20} />
           </Pressable>
         ) : item.status !== 'completed' &&
           item.status !== 'queued' &&
@@ -106,7 +107,7 @@ export default function DownloadsScreen() {
             style={styles.control}
             onPress={() => void resume(item.id)}
           >
-            <ThemedText>▶</ThemedText>
+            <Play size={20} />
           </Pressable>
         ) : null}
         <Pressable
@@ -115,7 +116,7 @@ export default function DownloadsScreen() {
           style={styles.control}
           onPress={() => remove(item.id)}
         >
-          <ThemedText themeColor="textSecondary">×</ThemedText>
+          <Cross size={20} color={theme.textSecondary} />
         </Pressable>
       </View>
     ),
