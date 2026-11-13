@@ -33,11 +33,11 @@ msgstr "10–30 minutes"
 msgid "30–60 minutes"
 msgstr "30–60 minutes"
 
-#: src/app/video/[bvid].tsx:289
+#: src/app/video/[bvid].tsx:291
 msgid "Add to playlist"
 msgstr "Add to playlist"
 
-#: src/app/video/[bvid].tsx:374
+#: src/app/video/[bvid].tsx:376
 msgid "All comments"
 msgstr "All comments"
 
@@ -79,7 +79,7 @@ msgstr "Clear searches"
 msgid "Clear watch history?"
 msgstr "Clear watch history?"
 
-#: src/app/video/[bvid].tsx:235
+#: src/app/video/[bvid].tsx:237
 msgid "Comments"
 msgstr "Comments"
 
@@ -95,16 +95,16 @@ msgstr "Continue watching"
 msgid "Could not open this link. Use a regular Bilibili video link or BV/av ID, check your connection, and try again."
 msgstr "Could not open this link. Use a regular Bilibili video link or BV/av ID, check your connection, and try again."
 
-#: src/app/video/[bvid].tsx:270
+#: src/app/video/[bvid].tsx:272
 msgid "Could not share video"
 msgstr "Could not share video"
 
-#: src/app/video/[bvid].tsx:133
-#: src/app/video/[bvid].tsx:341
+#: src/app/video/[bvid].tsx:147
+#: src/app/video/[bvid].tsx:343
 msgid "Could not start playback. Try again."
 msgstr "Could not start playback. Try again."
 
-#: src/app/video/[bvid].tsx:319
+#: src/app/video/[bvid].tsx:321
 msgid "Create a playlist first."
 msgstr "Create a playlist first."
 
@@ -120,11 +120,11 @@ msgstr "Creator"
 msgid "Delete"
 msgstr "Delete"
 
-#: src/app/video/[bvid].tsx:364
+#: src/app/video/[bvid].tsx:366
 msgid "Description"
 msgstr "Description"
 
-#: src/app/video/[bvid].tsx:296
+#: src/app/video/[bvid].tsx:298
 msgid "Download"
 msgstr "Download"
 
@@ -173,7 +173,7 @@ msgstr "Language"
 msgid "Library"
 msgstr "Library"
 
-#: src/app/video/[bvid].tsx:234
+#: src/app/video/[bvid].tsx:236
 msgid "likes"
 msgstr "likes"
 
@@ -223,7 +223,7 @@ msgstr "Open video link"
 msgid "Over 60 minutes"
 msgstr "Over 60 minutes"
 
-#: src/app/video/[bvid].tsx:328
+#: src/app/video/[bvid].tsx:330
 msgid "Parts"
 msgstr "Parts"
 
@@ -260,7 +260,7 @@ msgid "Play a video or playlist to build your queue."
 msgstr "Play a video or playlist to build your queue."
 
 #: src/app/playback.tsx:36
-#: src/app/video/[bvid].tsx:228
+#: src/app/video/[bvid].tsx:230
 msgid "Playback and queue"
 msgstr "Playback and queue"
 
@@ -281,7 +281,7 @@ msgstr "Playlist name"
 msgid "Playlists"
 msgstr "Playlists"
 
-#: src/app/video/[bvid].tsx:270
+#: src/app/video/[bvid].tsx:272
 msgid "Please try again."
 msgstr "Please try again."
 
@@ -363,7 +363,7 @@ msgstr "Search Bilibili videos"
 msgid "Settings"
 msgstr "Settings"
 
-#: src/app/video/[bvid].tsx:278
+#: src/app/video/[bvid].tsx:280
 msgid "Share video"
 msgstr "Share video"
 
@@ -439,11 +439,11 @@ msgid "Videos you watch will appear here."
 msgstr "Videos you watch will appear here."
 
 #. placeholder {0}: detail.uploader
-#: src/app/video/[bvid].tsx:240
+#: src/app/video/[bvid].tsx:242
 msgid "View creator: {0}"
 msgstr "View creator: {0}"
 
-#: src/app/video/[bvid].tsx:233
+#: src/app/video/[bvid].tsx:235
 #: src/components/video-card.tsx:54
 msgid "views"
 msgstr "views"

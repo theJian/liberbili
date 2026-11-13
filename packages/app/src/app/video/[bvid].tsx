@@ -16,7 +16,14 @@ import { useLingui } from '@lingui/react/macro';
 import { Image } from 'expo-image';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -30,6 +37,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { Comment, VideoPart, VideoSummary } from '@liberbili/api/types';
 
+import { CommentThread } from '@/lib/comment-thread';
 import { PlaybackStatus } from '@/components/playback-status';
 import { RelatedVideos } from '@/components/related-videos';
 import { CommentCard } from '@/components/comment-card';
@@ -63,13 +71,22 @@ export default function VideoScreen() {
   const { player, current, play, playPart } = usePlayer();
   const { start } = useDownloads();
   const { playlists, add } = usePlaylists();
-  const initialComments = useResource(
+  const aid = detail?.aid;
+  const comments = useMemo(
     () =>
-      detail
-        ? bilibiliApi.getComments(detail.aid)
-        : Promise.resolve({ items: [] }),
-    [detail?.aid],
+      new CommentThread(bvid, aid, (videoAid, cursor) =>
+        bilibiliApi.getComments(videoAid, cursor),
+      ),
+    [bvid, aid],
   );
+  const commentState = useSyncExternalStore(
+    comments.subscribe,
+    comments.getSnapshot,
+    comments.getSnapshot,
+  );
+  useEffect(() => {
+    void comments.load();
+  }, [comments]);
   const [focused, setFocused] = useState(false);
   useFocusEffect(
     useCallback(() => {
@@ -77,9 +94,6 @@ export default function VideoScreen() {
       return () => setFocused(false);
     }, []),
   );
-  const [moreComments, setMoreComments] = useState<Comment[]>([]);
-  const [nextCursor, setNextCursor] = useState<string>();
-  const [commentLoading, setCommentLoading] = useState(false);
   const [choosingPlaylist, setChoosingPlaylist] = useState(false);
   const [playbackError, setPlaybackError] = useState<Error>();
   const summary = useMemo<VideoSummary | undefined>(
@@ -180,18 +194,6 @@ export default function VideoScreen() {
     summary,
     timeParam,
   ]);
-  const loadComments = useCallback(async () => {
-    const cursor = nextCursor ?? initialComments.data?.next;
-    if (!detail || commentLoading || !cursor) return;
-    setCommentLoading(true);
-    try {
-      const result = await bilibiliApi.getComments(detail.aid, cursor);
-      setMoreComments((all) => [...all, ...result.items]);
-      setNextCursor(result.next ?? '');
-    } finally {
-      setCommentLoading(false);
-    }
-  }, [commentLoading, detail, initialComments.data?.next, nextCursor]);
   const renderComment = useCallback(
     ({ item }: { item: Comment }) => <CommentCard comment={item} />,
     [],
@@ -380,16 +382,23 @@ export default function VideoScreen() {
       <StatusBar style="light" />
       <View style={[styles.fill, { backgroundColor: theme.background }]}>
         <FlashList
-          data={[...(initialComments.data?.items ?? []), ...moreComments]}
+          data={commentState.items}
           renderItem={renderComment}
           keyExtractor={(item) => item.id}
           ListHeaderComponent={header}
-          onEndReached={loadComments}
+          onEndReached={() => void comments.more()}
           onEndReachedThreshold={0.4}
           ListFooterComponent={
-            commentLoading || initialComments.loading ? (
+            commentState.loading ||
+            (!commentState.started && !commentState.error) ? (
               <ActivityIndicator style={styles.footer} color={theme.accent} />
-            ) : null
+            ) : (
+              <ScreenState
+                error={commentState.error}
+                empty={!commentState.items.length && !commentState.error}
+                onRetry={() => void comments.load()}
+              />
+            )
           }
         />
       </View>
