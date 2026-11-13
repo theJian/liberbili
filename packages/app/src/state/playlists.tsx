@@ -10,15 +10,18 @@ import {
 
 import type { VideoSummary } from '@liberbili/api/types';
 
+import {
+  makePlaylist,
+  normalizePlaylists,
+  playlistName,
+  renamePlaylist,
+  type Playlist,
+} from '@/lib/playlist-data';
 import { storage } from '@/storage';
 
+export type { Playlist } from '@/lib/playlist-data';
+
 const STORAGE_KEY = '@liberbili/playlists/v1';
-export type Playlist = {
-  id: string;
-  name: string;
-  createdAt: number;
-  items: VideoSummary[];
-};
 type Value = {
   playlists: Playlist[];
   create(name: string): string;
@@ -30,8 +33,7 @@ type Value = {
 const Context = createContext<Value | null>(null);
 
 function loadPlaylists(): Playlist[] {
-  const data = storage.getString(STORAGE_KEY);
-  return data ? (JSON.parse(data) as Playlist[]) : [];
+  return normalizePlaylists(storage.getString(STORAGE_KEY));
 }
 
 export function PlaylistProvider({ children }: PropsWithChildren) {
@@ -41,19 +43,15 @@ export function PlaylistProvider({ children }: PropsWithChildren) {
   }, [playlists]);
   const create = useCallback((name: string) => {
     const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-    setPlaylists((current) => [
-      ...current,
-      { id, name: name.trim(), createdAt: Date.now(), items: [] },
-    ]);
+    const playlist = makePlaylist(name, id, Date.now());
+    setPlaylists((current) => [...current, playlist]);
     return id;
   }, []);
-  const rename = useCallback(
-    (id: string, name: string) =>
-      setPlaylists((all) =>
-        all.map((p) => (p.id === id ? { ...p, name: name.trim() } : p)),
-      ),
-    [],
-  );
+  const rename = useCallback((id: string, name: string) => {
+    // Validate synchronously so invalid actions never enter React's state updater.
+    const trimmed = playlistName(name);
+    setPlaylists((all) => renamePlaylist(all, id, trimmed));
+  }, []);
   const remove = useCallback(
     (id: string) => setPlaylists((all) => all.filter((p) => p.id !== id)),
     [],
