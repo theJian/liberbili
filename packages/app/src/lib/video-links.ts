@@ -22,9 +22,11 @@ export async function playVideoReference(
   position: { page?: string; timestamp?: string },
   playback: {
     play(video: VideoSummary): Promise<void>;
-    playPart(video: VideoSummary, part: VideoPart): Promise<void>;
-    isCurrent(): boolean;
-    seek(seconds: number): void;
+    playPart(
+      video: VideoSummary,
+      part: VideoPart,
+      position?: number,
+    ): Promise<void>;
   },
 ): Promise<void> {
   const page = Number(position.page ?? 1);
@@ -38,8 +40,13 @@ export async function playVideoReference(
     timestamp < 0
   )
     throw new Error('Invalid video position');
-  if (position.page) await playback.playPart(video, part);
+  if (position.page !== undefined || position.timestamp !== undefined)
+    await playback.playPart(
+      video,
+      part,
+      position.timestamp !== undefined
+        ? Math.min(timestamp, part.duration || timestamp)
+        : undefined,
+    );
   else await playback.play(video);
-  if (playback.isCurrent() && timestamp)
-    playback.seek(Math.min(timestamp, part.duration || timestamp));
 }

@@ -1,4 +1,5 @@
 import { FlashList } from '@shopify/flash-list';
+import { Cross, Pause, Play } from '@doodle-icons/react-native';
 import { useLingui } from '@lingui/react/macro';
 import { Image } from 'expo-image';
 import { useCallback } from 'react';
@@ -69,16 +70,31 @@ export default function DownloadsScreen() {
           </View>
         </View>
         {item.status === 'downloading' ? (
-          <Pressable onPress={() => void pause(item.id)}>
-            <ThemedText>Ⅱ</ThemedText>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t`Pause download`}
+            style={styles.control}
+            onPress={() => void pause(item.id)}
+          >
+            <Pause size={20} />
           </Pressable>
         ) : item.status !== 'completed' ? (
-          <Pressable onPress={() => void resume(item.id)}>
-            <ThemedText>▶</ThemedText>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t`Resume download`}
+            style={styles.control}
+            onPress={() => void resume(item.id)}
+          >
+            <Play size={20} />
           </Pressable>
         ) : null}
-        <Pressable onPress={() => remove(item.id)}>
-          <ThemedText themeColor="textSecondary">×</ThemedText>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t`Remove download`}
+          style={styles.control}
+          onPress={() => remove(item.id)}
+        >
+          <Cross size={20} color={theme.textSecondary} />
         </Pressable>
       </View>
     ),
@@ -111,6 +127,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   image: { width: 112, aspectRatio: 16 / 9, borderRadius: 8 },
+  control: {
+    minWidth: 44,
+    minHeight: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   content: { flex: 1, gap: 5 },
   name: { fontWeight: '600' },
   track: { height: 4, overflow: 'hidden', borderRadius: 2 },

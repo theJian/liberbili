@@ -34,7 +34,7 @@ describe('video sharing links', () => {
   });
 });
 
-describe('linked video playback ownership', () => {
+describe('linked video playback selection', () => {
   const video = {
     bvid: 'BV17x411w7KC',
   } as import('@liberbili/api/types').VideoSummary;
@@ -43,17 +43,16 @@ describe('linked video playback ownership', () => {
     cid: page,
     duration: 120,
   })) as import('@liberbili/api/types').VideoPart[];
-  test('plays selected part, clamps time, and preserves position on retry', async () => {
-    const played: number[] = [];
-    const sought: number[] = [];
+  test('passes the linked part and bounded position to the player, including on retry', async () => {
+    const played: { page: number; position?: number }[] = [];
     const playback = {
       play: async () => {},
-      playPart: async (_video: unknown, part: { page: number }) => {
-        played.push(part.page);
-      },
-      isCurrent: () => true,
-      seek: (seconds: number) => {
-        sought.push(seconds);
+      playPart: async (
+        _video: unknown,
+        part: { page: number },
+        position?: number,
+      ) => {
+        played.push({ page: part.page, position });
       },
     };
     await playVideoReference(
@@ -68,33 +67,34 @@ describe('linked video playback ownership', () => {
       { page: '2', timestamp: '150' },
       playback,
     );
-    expect(played).toEqual([2, 2]);
-    expect(sought).toEqual([120, 120]);
+    expect(played).toEqual([
+      { page: 2, position: 120 },
+      { page: 2, position: 120 },
+    ]);
   });
-  test('does not seek after another route or same-video part selection takes ownership', async () => {
-    let finish!: () => void;
-    let current = true;
-    const sought: number[] = [];
-    const pending = playVideoReference(
-      video,
-      parts,
-      { page: '2', timestamp: '42' },
-      {
-        play: async () => {},
-        playPart: () =>
-          new Promise<void>((resolve) => {
-            finish = resolve;
-          }),
-        isCurrent: () => current,
-        seek: (seconds) => {
-          sought.push(seconds);
-        },
+  test('explicit time selects the first part and zero overrides saved history', async () => {
+    const played: { page: number; position?: number }[] = [];
+    let defaultPlays = 0;
+    const playback = {
+      play: async () => {
+        defaultPlays += 1;
       },
-    );
-    current = false;
-    finish();
-    await pending;
-    expect(sought).toEqual([]);
+      playPart: async (
+        _video: unknown,
+        part: { page: number },
+        position?: number,
+      ) => {
+        played.push({ page: part.page, position });
+      },
+    };
+    await playVideoReference(video, parts, { timestamp: '0' }, playback);
+    await playVideoReference(video, parts, { page: '2' }, playback);
+    await playVideoReference(video, parts, {}, playback);
+    expect(played).toEqual([
+      { page: 1, position: 0 },
+      { page: 2, position: undefined },
+    ]);
+    expect(defaultPlays).toBe(1);
   });
   test('rejects unavailable part and invalid direct route position', async () => {
     const playback = {
@@ -104,8 +104,6 @@ describe('linked video playback ownership', () => {
       playPart: async () => {
         throw new Error('must not load');
       },
-      isCurrent: () => true,
-      seek: () => {},
     };
     for (const position of [
       { page: '3' },

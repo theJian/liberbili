@@ -1,7 +1,20 @@
+/**
+ * VideoScreen keeps `/video/[bvid]` details aligned with shared playback.
+ * While focused, it uses videoRouteAction to open each route once matching
+ * details arrive, honoring explicit part/time changes even for the current video. Queue
+ * changes are followed through router.setParams; synchronization waits for those
+ * parameters to arrive, and new route opens wait for matching details.
+ *
+ * PlayerProvider owns playback and applies linked positions within its serialized
+ * source transitions so retries retain the position and superseded loads cannot seek.
+ * This screen attaches its VideoView while focused
+ * and offers parts, downloads, playlists, related videos, and paginated comments.
+ */
 import { FlashList } from '@shopify/flash-list';
+import { Download, FolderAdd } from '@doodle-icons/react-native';
 import { useLingui } from '@lingui/react/macro';
 import { Image } from 'expo-image';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -17,7 +30,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { Comment, VideoPart, VideoSummary } from '@liberbili/api/types';
 
+import { PlaybackStatus } from '@/components/playback-status';
+import { RelatedVideos } from '@/components/related-videos';
 import { CommentCard } from '@/components/comment-card';
+import { videoRouteAction } from '@/lib/video-route';
 import { bilibiliApi } from '@/lib/bilibili';
 import { ScreenState } from '@/components/screen-state';
 import { ThemedText } from '@/components/themed-text';
@@ -39,7 +55,8 @@ export default function VideoScreen() {
     canonicalVideoUrl(bvid);
     return bilibiliApi.getVideo(bvid);
   }, [bvid]);
-  const detail = detailResource.data;
+  const detail =
+    detailResource.data?.bvid === bvid ? detailResource.data : undefined;
   const { i18n, t } = useLingui();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
@@ -52,6 +69,13 @@ export default function VideoScreen() {
         ? bilibiliApi.getComments(detail.aid)
         : Promise.resolve({ items: [] }),
     [detail?.aid],
+  );
+  const [focused, setFocused] = useState(false);
+  useFocusEffect(
+    useCallback(() => {
+      setFocused(true);
+      return () => setFocused(false);
+    }, []),
   );
   const [moreComments, setMoreComments] = useState<Comment[]>([]);
   const [nextCursor, setNextCursor] = useState<string>();
@@ -73,86 +97,86 @@ export default function VideoScreen() {
       },
     [detail],
   );
-  const playbackRequest = useRef('');
+  const routeKey = `${bvid}:${pageParam ?? ''}:${timeParam ?? ''}`;
+  const openedBvid = useRef<string | undefined>(undefined);
+  const openedRoute = useRef<string | undefined>(undefined);
+  const pendingBvid = useRef<string | undefined>(undefined);
+  const previousCurrent = useRef(current?.bvid);
   const linkedGeneration = useRef(0);
-  const mounted = useRef(true);
-  const activeRoute = useRef('');
-  const selectedVideo = useRef(current?.bvid);
+  const activeRoute = useRef<string | undefined>(undefined);
   useEffect(() => {
-    selectedVideo.current = current?.bvid;
-  }, [current?.bvid]);
-  useEffect(() => {
-    activeRoute.current = `${bvid}:${pageParam ?? ''}:${timeParam ?? ''}`;
+    activeRoute.current = focused ? routeKey : undefined;
     return () => {
-      activeRoute.current = '';
+      activeRoute.current = undefined;
     };
-  }, [bvid, pageParam, timeParam]);
-  useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
+  }, [focused, routeKey]);
   const openLinkedVideo = useCallback(async () => {
-    if (!summary || !detail || detail.bvid !== bvid) return;
-    const key = `${bvid}:${pageParam ?? ''}:${timeParam ?? ''}`;
-    if (activeRoute.current !== key) return;
+    if (!summary || !detail || activeRoute.current !== routeKey) return;
     const generation = ++linkedGeneration.current;
-    playbackRequest.current = key;
     try {
       await playVideoReference(
         summary,
         detail.parts,
         { page: pageParam, timestamp: timeParam },
-        {
-          play,
-          playPart,
-          isCurrent: () =>
-            mounted.current &&
-            linkedGeneration.current === generation &&
-            playbackRequest.current === key &&
-            activeRoute.current === key &&
-            selectedVideo.current === bvid,
-          seek: (seconds) => {
-            player.currentTime = seconds;
-          },
-        },
+        { play, playPart },
       );
       if (
-        mounted.current &&
         linkedGeneration.current === generation &&
-        activeRoute.current === key
+        activeRoute.current === routeKey
       )
         setPlaybackError(undefined);
     } catch {
       if (
-        mounted.current &&
         linkedGeneration.current === generation &&
-        playbackRequest.current === key &&
-        activeRoute.current === key
+        activeRoute.current === routeKey
       )
         setPlaybackError(new Error(t`Could not start playback. Try again.`));
     }
-  }, [bvid, detail, pageParam, play, playPart, player, summary, t, timeParam]);
+  }, [detail, pageParam, play, playPart, routeKey, summary, t, timeParam]);
   useEffect(() => {
-    const key = `${bvid}:${pageParam ?? ''}:${timeParam ?? ''}`;
-    if (
-      playbackRequest.current === key ||
-      (current?.bvid === bvid && !pageParam && !timeParam)
-    )
+    const action = videoRouteAction({
+      focused,
+      bvid,
+      routeKey,
+      openedRoute: openedRoute.current,
+      summaryBvid: summary?.bvid,
+      currentBvid: current?.bvid,
+      previousCurrent: previousCurrent.current,
+      openedBvid: openedBvid.current,
+      pendingBvid: pendingBvid.current,
+    });
+    if (!focused || (pendingBvid.current && pendingBvid.current !== bvid))
       return;
-    if (summary && detail?.bvid === bvid) {
-      void Promise.resolve().then(() => {
-        if (activeRoute.current === key && playbackRequest.current !== key)
-          return openLinkedVideo();
-      });
+    if (pendingBvid.current === bvid) pendingBvid.current = undefined;
+    previousCurrent.current = current?.bvid;
+    if (action.type === 'follow') {
+      linkedGeneration.current += 1;
+      activeRoute.current = undefined;
+      openedBvid.current = action.bvid;
+      openedRoute.current = `${action.bvid}::`;
+      pendingBvid.current = action.bvid;
+      router.setParams({ bvid: action.bvid, p: undefined, t: undefined });
+      return;
+    }
+    if (action.type === 'open' && summary) {
+      openedBvid.current = bvid;
+      openedRoute.current = routeKey;
+      if (
+        current?.bvid !== bvid ||
+        pageParam !== undefined ||
+        timeParam !== undefined
+      )
+        void Promise.resolve().then(() => {
+          if (activeRoute.current === routeKey) return openLinkedVideo();
+        });
     }
   }, [
     bvid,
     current?.bvid,
-    detail?.bvid,
+    focused,
     openLinkedVideo,
     pageParam,
+    routeKey,
     summary,
     timeParam,
   ]);
@@ -187,12 +211,22 @@ export default function VideoScreen() {
     );
   const header = (
     <View>
-      <VideoView
-        player={player}
-        style={styles.video}
-        nativeControls
-        fullscreenOptions={{ enable: true }}
-      />
+      {focused ? (
+        <VideoView
+          player={player}
+          style={styles.video}
+          nativeControls
+          fullscreenOptions={{ enable: true }}
+        />
+      ) : null}
+      <PlaybackStatus />
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => router.push('/playback')}
+        style={{ padding: 16 }}
+      >
+        <ThemedText>{t`Playback and queue`}</ThemedText>
+      </Pressable>
       <View style={styles.info}>
         <ThemedText style={styles.title}>{detail.title}</ThemedText>
         <ThemedText type="small" themeColor="textSecondary">
@@ -200,7 +234,18 @@ export default function VideoScreen() {
           {formatCount(detail.likes, i18n.locale)} {t`likes`} ·{' '}
           {formatCount(detail.comments, i18n.locale)} {t`Comments`}
         </ThemedText>
-        <View style={styles.uploader}>
+        <Pressable
+          accessibilityRole="button"
+          disabled={!detail.uploaderId}
+          accessibilityLabel={t`View creator: ${detail.uploader}`}
+          onPress={() =>
+            router.push({
+              pathname: '/creator/[id]',
+              params: { id: detail.uploaderId },
+            })
+          }
+          style={styles.uploader}
+        >
           {detail.uploaderAvatar ? (
             <Image
               source={{ uri: detail.uploaderAvatar }}
@@ -208,7 +253,7 @@ export default function VideoScreen() {
             />
           ) : null}
           <ThemedText type="smallBold">{detail.uploader}</ThemedText>
-        </View>
+        </Pressable>
         {playbackError ? (
           <ScreenState
             error={playbackError}
@@ -240,15 +285,15 @@ export default function VideoScreen() {
               { backgroundColor: theme.backgroundElement },
             ]}
           >
-            <ThemedText>＋ {t`Add to playlist`}</ThemedText>
+            <FolderAdd size={20} />
+            <ThemedText>{t`Add to playlist`}</ThemedText>
           </Pressable>
           <Pressable
             onPress={() => void start(summary)}
             style={[styles.action, { backgroundColor: theme.accent }]}
           >
-            <ThemedText style={styles.actionPrimary}>
-              ↓ {t`Download`}
-            </ThemedText>
+            <Download size={20} color="#fff" />
+            <ThemedText style={styles.actionPrimary}>{t`Download`}</ThemedText>
           </Pressable>
         </View>
         {choosingPlaylist ? (
@@ -325,6 +370,7 @@ export default function VideoScreen() {
             </ThemedText>
           </View>
         ) : null}
+        <RelatedVideos bvid={bvid} />
         <ThemedText style={styles.commentsTitle}>{t`All comments`}</ThemedText>
       </View>
     </View>
@@ -370,7 +416,15 @@ const styles = StyleSheet.create({
   },
   avatar: { width: 32, height: 32, borderRadius: 16 },
   actions: { flexDirection: 'row', gap: 10, paddingHorizontal: 16 },
-  action: { flex: 1, borderRadius: 999, padding: 11, alignItems: 'center' },
+  action: {
+    flex: 1,
+    borderRadius: 999,
+    padding: 11,
+    flexDirection: 'row',
+    gap: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   actionPrimary: { color: '#fff', fontWeight: '700' },
   playlistChoices: { paddingHorizontal: 16, gap: 8 },
   chip: {
